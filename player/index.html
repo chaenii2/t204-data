@@ -201,7 +201,10 @@ async function dIpo(){
 async function loadDirect(){
   const feed={source:'direct'}; const errs=[];
   const run=async(k,fn,def)=>{try{feed[k]=await fn()}catch(e){feed[k]=def;errs.push(k+': '+e.message)}};
-  await Promise.all([run('weather',dWeather,null),run('_pm',dDust,null),run('fx',dFx,{basis:'',items:[]}),run('ipo_list',dIpo,[])]);
+  const relayPart=async()=>{const r=await getJSON(CFG.feedUrl+'?t='+Date.now());return r};
+  let rel=null;
+  await Promise.all([run('weather',dWeather,null),run('_pm',dDust,null),(async()=>{try{rel=await relayPart()}catch(e){errs.push('relay: '+e.message)}})()]);
+  feed.fx=(rel&&rel.fx)||{basis:'',items:[]}; feed.ipo_list=(rel&&rel.ipo_list)||[];
   if(feed.weather) feed.weather.pm=feed._pm||'보통';
   const n=kst(); feed.generated_at=`${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())} ${pad(n.getHours())}:${pad(n.getMinutes())}`;
   feed.errors=errs; return finalize(feed);
@@ -223,8 +226,7 @@ window.T204_DIAG = async function(root){
     const k=CFG.keys||{};
     T.push(['기상청 (apis.data.go.kr)',`https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst?`+qs({serviceKey:k.DATA_GO_KR_KEY,pageNo:1,numOfRows:20,dataType:'JSON',base_date:ymd(b),base_time:pad(b.getHours())+'00',nx:61,ny:125})]);
     T.push(['에어코리아 (apis.data.go.kr)',`https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty?`+qs({serviceKey:k.DATA_GO_KR_KEY,returnType:'json',numOfRows:1,pageNo:1,stationName:'강남구',dataTerm:'DAILY',ver:'1.0'})]);
-    T.push(['수출입은행 (oapi.koreaexim.go.kr)',`https://oapi.koreaexim.go.kr/site/program/financial/exchangeJSON?`+qs({authkey:k.KOREAEXIM_KEY,searchdate:ymd(now),data:'AP01'})]);
-    T.push(['OpenDART (opendart.fss.or.kr)',`https://opendart.fss.or.kr/api/list.json?`+qs({crtfc_key:k.DART_KEY,pblntf_detail_ty:'C001',page_count:1})]);
+    T.push(['환율·공모주 중계 (chaenii2.github.io)', CFG.feedUrl]);
   }
   const rows=T.map(([n])=>`<tr><td>${n}</td><td class="st">확인 중…</td></tr>`).join('');
   root.innerHTML=`<div style="padding:70px 60px;font-size:34px;line-height:1.5;color:#fff">

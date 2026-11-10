@@ -42,7 +42,9 @@ def main():
     if a.mode == "relay":
         cfg["feedUrl"] = a.feed_url
     else:
-        cfg["keys"] = {k: os.environ.get(k, "").strip() for k in ["DATA_GO_KR_KEY", "KOREAEXIM_KEY", "DART_KEY"]}
+        # 브라우저 직접 호출을 허용하는 공공데이터포털 키만 넣음 (수출입은행·DART는 CORS 미허용 → 중계)
+        cfg["keys"] = {"DATA_GO_KR_KEY": os.environ.get("DATA_GO_KR_KEY", "").strip()}
+        cfg["feedUrl"] = a.feed_url
     html = (TPL / "player_v4.src.html").read_text(encoding="utf-8")
     html = html.replace("/*DATA*/", json.dumps(finalize_embedded(feed), ensure_ascii=False))
     html = html.replace("/*CONFIG*/", json.dumps(cfg, ensure_ascii=False))
