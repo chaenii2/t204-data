@@ -44,6 +44,22 @@ def main():
             "ipo": "OpenDART 증권신고서 (opendart.fss.or.kr)",
         },
     }
+    # 수집 실패한 항목은 직전 정상값 유지 (화면이 비지 않게)
+    prev_path = os.path.join(out, "feed.json")
+    try:
+        prev = json.load(open(prev_path, encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        prev = {}
+    kept = []
+    if not feed["weather"] and prev.get("weather"):
+        feed["weather"] = prev["weather"]; kept.append("weather")
+    if not feed["fx"].get("items") and prev.get("fx", {}).get("items"):
+        feed["fx"] = prev["fx"]; kept.append("fx")
+    if not feed["ipo_list"] and prev.get("ipo_list"):
+        feed["ipo_list"] = prev["ipo_list"]; kept.append("ipo")
+    if kept:
+        F.log("직전 값 유지: " + ", ".join(kept))
+    feed["stale"] = kept
     os.makedirs(out, exist_ok=True)
     with open(os.path.join(out, "feed.json"), "w", encoding="utf-8") as f:
         json.dump(feed, f, ensure_ascii=False, indent=1)
