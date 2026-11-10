@@ -104,6 +104,7 @@ const MODES={
   evening:{ttl:'퇴근길 브리핑',lab:'GOOD EVENING',line:['증시 마감','환율','공모주 청약']}
 };
 let DATA=JSON.parse(document.getElementById('t204-data').textContent);
+{const _k=new Date(Date.now()+(new Date().getTimezoneOffset()+540)*60000);DATA.date=`${_k.getFullYear()}-${String(_k.getMonth()+1).padStart(2,'0')}-${String(_k.getDate()).padStart(2,'0')}`;DATA.dow=['SUN','MON','TUE','WED','THU','FRI','SAT'][_k.getDay()];}
 if(DATA.ipo_list&&window.T204_IPO){const n=new Date();DATA.ipo={morning:T204_IPO(DATA.ipo_list,n,false),evening:T204_IPO(DATA.ipo_list,n,true)}}
 const $=s=>document.querySelector(s);
 const fmt=(v,dec=2)=>Number(v).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
@@ -227,18 +228,22 @@ function build(mode){
   const dm=mode==='today'?'morning':mode;
   SCN=SCNS[mode]; $('.prog').innerHTML=SCN.slice(1,-1).map(()=>'<i><b></b></i>').join('');
   const has=k=>{const x=DATA[k];return !!x&&(Array.isArray(x.items)?x.items.length>0:true)};
+  // 오래된 데이터는 표시하지 않음: 날씨=오늘 데이터만, 환율=2일 이내
+  const kd=()=>{const d=new Date();return new Date(d.getTime()+(d.getTimezoneOffset()+540)*60000)};
+  const ageDays=()=>{if(!DATA.generated_at)return 99;const [y,m,d]=DATA.generated_at.slice(0,10).split('-').map(Number);const t=kd();return Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(y,m-1,d))/86400000)};
+  const freshDay=()=>ageDays()===0, fresh2=()=>ageDays()<=2;
   const S={
-    weather:{ok:()=>!!DATA.weather,t:'날씨',f:()=>weatherScene()},
+    weather:{ok:()=>!!DATA.weather&&freshDay(),t:'날씨',f:()=>weatherScene()},
     traffic:{ok:()=>!!DATA.traffic,t:'교통',f:()=>trafficScene()},
-    fx:{ok:()=>has('fx'),t:'환율',f:i=>tickerScene(i,{head:'오늘의 환율',cat:'환율',items:DATA.fx.items,basis:DATA.fx.basis,b:listB('원/외화')})},
+    fx:{ok:()=>has('fx')&&fresh2(),t:'환율',f:i=>tickerScene(i,{head:'오늘의 환율',cat:'환율',items:DATA.fx.items,basis:DATA.fx.basis,b:listB('원/외화')})},
     stock:{ok:()=>has('kr'),t:'증시',f:i=>tickerScene(i,{head:'국내 증시 마감',cat:'국내',items:DATA.kr.items,basis:DATA.kr.basis,b:flowB()})},
     rate:{ok:()=>!!DATA.rates,t:'금리',f:()=>rateScene()},
     ipo:{ok:()=>DATA.ipo&&(DATA.ipo[dm]||[]).length>0,t:'공모주 청약',f:()=>scheduleScene(dm)},
   };
   const order={morning:['weather','traffic','ipo','fx','stock'],today:['weather','fx','stock','ipo','rate'],evening:['traffic','fx','stock','rate','ipo','weather']}[mode];
   const picked=order.filter(k=>S[k].ok()).slice(0,3);
-  MODES[mode].line=picked.map(k=>S[k].t);
-  const body=picked.map((k,n)=>S[k].f(n+1));
+  MODES[mode].line=picked.length?picked.map(k=>S[k].t):['중앙일보','테헤란로 T204'];
+  const body=picked.map((k,n)=>S[k].f(n+1)); while(body.length<3) body.push(outro());
   $('#scenes').innerHTML=[intro(mode),...body,outro()].map(h=>`<section class="scene">${h}</section>`).join('');
   const st=$('#stage'); st.classList.remove('morning','lunch','evening'); st.classList.add(mode==='today'?'lunch':mode);
   $('#ttl').textContent=MODES[mode].ttl; $('#lab').textContent=MODES[mode].lab;
