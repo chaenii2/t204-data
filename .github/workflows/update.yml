@@ -1,0 +1,43 @@
+name: 데이터 갱신 (15분마다)
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scripts/**
+      - template/**
+      - .github/workflows/update.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: 데이터 수집 → feed.json
+        env:
+          DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
+          KOREAEXIM_KEY: ${{ secrets.KOREAEXIM_KEY }}
+          DART_KEY: ${{ secrets.DART_KEY }}
+        run: python scripts/build_feed.py .
+      - name: 링크용 플레이어 갱신 (player/index.html)
+        run: python scripts/build_player.py relay --embed feed.json --feed-url https://chaenii2.github.io/t204-data/feed.json --out player
+      - name: 저장
+        run: |
+          git config user.name "t204-bot"
+          git config user.email "t204-bot@users.noreply.github.com"
+          git add feed.json feed_log.md player
+          git commit -m "데이터 갱신 $(TZ=Asia/Seoul date +'%m-%d %H:%M')" || echo "변경 없음"
+          git pull --rebase -q origin main && git push
