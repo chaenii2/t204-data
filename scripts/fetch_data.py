@@ -109,10 +109,12 @@ def dust_both():
         "stationName": "강남구", "dataTerm": "DAILY", "ver": "1.0"}))
     pm10 = pm25 = None
     for it in d["response"]["body"]["items"]:
-        if pm10 is None and it.get("pm10Grade") not in (None, "", "-"):
-            pm10 = GRADE.get(str(it["pm10Grade"]))
-        if pm25 is None and it.get("pm25Grade") not in (None, "", "-"):
-            pm25 = GRADE.get(str(it["pm25Grade"]))
+        for f in ("pm10Grade", "pm10Grade1h"):
+            if pm10 is None and it.get(f) not in (None, "", "-"):
+                pm10 = GRADE.get(str(it[f]))
+        for f in ("pm25Grade", "pm25Grade1h"):
+            if pm25 is None and it.get(f) not in (None, "", "-"):
+                pm25 = GRADE.get(str(it[f]))
         if pm10 and pm25:
             break
     log(f"미세먼지: {pm10} / 초미세먼지: {pm25} (강남구 측정소)")
