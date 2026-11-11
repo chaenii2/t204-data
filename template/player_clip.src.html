@@ -159,7 +159,7 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
         <div class="pa" style="top:1410px;font-size:48px;font-weight:700">한국은행 기준금리</div>
         <div class="pb num" style="top:1390px;text-align:right;font-size:84px;font-weight:900">${R.v.toFixed(2)}%</div>`:''}`;
     if(!K.length) return [fx];
-    const idx=(it,box)=>`<div class="${box}" style="top:440px"><div class="lbl">${it.code==='KOSPI'?'코스피':'코스닥'}</div>
+    const idx=(it,box)=>`<div class="${box}" style="top:${box==='pa'?480:480}px"><div class="lbl">${it.code==='KOSPI'?'코스피':'코스닥'}</div>
         <div class="num" style="font-size:${box==='pa'?112:96}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>
         <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${sgn(it.d)} ${fmt(Math.abs(it.d))}</div>
         <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${(v=>(v>0?'+':'')+v.toFixed(2))(it.pct??pct(it.d,it.v))}%</div>
@@ -169,7 +169,10 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
       <div class="pa" style="top:1295px"><span style="background:var(--red);font-size:38px;font-weight:700;padding:6px 26px 9px;border-radius:999px">공모주 청약</span></div>
       ${ipo.map((o,i)=>`<div class="pa" style="top:${1390+i*92}px;font-size:50px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.name}</div>
          <div class="pb" style="top:${1390+i*92}px;font-size:50px;font-weight:800;text-align:right;color:${o.hot?'#ff6b5e':'#ffd166'}">${o.badge}</div>`).join('')}`:'';
-    const st=`<div class="title">오늘의 증시</div>${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
+    const kb=((DATA.kr.basis||'').match(/(\d{2}\.\d{2})/)||[])[1];
+    const st=`<div class="title">오늘의 증시</div>
+      <div class="pa" style="top:378px;display:flex;align-items:center;gap:18px;white-space:nowrap"><span style="background:#f59e0b;color:#1a1204;font-size:34px;font-weight:800;padding:5px 24px 8px;border-radius:999px">국내 증시</span>${kb?`<span class="k" style="font-size:34px">${kb} 종가 기준</span>`:''}</div>
+      ${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
     return [fx,st];
   }};
 CL.weather={bg:'bg-sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
