@@ -167,11 +167,13 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
     const ipo=ipoItems().slice(0,2);
     const ip=ipo.length?`<div class="hr" style="left:56px;width:1092px;top:1260px"></div>
       <div class="pa" style="top:1295px"><span style="background:var(--red);font-size:38px;font-weight:700;padding:6px 26px 9px;border-radius:999px">공모주 청약</span></div>
-      ${ipo.map((o,i)=>`<div class="pa" style="top:${1390+i*92}px;font-size:50px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.name}</div>
-         <div class="pb" style="top:${1390+i*92}px;font-size:50px;font-weight:800;text-align:right;color:${o.hot?'#ff6b5e':'#ffd166'}">${o.badge}</div>`).join('')}`:'';
+      ${ipo.map((o,i)=>`<div class="pa" style="top:${1380+i*130}px"><div style="font-size:48px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2">${o.name}</div>
+           <div class="num" style="font-size:32px;color:var(--sub);margin-top:4px">${o.period} · ${o.price}</div></div>
+         <div class="pb" style="top:${1380+i*130}px;text-align:right"><div style="font-size:48px;font-weight:800;line-height:1.2;color:${o.hot?'#ff6b5e':'#ffd166'}">${o.badge}</div>
+           <div style="font-size:32px;color:var(--sub);margin-top:4px;white-space:nowrap">대표주관 ${o.broker}</div></div>`).join('')}`:'';
     const kb=((DATA.kr.basis||'').match(/(\d{2}\.\d{2})/)||[])[1];
     const st=`<div class="title">오늘의 증시</div>
-      <div class="pa" style="top:378px;display:flex;align-items:center;gap:18px;white-space:nowrap"><span style="background:#f59e0b;color:#1a1204;font-size:34px;font-weight:800;padding:5px 24px 8px;border-radius:999px">국내 증시</span>${kb?`<span class="k" style="font-size:34px">${kb} 종가 기준</span>`:''}</div>
+      <div class="pa" style="top:378px;display:flex;align-items:center;gap:18px;white-space:nowrap"><span style="background:#f59e0b;color:#1a1204;font-size:34px;font-weight:800;padding:5px 24px 8px;border-radius:999px">국내</span>${kb?`<span class="k" style="font-size:34px">${kb} 종가 기준</span>`:''}</div>
       ${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
     return [fx,st];
   }};
@@ -225,8 +227,8 @@ function coverHtml(k){return `<div class="cover-bg ${k}"></div>
     <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px"><span class="num" style="font-size:54px;font-weight:700"><span class="cdate2"></span></span><span class="campm" style="font-size:54px;font-weight:600;color:#dbe4f3"></span></div>
     <div class="num ctime2" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.6)"></div>
     <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:56px 0 34px"></div>
-    <div style="font-size:66px;font-weight:800">T204 오늘의 인사이트</div>
-    <div style="font-size:52px;font-weight:800;color:${CLIPCOLOR[k]};margin-top:20px">${CLIPNAME[k]}</div>
+    <div style="font-size:76px;font-weight:800;line-height:1.15">T204</div><div style="font-size:58px;font-weight:400;color:#dbe4f3;margin-top:4px">오늘의 인사이트</div>
+    <div style="font-size:44px;font-weight:700;color:${CLIPCOLOR[k]};margin-top:26px">${CLIPNAME[k]}</div>
   </div>`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
