@@ -138,19 +138,19 @@ function ipoItems(){
 }
 function ipoTicker(dur,top){
   const it=ipoItems(); if(!it.length) return '';
-  const s0=1.2, slot=(dur-s0-.6)/it.length;
-  return `<div class="divider" style="top:${top-34}px"></div>
-   <div class="pa" style="top:${top}px;height:130px;width:520px" ${A('fade',.9)}>
-     <span style="position:absolute;left:0;top:8px;background:var(--red);color:#fff;font-size:30px;font-weight:700;padding:6px 20px 8px;border-radius:999px">공모주 청약</span>
-     ${it.map((o,i)=>`<div class="roll" data-s="${s0+i*slot}" data-e="${s0+(i+1)*slot}" style="position:absolute;left:0;top:66px;width:520px;opacity:0">
-        <div style="font-size:44px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.name}</div>
-        <div class="num" style="font-size:30px;color:#c9d6ee;margin-top:2px">${o.period} · ${o.price}</div></div>`).join('')}
+  const pages=[]; for(let i=0;i<it.length;i+=2) pages.push(it.slice(i,i+2));
+  const s0=1.2, slot=(dur-s0-.6)/pages.length;
+  const rowA=o=>`<div style="height:104px"><div style="font-size:40px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.name}</div>
+      <div class="num" style="font-size:28px;color:#c9d6ee;margin-top:2px">${o.period} · ${o.price}</div></div>`;
+  const rowB=o=>`<div style="height:104px;text-align:right"><div style="font-size:42px;font-weight:900;color:${o.hot?'#ff6b5e':'#ffd166'}">${o.badge}</div>
+      <div style="font-size:26px;color:#c9d6ee;margin-top:2px">대표주관 ${o.broker}</div></div>`;
+  return `<div class="divider" style="top:${top-30}px"></div>
+   <div class="pa" style="top:${top}px;width:520px" ${A('fade',.9)}>
+     <span style="background:var(--red);color:#fff;font-size:30px;font-weight:700;padding:6px 20px 8px;border-radius:999px">공모주 청약</span>
+     <div style="position:relative;height:216px;margin-top:22px">${pages.map((pg,i)=>`<div class="roll" data-s="${s0+i*slot}" data-e="${s0+(i+1)*slot}" style="position:absolute;left:0;right:0;top:0;opacity:0">${pg.map(rowA).join('')}</div>`).join('')}</div>
    </div>
-   <div class="pb" style="top:${top}px;height:130px" ${A('fade',1)}>
-     ${it.map((o,i)=>`<div class="roll" data-s="${s0+i*slot}" data-e="${s0+(i+1)*slot}" style="position:absolute;right:0;top:20px;text-align:right;opacity:0">
-        <div style="font-size:52px;font-weight:900;color:${o.hot?'#ff6b5e':'#ffd166'}">${o.badge}</div>
-        <div style="font-size:28px;color:#c9d6ee;margin-top:6px">대표주관 ${o.broker}</div></div>`).join('')}
-     <div style="position:absolute;right:0;top:-6px;font-size:24px;color:rgba(255,255,255,.5)" class="num">${it.length>1?'':''}</div>
+   <div class="pb" style="top:${top+66}px" ${A('fade',1)}>
+     <div style="position:relative;height:216px">${pages.map((pg,i)=>`<div class="roll" data-s="${s0+i*slot}" data-e="${s0+(i+1)*slot}" style="position:absolute;left:0;right:0;top:0;opacity:0">${pg.map(rowB).join('')}</div>`).join('')}</div>
    </div>`;
 }
 
@@ -180,10 +180,10 @@ SC.fx={dur:10,bg:'navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fre
     `<div style="padding-top:150px">${rest.map((r,i)=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;border-bottom:2px solid var(--line)" ${A('up',.6+i*.12)}>
         <span style="font-size:34px;font-weight:700">${r.code}${r.unit?` <span style="font-size:24px;color:var(--sub)">(${r.unit})</span>`:''}</span>
         <span style="text-align:right"><span class="num" style="font-size:40px;font-weight:700">${fmt(r.v)}</span><br><span class="num ${cls(r.d)}" style="font-size:26px;font-weight:700">${sgn(r.d)} ${fmt(Math.abs(r.d))}</span></span></div>`).join('')}</div>`)
-    +`<div style="position:absolute;left:56px;top:880px" ${A('fade',.4)}>${spark(hist.length>1?hist:null,1090,280,'#3aa0ff','fx')}</div>`
-    +ipoTicker(SC.fx.dur,1480)
-    +(R?`<div class="divider" style="top:1215px"></div>
-      <div class="pa" style="top:1250px;display:flex;align-items:center;gap:34px" ${A('up',1.4)}>
+    +`<div style="position:absolute;left:56px;top:840px" ${A('fade',.4)}>${spark(hist.length>1?hist:null,1090,250,'#3aa0ff','fx')}</div>`
+    +ipoTicker(SC.fx.dur,1400)
+    +(R?`<div class="divider" style="top:1150px"></div>
+      <div class="pa" style="top:1180px;display:flex;align-items:center;gap:34px" ${A('up',1.4)}>
         <div style="width:120px;height:120px;border-radius:50%;border:3px solid rgba(58,160,255,.6);background:rgba(58,160,255,.12);display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:700">%</div>
         <div><div class="num" style="font-size:72px;font-weight:900">${R.v.toFixed(2)}%</div><div class="k" style="font-size:34px;color:#dbe4f3">${R.name}</div></div></div>`:'');
   }};
@@ -195,7 +195,7 @@ SC.stock={dur:10,bg:'navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length>0
       <div class="num ${cls(it.d)}" style="font-size:50px;font-weight:700;margin-top:6px" ${A('fade',d+.6)}>${sgn(it.d)} ${fmt(Math.abs(it.d))} &nbsp;${it.pct>0?'+':''}${(it.pct??pct(it.d,it.v)).toFixed(2)}%</div>
       <div style="margin-top:40px" ${A('fade',d+.3)}>${spark(it.hist,w,240,it.d>=0?'#ff4d4f':'#3aa0ff','s'+it.code)}</div>`;
     return P(`<div class="title" ${A('up',0)}>국내 증시</div><div style="margin-top:80px">${blk(K[0],480,.2)}</div>`,
-             `<div style="padding-top:194px">${K[1]?blk(K[1],380,.5):''}</div>`)+ipoTicker(SC.stock.dur,1480);
+             `<div style="padding-top:194px">${K[1]?blk(K[1],380,.5):''}</div>`)+ipoTicker(SC.stock.dur,1400);
   }};
 
 SC.weather={dur:8,bg:'sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
@@ -221,17 +221,29 @@ SC.weather={dur:8,bg:'sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · �
      +(w.pm25?`<div class="pb" style="top:1615px;font-size:40px;font-weight:700" ${A('up',1.2)}>초미세먼지 <span style="color:${gradeColor(w.pm25)}">${w.pm25}</span><span class="dot" style="background:${gradeColor(w.pm25)}"></span></div>`:'');
   }};
 
-SC.traffic={dur:8,bg:'green',ok:()=>!!DATA.traffic,src:()=>'서울시 실시간 도시데이터',
+SC.traffic={dur:8,bg:'green',ok:()=>!!DATA.traffic,src:()=>DATA.traffic.basis||'서울시 실시간 도시데이터',
   html:()=>{
-    const T=DATA.traffic, c={'원활':'#4ade80','서행':'#facc15','정체':'#ff4d4f'}[T.status]||'#4ade80';
+    const T=DATA.traffic, C=st=>({'원활':'#4ade80','서행':'#facc15','정체':'#ff4d4f'}[st]||'#4ade80');
+    const stOf=k=>k>=25?'원활':k>=15?'서행':'정체';
+    const seg=(T.segments||[]).map((g,i)=>`<div style="margin-top:${i?44:0}px" ${A('up',.9+i*.12)}>
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:32px;font-weight:700">${g.name}</span>
+        <span class="num" style="font-size:34px;font-weight:800;color:${C(stOf(g.kmh))}">${g.kmh}<span style="font-size:24px"> km/h</span></span></div>
+        <div style="height:20px;border-radius:10px;background:rgba(255,255,255,.14);margin-top:12px;overflow:hidden"><div style="height:100%;width:${Math.min(100,g.kmh/40*100)}%;background:${C(stOf(g.kmh))};border-radius:8px" ${A('grow',1.1+i*.12,'data-dur="1"')}></div></div></div>`).join('');
+    const card=(icon,k,v,sub,d)=>`<div style="padding:26px 0;border-bottom:2px solid rgba(255,255,255,.16)" ${A('up',d)}>
+        <div style="font-size:28px;color:#cfe9e0">${icon} ${k}</div><div style="font-size:46px;font-weight:800;margin-top:4px">${v}</div>${sub?`<div style="font-size:26px;color:#cfe9e0;margin-top:2px">${sub}</div>`:''}</div>`;
+    const cards=[];
+    if(T.congest) cards.push(card('👥','역삼역 일대 혼잡도',`<span style="color:${({'여유':'#4ade80','보통':'#4ade80','약간 붐빔':'#facc15','붐빔':'#ff4d4f'})[T.congest]||'#fff'}">${T.congest}</span>`,T.congest_msg||'',.6));
+    if(T.subway&&T.subway.length) cards.push(card('🚇','2호선 역삼역 다음 열차',T.subway.map(x=>`${x.dir} <span class="num">${x.min}</span>분`).join(' · '),'',.75));
+    if(T.bike) cards.push(card('🚲','따릉이 대여 가능',`<span class="num">${T.bike.n}</span>대`,T.bike.name,.9));
+    if(T.roads&&T.roads.length) cards.push(card('🛣️','주변 도로',T.roads.map(r=>`${r.name} <span style="color:${C(stOf(r.kmh))}">${stOf(r.kmh)}</span>`).join(' · '),'',1.05));
     return P(`<div class="title" ${A('up',0)}>오늘의 교통</div>
-        <div style="margin:200px 0 0 60px;width:240px;height:240px;border-radius:50%;border:5px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center" ${A('scale',.3)}>
-          <svg width="130" height="110" viewBox="0 0 130 110" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"><path d="M18 58 L30 24 Q33 16 42 16 H88 Q97 16 100 24 L112 58"/><rect x="10" y="56" width="110" height="34" rx="12"/><path d="M22 90 v12 M108 90 v12"/><circle cx="34" cy="73" r="6" fill="#fff"/><circle cx="96" cy="73" r="6" fill="#fff"/></svg></div>`,
-      `<div style="padding-top:300px;border-left:3px solid rgba(255,255,255,.35);padding-left:40px;margin-left:-40px">
-        <div style="font-size:46px;font-weight:700" ${A('up',.4)}>테헤란로</div><div style="font-size:34px;color:#cfe9e0" ${A('up',.5)}>역삼 ↔ 삼성</div>
-        <div style="font-size:150px;font-weight:900;color:${c};letter-spacing:-.04em;margin-top:20px" ${A('up',.7)}>${T.status||'-'}</div>
-        ${T.kmh?`<div class="num" style="font-size:40px;color:#e6f5ef" ${A('up',.9)}>평균 ${T.kmh}km/h</div>`:''}
-        ${T.congest?`<div style="font-size:36px;color:#e6f5ef;margin-top:30px" ${A('up',1.1)}>역삼역 일대 ${T.congest}</div>`:''}</div>`);
+        <div style="margin-top:110px;font-size:56px;font-weight:800" ${A('up',.2)}>테헤란로</div>
+        <div style="font-size:32px;color:#cfe9e0" ${A('up',.25)}>강남역 ↔ 삼성역</div>
+        <div style="display:flex;align-items:baseline;gap:24px;margin-top:6px" ${A('up',.35)}>
+          <span style="font-size:150px;font-weight:900;color:${C(T.status)};letter-spacing:-.04em">${T.status||'-'}</span>
+          ${T.kmh?`<span class="num" style="font-size:44px;color:#e6f5ef;white-space:nowrap">평균 ${T.kmh}km/h</span>`:''}</div>
+        <div style="margin-top:20px;font-size:26px;color:#cfe9e0" ${A('fade',.8)}>구간별 속도</div><div style="margin-top:26px">${seg}</div>`,
+      `<div style="padding-top:190px">${cards.slice(0,4).join('')}</div>`);
   }};
 
 const ORDER=['open','fx','stock','weather','traffic'];
