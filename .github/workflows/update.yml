@@ -27,8 +27,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: 데이터 수집 · 플레이어 갱신 · 저장 (예약 실행은 15분 간격 4회 반복)
-        timeout-minutes: 58
+      - name: 데이터 수집 · 플레이어 갱신 · 저장 (예약 실행은 15분 간격 22회 ≒ 5시간 반복)
+        timeout-minutes: 340
         env:
           DATA_GO_KR_KEY: ${{ secrets.DATA_GO_KR_KEY }}
           KOREAEXIM_KEY: ${{ secrets.KOREAEXIM_KEY }}
@@ -41,7 +41,7 @@ jobs:
           git config user.name "t204-bot"
           git config user.email "t204-bot@users.noreply.github.com"
           U=https://chaenii2.github.io/t204-data/feed.json
-          N=1; [ "${{ github.event_name }}" = "schedule" ] && N=4
+          N=1; [ "${{ github.event_name }}" = "schedule" ] && N=22
           for i in $(seq 1 $N); do
             git pull -q --rebase -X theirs origin main || git rebase --abort || true
             python scripts/build_feed.py . || echo "수집 실패(이전 값 유지)"
