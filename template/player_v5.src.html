@@ -140,9 +140,11 @@ function ipoItems(){
     return {badge,hot:s<=t0,name:o.name,period:`${f(s)}~${f(e)}`,price:(o.price||'').includes('확정 전')?'공모가 미정':`공모가 ${o.price}`,broker:(o.broker||'').replace('대표주관 ','')};
   });
 }
-function ipoTicker(dur,top){
+function ipoTicker(dur,top,part){
   const it=ipoItems(); if(!it.length) return '';
-  const pages=[]; for(let i=0;i<it.length;i+=2) pages.push(it.slice(i,i+2));
+  let pages=[]; for(let i=0;i<it.length;i+=2) pages.push(it.slice(i,i+2));
+  // 환율·증시 두 화면이 다 있으면 페이지를 나눠 한 화면에 한 페이지씩(읽을 시간 확보)
+  if(pages.length>1&&LIST.includes('fx')&&LIST.includes('stock')){const h=Math.ceil(pages.length/2);pages=part===1?pages.slice(h):pages.slice(0,h)}
   const s0=1.2, slot=(dur-s0-.6)/pages.length;
   const rowA=o=>`<div style="height:104px"><div style="font-size:40px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.name}</div>
       <div class="num" style="font-size:28px;color:#c9d6ee;margin-top:2px">${o.period} · ${o.price}</div></div>`;
@@ -185,7 +187,7 @@ SC.fx={dur:10,bg:'navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fre
         <span style="font-size:34px;font-weight:700">${r.code}${r.unit?` <span style="font-size:24px;color:var(--sub)">(${r.unit})</span>`:''}</span>
         <span style="text-align:right"><span class="num" style="font-size:40px;font-weight:700">${fmt(r.v)}</span><br><span class="num ${cls(r.d)}" style="font-size:26px;font-weight:700">${sgn(r.d)} ${fmt(Math.abs(r.d))}</span></span></div>`).join('')}</div>`)
     +`<div style="position:absolute;left:56px;top:840px" ${A('fade',.4)}>${spark(hist.length>1?hist:null,1090,250,'#3aa0ff','fx')}</div>`
-    +ipoTicker(SC.fx.dur,1400)
+    +ipoTicker(SC.fx.dur,1400,0)
     +(R?`<div class="divider" style="top:1150px"></div>
       <div class="pa" style="top:1180px;display:flex;align-items:center;gap:34px" ${A('up',1.4)}>
         <div style="width:120px;height:120px;border-radius:50%;border:3px solid rgba(58,160,255,.6);background:rgba(58,160,255,.12);display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:700">%</div>
@@ -199,7 +201,7 @@ SC.stock={dur:10,bg:'navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length>0
       <div class="num ${cls(it.d)}" style="font-size:50px;font-weight:700;margin-top:6px" ${A('fade',d+.6)}>${sgn(it.d)} ${fmt(Math.abs(it.d))} &nbsp;${it.pct>0?'+':''}${(it.pct??pct(it.d,it.v)).toFixed(2)}%</div>
       <div style="margin-top:40px" ${A('fade',d+.3)}>${spark(it.hist,w,240,it.d>=0?'#ff4d4f':'#3aa0ff','s'+it.code)}</div>`;
     return P(`<div class="title" ${A('up',0)}>국내 증시</div><div style="margin-top:80px">${blk(K[0],480,.2)}</div>`,
-             `<div style="padding-top:194px">${K[1]?blk(K[1],380,.5):''}</div>`)+ipoTicker(SC.stock.dur,1400);
+             `<div style="padding-top:194px">${K[1]?blk(K[1],380,.5):''}</div>`)+ipoTicker(SC.stock.dur,1400,1);
   }};
 
 SC.weather={dur:8,bg:'sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
@@ -265,6 +267,9 @@ let scenes=[],LOOP=8,pending=null;
 
 function build(){
   LIST=ORDER.filter(k=>{try{return SC[k].ok()}catch(e){return false}});
+  // 한 번 재생 = TOTAL초(기본 30초, T204 슬롯). 빠진 장면이 있으면 남은 장면이 비율대로 길어짐
+  const TOTAL=+((window.T204_CONFIG||{}).total)||30, BASE={open:4.5,fx:7,stock:6.5,weather:6,traffic:6};
+  const sum=LIST.reduce((a,k)=>a+(BASE[k]||6),0); LIST.forEach(k=>SC[k].dur=Math.round((BASE[k]||6)*TOTAL/sum*100)/100);
   let t=0; const html=[];
   scenes=LIST.map(k=>{const s={key:k,a:t,b:t+SC[k].dur,bg:SC[k].bg};t+=SC[k].dur;return s});
   LOOP=t;
