@@ -50,6 +50,10 @@ def main():
     html = html.replace("/*DATA*/", json.dumps(finalize_embedded(feed), ensure_ascii=False))
     html = html.replace("/*CONFIG*/", json.dumps(cfg, ensure_ascii=False))
     html = html.replace("/*LOADER*/", (TPL / "loader.js").read_text(encoding="utf-8"))
+    earth = TPL / "assets" / "earth_bg.jpg"
+    if earth.exists():
+        import base64
+        html = html.replace("/*EARTH*/", "data:image/jpeg;base64," + base64.b64encode(earth.read_bytes()).decode())
     out = pathlib.Path(a.out)
     if out.exists():
         shutil.rmtree(out)

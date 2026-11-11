@@ -20,13 +20,7 @@
   .pb{left:756px;width:390px}
   /* 배경 레이어 (장면마다 교차 전환) */
   .bg{position:absolute;inset:0;opacity:0}
-  .bg-open{background:radial-gradient(90% 38% at 50% 112%, #2f7bff 0%, #123a7a 30%, rgba(8,24,56,.0) 62%),
-                     radial-gradient(130% 60% at 50% 128%, #0b2a5c 0%, transparent 70%),
-                     linear-gradient(180deg,#071630 0%,#0a1f44 55%,#0c2550 100%)}
-  .bg-open .earth{position:absolute;left:-30%;right:-30%;top:1290px;height:1400px;border-radius:50%;
-     background:radial-gradient(60% 40% at 50% 10%,#16386e,#081a38 60%,#050f22);box-shadow:0 -10px 60px 10px rgba(80,160,255,.55),inset 0 14px 40px rgba(130,190,255,.45)}
-  .bg-open .lights{position:absolute;left:0;right:0;top:1330px;height:400px;opacity:.55;
-     background-image:radial-gradient(2px 2px at 20% 30%,#ffd27a 60%,transparent),radial-gradient(2px 2px at 34% 52%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 47% 22%,#ffe2a8 60%,transparent),radial-gradient(2px 2px at 61% 40%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 73% 62%,#ffe2a8 60%,transparent),radial-gradient(2px 2px at 86% 35%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 12% 70%,#ffe2a8 60%,transparent),radial-gradient(1.5px 1.5px at 54% 75%,#ffe2a8 60%,transparent)}
+  .bg-open{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
   .bg-navy{background:radial-gradient(80% 45% at 85% 0%,rgba(40,110,220,.35),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
   .bg-sky{background:linear-gradient(180deg,#1b2f52 0%,#2c3f63 30%,#5a5f78 52%,#a7765d 70%,#e0955a 82%,#6f4a3b 100%)}
   .bg-sky .cl{position:absolute;border-radius:50%;background:rgba(255,236,220,.55);filter:blur(28px)}
@@ -34,7 +28,7 @@
   .bg-green .streak{position:absolute;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,rgba(170,255,225,.9),transparent);transform:rotate(-14deg);filter:blur(.5px)}
   /* 상단 고정 헤더 */
   .head{position:absolute;top:70px;z-index:3}
-  .logo{display:flex;align-items:center;gap:16px;font-size:54px;font-weight:900;letter-spacing:-.03em}
+  .logo{font-family:Georgia,'Times New Roman','Noto Serif KR',serif;font-size:66px;font-weight:700;color:#ef3b24;letter-spacing:-.02em;line-height:1}
   .plus{font-size:34px;font-weight:700;background:var(--red);color:#fff;padding:4px 22px 6px;border-radius:999px;letter-spacing:0}
   .clock{text-align:right;font-size:34px;font-weight:700;line-height:1.35}
   /* 장면 */
@@ -61,7 +55,7 @@
 </head>
 <body>
 <div id="stage">
-  <div class="bg bg-open" data-bg="open"><div class="earth"></div><div class="lights"></div></div>
+  <div class="bg bg-open" data-bg="open"></div>
   <div class="bg bg-navy" data-bg="navy"></div>
   <div class="bg bg-sky" data-bg="sky">
     <div class="cl" style="left:-80px;top:1150px;width:700px;height:160px"></div>
@@ -74,8 +68,8 @@
     <div class="streak" style="left:400px;top:1560px;width:900px;opacity:.5"></div>
     <div class="streak" style="left:-200px;top:1640px;width:1400px;opacity:.35"></div>
   </div>
-  <div class="head" style="left:56px"><div class="logo">중앙일보<span class="plus">Plus</span></div></div>
-  <div class="head clock" style="left:756px;width:390px"><div id="cdate"></div><div id="ctime"></div></div>
+  <div class="head" style="left:56px"><div class="logo">The JoongAng</div></div>
+  <div class="head clock" id="hclock" style="left:756px;width:390px"><div id="cdate"></div><div id="ctime"></div></div>
   <div id="scenes"></div>
   <div class="prog" id="prog"></div>
   <div class="src" id="src"></div>
@@ -133,14 +127,17 @@ const SKYTXT={clear:'맑은 하늘',partly:'구름 많은 하늘',cloudy:'흐린
 
 /* ---------- 장면 ---------- */
 const SC={};
-SC.open={dur:8,bg:'open',src:'',ok:()=>true,html:()=>P(`
-  <div style="padding-top:330px">
-    <div style="font-size:64px;font-weight:500;color:#c9d6ee;letter-spacing:.02em" ${A('up',.1)}>T204</div>
-    <div style="font-size:150px;font-weight:900;line-height:1.08;letter-spacing:-.05em;margin-top:18px" ${A('up',.3)}>오늘의<br>인사이트</div>
-    <div style="width:110px;height:10px;background:var(--red);border-radius:5px;margin:60px 0 50px" ${A('grow',.7)}></div>
-    <div style="font-size:46px;font-weight:500;line-height:1.5;color:#dbe4f3" ${A('up',.9)}>중앙일보가 전하는<br>오늘의 주요 경제 소식</div>
-  </div>`,`
-  <div style="padding-top:560px">${lineup().map((t,i)=>`<div style="font-size:40px;font-weight:700;margin-top:${i?26:0}px;color:#dbe4f3" ${A('up',1.1+i*.12)}><span class="num" style="color:var(--red);margin-right:16px">0${i+1}</span>${t}</div>`).join('')}</div>`)};
+SC.open={dur:8,bg:'open',src:'',ok:()=>true,html:()=>`
+  <div class="pa" style="top:430px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px" ${A('up',.1)}>
+      <span class="num" style="font-size:54px;font-weight:700"><span class="odate"></span></span>
+      <span style="font-size:54px;font-weight:600;color:#c9d6ee" class="oampm"></span></div>
+    <div class="num otime" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.75),0 0 6px rgba(200,225,255,.6)" ${A('up',.25)}></div>
+    <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:56px 0 34px" ${A('grow',.6)}></div>
+    <div style="font-size:72px;font-weight:800;letter-spacing:-.01em" ${A('up',.75)}>T204</div>
+    <div style="font-size:58px;font-weight:400;color:#dbe4f3;margin-top:4px" ${A('up',.85)}>오늘의 인사이트</div>
+    <div style="font-size:44px;font-weight:400;line-height:1.55;color:#c9d6ee;margin-top:70px" ${A('up',1.05)}>중앙일보가 전하는<br>오늘의 주요 경제 소식</div>
+  </div>`};
 
 SC.fx={dur:10,bg:'navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fresh(2),src:()=>`${DATA.fx.basis||''}`,
   html:()=>{
@@ -210,6 +207,7 @@ function build(){
   let t=0; const html=[];
   scenes=LIST.map(k=>{const s={key:k,a:t,b:t+SC[k].dur,bg:SC[k].bg};t+=SC[k].dur;return s});
   LOOP=t;
+  setTimeout(clockTick,0);
   $('#scenes').innerHTML=LIST.map(k=>`<section class="scene">${SC[k].html()}</section>`).join('');
   $('#prog').innerHTML=LIST.map(()=>'<i><b></b></i>').join('');
   const els=[...document.querySelectorAll('#scenes .scene')];
@@ -218,7 +216,9 @@ function build(){
     spins:[...el.querySelectorAll('.spin')],drifts:[...el.querySelectorAll('.drift')],drops:[...el.querySelectorAll('.drop')],pulses:[...el.querySelectorAll('.pulse')]})});
 }
 const bgs=()=>[...document.querySelectorAll('.bg')];
-function clockTick(){const k=kst(),h=k.getHours();$('#cdate').textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())}(${'일월화수목금토'[k.getDay()]})`;$('#ctime').textContent=`${pad(h%12||12)}:${pad(k.getMinutes())} ${h<12?'AM':'PM'}`}
+function clockTick(){const k=kst(),h=k.getHours(),dd=`${pad(k.getMonth()+1)}.${pad(k.getDate())}`,dw='일월화수목금토'[k.getDay()],hm=`${pad(h%12||12)}:${pad(k.getMinutes())}`,ap=h<12?'AM':'PM';
+  $('#cdate').textContent=`${dd}(${dw})`;$('#ctime').textContent=`${hm} ${ap}`;
+  document.querySelectorAll('.odate').forEach(e=>e.textContent=`${dd} (${dw})`);document.querySelectorAll('.otime').forEach(e=>e.textContent=hm);document.querySelectorAll('.oampm').forEach(e=>e.textContent=ap)}
 
 function render(t){
   t=((t%LOOP)+LOOP)%LOOP;
@@ -251,6 +251,7 @@ function render(t){
   const cur=scenes.find(s=>t>=s.a&&t<s.b); const nxt=scenes[(scenes.indexOf(cur)+1)%scenes.length];
   const mix=cur?seg(t,cur.b-FADE,cur.b):0;
   bgs().forEach(b=>{const k=b.dataset.bg;let o=0;if(cur&&k===cur.bg)o=1-mix;if(nxt&&k===nxt.bg)o=Math.max(o,mix);if(cur&&nxt&&cur.bg===nxt.bg&&k===cur.bg)o=1;b.style.opacity=o});
+  {const o=scenes.find(s=>s.key==='open');let h=0;if(o){h=t<o.b?1-seg(t,o.b-FADE,o.b):seg(t,LOOP-FADE,LOOP)}$('#hclock').style.opacity=1-h}
   document.querySelectorAll('#prog b').forEach((b,i)=>{const s=scenes[i];b.style.width=(seg(t,s.a,s.b)*100)+'%'});
 }
 
