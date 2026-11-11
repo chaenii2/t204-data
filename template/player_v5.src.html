@@ -118,12 +118,16 @@ function weatherIcon(sky,size){
   let g;
   if(sky==='clear') g=sunSvg(78);
   else if(sky==='rain') g=`<g transform="translate(0,-30)">${cloud}</g>`+[-60,0,60].map((x,i)=>`<rect class="drop" data-i="${i}" x="${x-6}" y="90" width="12" height="40" rx="6" fill="#7cb8ff"/>`).join('');
+  else if(sky==='snow'||sky==='sleet'){
+    const flake=(x,i)=>`<g class="drop" data-i="${i}"><g transform="translate(${x},110)" stroke="#fff" stroke-width="7" stroke-linecap="round">${[0,60,120].map(r=>`<line x1="0" y1="-17" x2="0" y2="17" transform="rotate(${r})"/>`).join('')}</g></g>`;
+    const drop=(x,i)=>`<rect class="drop" data-i="${i}" x="${x-6}" y="90" width="12" height="40" rx="6" fill="#7cb8ff"/>`;
+    g=`<g transform="translate(0,-30)">${cloud}</g>`+[-60,0,60].map((x,i)=>sky==='sleet'&&i===1?drop(x,i):flake(x,i)).join('');}
   else if(sky==='cloudy') g=cloud;
   else g=`<g transform="translate(55,-60) scale(.85)">${sunSvg(70)}</g>${cloud}`;
   return `<svg width="${size}" height="${size}" viewBox="-170 -170 340 340" style="overflow:visible">${g}</svg>`;
 }
 const gradeColor=g=>({'좋음':'#3aa0ff','보통':'#4ade80','나쁨':'#fb923c','매우나쁨':'#ff4d4f'}[g]||'#a9b6cc');
-const SKYTXT={clear:'맑은 하늘',partly:'구름 많은 하늘',cloudy:'흐린 하늘',rain:'비 오는 하늘'};
+const SKYTXT={clear:'맑은 하늘',partly:'구름 많은 하늘',cloudy:'흐린 하늘',rain:'비 오는 하늘',snow:'눈 오는 하늘',sleet:'비 또는 눈'};
 
 /* ---------- 공모주 청약 롤링 ---------- */
 function ipoItems(){
@@ -215,7 +219,7 @@ SC.weather={dur:8,bg:'sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · �
      +(H.length?`<div style="position:absolute;left:0;right:0;top:1150px;height:250px;background:rgba(10,20,40,.28)" ${A('fade',.9)}></div>
        <div class="pa" style="top:1175px;display:flex;justify-content:space-between">${H.slice(0,3).map(hr).join('')}</div>
        <div class="pb" style="top:1175px;display:flex;justify-content:space-between">${H.slice(3,6).map((h,i)=>hr(h,i+3)).join('')}</div>`:'')
-     +(T?`<div class="pa" style="top:1470px;font-size:38px;font-weight:700" ${A('up',1.4)}>내일 <span class="num">${T.min}° / ${T.max}°</span> · ${({clear:'맑음',partly:'구름 많음',cloudy:'흐림',rain:'비'})[T.sky]||''}${T.pop>=40?` · 강수 ${T.pop}%`:''}</div>`:'')
+     +(T?`<div class="pa" style="top:1470px;font-size:38px;font-weight:700" ${A('up',1.4)}>내일 <span class="num">${T.min}° / ${T.max}°</span> · ${({clear:'맑음',partly:'구름 많음',cloudy:'흐림',rain:'비',snow:'눈',sleet:'비/눈'})[T.sky]||''}${T.pop>=40?` · 강수 ${T.pop}%`:''}</div>`:'')
      +((w.pm||w.pm25)?`<div class="divider" style="top:1580px;background:rgba(255,255,255,.3)"></div>`:'')
      +(w.pm?`<div class="pa" style="top:1615px;font-size:40px;font-weight:700" ${A('up',1.1)}>미세먼지 <span style="color:${gradeColor(w.pm)}">${w.pm}</span><span class="dot" style="background:${gradeColor(w.pm)}"></span></div>`:'')
      +(w.pm25?`<div class="pb" style="top:1615px;font-size:40px;font-weight:700" ${A('up',1.2)}>초미세먼지 <span style="color:${gradeColor(w.pm25)}">${w.pm25}</span><span class="dot" style="background:${gradeColor(w.pm25)}"></span></div>`:'');

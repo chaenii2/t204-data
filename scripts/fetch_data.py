@@ -43,9 +43,14 @@ SKY = {"1": "맑음", "3": "구름많음", "4": "흐림"}
 PTY = {"1": "비", "2": "비/눈", "3": "눈", "4": "소나기", "5": "빗방울", "6": "빗방울눈날림", "7": "눈날림"}
 
 
+def pty_icon(pty):
+    # 강수형태: 1비 2비/눈 3눈 4소나기 5빗방울 6빗방울눈날림 7눈날림
+    return {"3": "snow", "7": "snow", "2": "sleet", "6": "sleet"}.get(str(pty), "rain")
+
+
 def icon_of(sky, pty):
     if pty and pty != "0":
-        return "rain"
+        return pty_icon(pty)
     return {"1": "clear", "3": "partly", "4": "cloudy"}.get(sky, "partly")
 
 
@@ -71,7 +76,8 @@ def weather():
     ptys = [v[t].get("PTY", "0") for t in day if v[t].get("PTY", "0") != "0"]
     skies = [v[t].get("SKY", "1") for t in day]
     if ptys:
-        text, sky = PTY.get(max(set(ptys), key=ptys.count), "비"), "rain"
+        mp = max(set(ptys), key=ptys.count)
+        text, sky = PTY.get(mp, "비"), pty_icon(mp)
     else:
         main = max(set(skies), key=skies.count)
         text, sky = SKY.get(main, "구름많음"), icon_of(main, "0")
@@ -111,7 +117,7 @@ def weather():
         tpop = max(int(tv[t].get("POP", 0)) for t in tday) if tday else 0
         tp = [tv[t].get("PTY", "0") for t in tday if tv[t].get("PTY", "0") != "0"]
         ts = [tv[t].get("SKY", "1") for t in tday]
-        tsky = "rain" if tp else icon_of(max(set(ts), key=ts.count), "0") if ts else "partly"
+        tsky = pty_icon(max(set(tp), key=tp.count)) if tp else icon_of(max(set(ts), key=ts.count), "0") if ts else "partly"
         tomorrow = {"min": round(tn), "max": round(tx), "pop": tpop, "sky": tsky}
     return {"sky": sky, "now_sky": now_sky, "text": text, "min": round(tmn), "max": round(tmx), "pop": pop, "tip": tip, "hourly": hourly, "tomorrow": tomorrow}
 
