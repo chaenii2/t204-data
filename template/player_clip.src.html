@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T204 오늘의 인사이트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+  /* 30초 고정 클립 · 캔버스 1200x1824 · A면 0–648 / B면 648–1200 · 코너 576–720 글자 금지 */
+  :root{--ink:#fff;--sub:#c3cee0;--line:rgba(255,255,255,.18);--red:#e8362f;--up:#ff5a5f;--down:#4aa8ff;--ok:#4ade80;--mid:#facc15;--bad:#ff4d4f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;
+    font-family:'Noto Sans KR','Noto Sans CJK KR','Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all}
+  #stage{position:absolute;width:1200px;height:1824px;transform-origin:0 0;overflow:hidden}
+  .num{font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .up{color:var(--up)} .down{color:var(--down)}
+  .pa,.pb{position:absolute}
+  .pa{left:56px;width:510px}
+  .pb{left:756px;width:392px}
+  .bg{position:absolute;inset:0}
+  .bg-navy{background:radial-gradient(80% 45% at 85% 0%,rgba(40,110,220,.35),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
+  .bg-sky{background:linear-gradient(180deg,#1b2f52 0%,#2c3f63 34%,#4d5a78 60%,#7d6a6a 82%,#4a3a3a 100%)}
+  .bg-green{background:radial-gradient(70% 40% at 80% 85%,rgba(60,220,170,.22),transparent 70%),linear-gradient(180deg,#0b3a33 0%,#0a2c28 55%,#06201d 100%)}
+  .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
+  /* 헤더: 로고는 원본 비율 그대로(가로·세로 비율 고정) */
+  .logo{position:absolute;left:56px;top:76px;height:54px;width:auto;display:block;z-index:3}
+  .clock{z-index:3;transition:opacity .6s;position:absolute;left:756px;width:392px;top:66px;text-align:right;font-size:44px;font-weight:700;line-height:1.3}
+  .title{position:absolute;left:56px;top:250px;font-size:88px;font-weight:900;letter-spacing:-.03em}
+  .lbl{font-size:44px;font-weight:700;color:#dfe7f5}
+  .k{font-size:40px;color:var(--sub)}
+  .hr{position:absolute;height:2px;background:var(--line)}
+  .dot{display:inline-block;width:30px;height:30px;border-radius:50%;margin-left:14px;vertical-align:middle}
+  .src{position:absolute;left:56px;width:510px;bottom:66px;font-size:28px;color:rgba(255,255,255,.6)}
+  /* 후원사 자리 (B면 하단) */
+  .spon{position:absolute;left:756px;width:392px;bottom:56px;height:120px;display:flex;align-items:center;justify-content:flex-end;gap:18px}
+  .spon .lab{font-size:28px;color:rgba(255,255,255,.7)}
+  .spon img{max-height:100px;max-width:300px;width:auto;height:auto}
+  .spon .ph{width:300px;height:100px;border:3px dashed rgba(255,255,255,.45);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:30px;color:rgba(255,255,255,.7)}
+  #content{position:absolute;inset:0;z-index:1}
+  .src,.spon{z-index:3}
+  .cover-bg{position:absolute;inset:0;background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
+  .cover-bg.weather{filter:hue-rotate(185deg) saturate(1.25) brightness(1.05)}
+  .cover-bg.traffic{filter:hue-rotate(-70deg) saturate(1.1)}
+  .intro{animation:in .9s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  /* 가이드 */
+  #guide{position:absolute;inset:0;pointer-events:none;display:none;z-index:9}
+  #guide .g{position:absolute;top:0;bottom:0;border:3px dashed rgba(255,255,0,.7)}
+  #guide span{position:absolute;top:8px;left:8px;font:700 22px system-ui;color:#ff0;background:rgba(0,0,0,.6);padding:2px 8px}
+  #stage.showguide #guide{display:block}
+  #ctl{position:fixed;left:12px;bottom:12px;display:flex;gap:6px;z-index:9;font:13px system-ui;transition:opacity .4s}
+  #ctl button{background:#222;color:#ddd;border:1px solid #444;border-radius:6px;padding:6px 10px;cursor:pointer}
+  #ctl button.on{background:#e8362f;color:#fff;border-color:#e8362f}
+  body.render #ctl, body.kiosk #ctl{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="bg" id="bg"></div>
+  <img class="logo" src="/*LOGO*/" alt="The JoongAng">
+  <div class="clock"><div id="cdate"></div><div id="ctime"></div></div>
+  <div id="content"></div>
+  <div class="spon" id="spon"></div>
+  <div class="src" id="src"></div>
+  <div id="guide">
+    <div class="g" style="left:0;width:648px"><span>A면 648</span></div>
+    <div class="g" style="left:648px;width:552px;border-color:rgba(0,255,255,.7)"><span style="color:#0ff;left:auto;right:8px">B면 552</span></div>
+    <div class="g" style="left:576px;width:144px;background:repeating-linear-gradient(45deg,rgba(255,0,0,.25) 0 10px,transparent 10px 20px);border-color:red"><span style="color:#f66;top:40px">코너</span></div>
+  </div>
+</div>
+<div id="ctl"><button data-c="finance">금융</button><button data-c="weather">날씨</button><button data-c="traffic">교통</button><button id="gbtn">A/B면 가이드</button></div>
+
+<script type="application/json" id="t204-data">/*DATA*/</script>
+<script>window.T204_CONFIG=/*CONFIG*/;</script>
+<script>/*LOADER*/</script>
+<script>
+(() => {
+const W0=1200,H0=1824;
+let DATA=JSON.parse(document.getElementById('t204-data').textContent);
+const CFG=window.T204_CONFIG||{};
+const $=s=>document.querySelector(s);
+const fmt=(v,dec=2)=>Number(v).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+const sgn=d=>d>0?'▲':(d<0?'▼':'–'), cls=d=>d>0?'up':(d<0?'down':'');
+const kst=()=>{const d=new Date();return new Date(d.getTime()+(d.getTimezoneOffset()+540)*60000)};
+const pad=n=>String(n).padStart(2,'0');
+const pct=(d,v)=>d/(v-d)*100;
+const A=()=>'';   // 고정형: 개별 요소 애니메이션 없음
+function sunSvg(r){let rays='';for(let i=0;i<8;i++)rays+=`<rect x="-7" y="${-r-46}" width="14" height="30" rx="7" transform="rotate(${i*45})"/>`;return `<g class="spin" fill="#FFC542"><circle r="${r}"/>${rays}</g>`}
+function weatherIcon(sky,size){
+  const cloud='<g class="drift"><ellipse cx="-40" cy="40" rx="95" ry="62" fill="#e9eef8"/><ellipse cx="40" cy="20" rx="85" ry="80" fill="#f4f7fc"/><ellipse cx="95" cy="55" rx="70" ry="50" fill="#dfe6f2"/><rect x="-135" y="40" width="300" height="62" rx="31" fill="#e6ecf6"/></g>';
+  let g;
+  if(sky==='clear') g=sunSvg(78);
+  else if(sky==='rain') g=`<g transform="translate(0,-30)">${cloud}</g>`+[-60,0,60].map((x,i)=>`<rect class="drop" data-i="${i}" x="${x-6}" y="90" width="12" height="40" rx="6" fill="#7cb8ff"/>`).join('');
+  else if(sky==='snow'||sky==='sleet'){
+    const flake=(x,i)=>`<g class="drop" data-i="${i}"><g transform="translate(${x},110)" stroke="#fff" stroke-width="7" stroke-linecap="round">${[0,60,120].map(r=>`<line x1="0" y1="-17" x2="0" y2="17" transform="rotate(${r})"/>`).join('')}</g></g>`;
+    const drop=(x,i)=>`<rect class="drop" data-i="${i}" x="${x-6}" y="90" width="12" height="40" rx="6" fill="#7cb8ff"/>`;
+    g=`<g transform="translate(0,-30)">${cloud}</g>`+[-60,0,60].map((x,i)=>sky==='sleet'&&i===1?drop(x,i):flake(x,i)).join('');}
+  else if(sky==='cloudy') g=cloud;
+  else g=`<g transform="translate(55,-60) scale(.85)">${sunSvg(70)}</g>${cloud}`;
+  return `<svg width="${size}" height="${size}" viewBox="-170 -170 340 340" style="overflow:visible">${g}</svg>`;
+}
+//=g=>({'좋음':'#3aa0ff','보통':'#4ade80','나쁨':'#fb923c','매우나쁨':'#ff4d4f'}[g]||'#a9b6cc');
+const SKYTXT_={clear:'맑은 하늘',partly:'구름 많은 하늘',cloudy:'흐린 하늘',rain:'비 오는 하늘',snow:'눈 오는 하늘',sleet:'비 또는 눈'};
+
+function ipoItems(){
+  const L=DATA.ipo_list||[]; if(!L.length) return [];
+  const k=kst(), t0=new Date(k.getFullYear(),k.getMonth(),k.getDate()), day=86400000;
+  const td=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}, f=d=>`${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+  return [...L].sort((a,b)=>a.start.localeCompare(b.start)).filter(o=>td(o.end)>=t0&&(td(o.start)-t0)/day<=14).slice(0,4).map(o=>{
+    const s=td(o.start),e=td(o.end),n=Math.round((s-t0)/day);
+    const badge=(s<=t0&&t0<=e)?(+e===+t0?'오늘 마감':'청약 중'):(n===1?'내일 시작':`D-${n}`);
+    return {badge,hot:s<=t0,name:o.name,period:`${f(s)}~${f(e)}`,price:(o.price||'').includes('확정 전')?'공모가 미정':`공모가 ${o.price}`,broker:(o.broker||'').replace('대표주관 ','')};
+  });
+}
+
+const ICO={
+  car:'<path fill="#fff" stroke="none" d="M6.9 6.6A2 2 0 0 1 8.8 5.2h6.4a2 2 0 0 1 1.9 1.4l1.4 4.2A2 2 0 0 1 20 12.7V17a1 1 0 0 1-1 1h-.6v1.3a1 1 0 0 1-1 1h-1.2a1 1 0 0 1-1-1V18H8.8v1.3a1 1 0 0 1-1 1H6.6a1 1 0 0 1-1-1V18H5a1 1 0 0 1-1-1v-4.3a2 2 0 0 1 1.5-1.9Zm1.6.6-1.1 3.4h9.2l-1.1-3.4ZM7.5 13.1a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Zm9 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z"/>',
+  people:'<circle cx="9" cy="8.5" r="2.6"/><path d="M4.5 18c0-2.6 2-4.5 4.5-4.5s4.5 1.9 4.5 4.5"/><circle cx="16.2" cy="9.5" r="2.1"/><path d="M15 13.6c2.4-.3 4.5 1.5 4.5 4"/>',
+  train:'<rect x="6.5" y="4.5" width="11" height="12" rx="2.5"/><path d="M6.5 11h11"/><circle cx="9.3" cy="13.8" r=".8" fill="currentColor"/><circle cx="14.7" cy="13.8" r=".8" fill="currentColor"/><path d="M9 16.5 7.5 19.5M15 16.5l1.5 3"/>',
+  bike:'<circle cx="7" cy="15.5" r="3.2"/><circle cx="17" cy="15.5" r="3.2"/><path d="M7 15.5 10 9h5l2 6.5M10 9l3 6.5h4M9 7h2.5"/>',
+  road:'<path d="M9 4.5 6 19.5M15 4.5l3 15M12 6v2.5M12 11v2.5M12 16v2.5"/>'};
+const icon=(k,sz,stroke)=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:${sz}px;height:${sz}px;border-radius:50%;border:${stroke}px solid rgba(255,255,255,.85);flex:none;vertical-align:middle"><svg viewBox="0 0 24 24" width="${Math.round(sz*.58)}" height="${Math.round(sz*.58)}" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fff">${ICO[k]}</svg></span>`;
+
+function fresh(maxDays){if(!DATA.generated_at)return false;const [y,m,d]=DATA.generated_at.slice(0,10).split('-').map(Number);const t=kst();return Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(y,m-1,d))/86400000)<=maxDays}
+function spark(arr,w,h,color){
+  if(!arr||arr.length<2) return '';
+  const mn=Math.min(...arr),mx=Math.max(...arr),sp=(mx-mn)||1;
+  const pts=arr.map((v,i)=>[i/(arr.length-1)*(w-20)+6, h-16-(v-mn)/sp*(h-32)]);
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');const L=pts[pts.length-1];
+  return `<svg width="${w}" height="${h}" style="display:block;overflow:visible"><defs><linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${d} L${L[0]} ${h} L6 ${h} Z" fill="url(#gs)"/><path d="${d}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${L[0]}" cy="${L[1]}" r="14" fill="${color}"/></svg>`;
+}
+const ST=k=>k>=25?'원활':k>=15?'서행':'정체', SC_=s=>({'원활':'#4ade80','서행':'#facc15','정체':'#ff4d4f'}[s]||'#fff');
+const gradeColor=g=>({'좋음':'#4aa8ff','보통':'#4ade80','나쁨':'#fb923c','매우나쁨':'#ff4d4f'}[g]||'#c3cee0');
+
+/* ---------- 클립 ---------- */
+const CL={};
+CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fresh(2),
+  // 30초 = 환율 15초 + 증시 15초 (증시 데이터가 없으면 환율 30초)
+  src:p=>p===1?((DATA.kr&&DATA.kr.basis)||'한국거래소'):((DATA.fx&&DATA.fx.basis)||'한국수출입은행'),
+  html:()=>{
+    const F=Object.fromEntries(DATA.fx.items.map(i=>[i.code,i])), U=F.USD;
+    const K=(DATA.kr&&DATA.kr.items&&fresh(4))?DATA.kr.items:[];
+    const R=(DATA.rates&&DATA.rates.items||[])[0];
+    const hist=(DATA.fx_hist||[]).map(h=>h.v);
+    const row=(lbl,v,sub)=>`<div style="padding:30px 0;border-bottom:2px solid var(--line)"><div class="k">${lbl}</div><div class="num" style="font-size:76px;font-weight:800;line-height:1.15">${v}</div>${sub?`<div class="num ${sub[1]}" style="font-size:42px;font-weight:700">${sub[0]}</div>`:''}</div>`;
+    let fb='';
+    if(F.JPY) fb+=row('엔 (100엔)',fmt(F.JPY.v),[`${sgn(F.JPY.d)} ${fmt(Math.abs(F.JPY.d))}`,cls(F.JPY.d)]);
+    if(F.EUR) fb+=row('유로',fmt(F.EUR.v),[`${sgn(F.EUR.d)} ${fmt(Math.abs(F.EUR.d))}`,cls(F.EUR.d)]);
+    if(F.CNY) fb+=row('위안',fmt(F.CNY.v),[`${sgn(F.CNY.d)} ${fmt(Math.abs(F.CNY.d))}`,cls(F.CNY.d)]);
+    const fx=`<div class="title">오늘의 환율</div>
+      <div class="pa" style="top:440px"><div class="lbl">원/달러</div>
+        <div class="num" style="font-size:118px;font-weight:900;line-height:1.1;margin-left:-4px;letter-spacing:-.03em">${fmt(U.v)}</div>
+        <div class="num ${cls(U.d)}" style="font-size:58px;font-weight:700">${sgn(U.d)} ${fmt(Math.abs(U.d))}원</div></div>
+      ${hist.length>1?`<div class="pa" style="top:850px"><div class="k" style="margin-bottom:18px">최근 달러 흐름</div>${spark(hist.slice(-15),510,320,'#4aa8ff')}</div>`:''}
+      <div class="pb" style="top:420px">${fb}</div>
+      ${R?`<div class="hr" style="left:56px;width:1092px;top:1360px"></div>
+        <div class="pa" style="top:1410px;font-size:48px;font-weight:700">한국은행 기준금리</div>
+        <div class="pb num" style="top:1390px;text-align:right;font-size:84px;font-weight:900">${R.v.toFixed(2)}%</div>`:''}`;
+    if(!K.length) return [fx];
+    const idx=(it,box)=>`<div class="${box}" style="top:440px"><div class="lbl">${it.code==='KOSPI'?'코스피':'코스닥'}</div>
+        <div class="num" style="font-size:${box==='pa'?112:96}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>
+        <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${sgn(it.d)} ${fmt(Math.abs(it.d))}</div>
+        <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${(it.pct??pct(it.d,it.v)).toFixed(2)}%</div>
+        ${it.hist&&it.hist.length>1?`<div style="margin-top:40px">${spark(it.hist,box==='pa'?510:392,260,it.d>=0?'#ff5a5f':'#4aa8ff')}</div>`:''}</div>`;
+    const ipo=ipoItems().slice(0,2);
+    const ip=ipo.length?`<div class="hr" style="left:56px;width:1092px;top:1260px"></div>
+      <div class="pa" style="top:1295px"><span style="background:var(--red);font-size:38px;font-weight:700;padding:6px 26px 9px;border-radius:999px">공모주 청약</span></div>
+      ${ipo.map((o,i)=>`<div class="pa" style="top:${1390+i*92}px;font-size:50px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${o.name}</div>
+         <div class="pb" style="top:${1390+i*92}px;font-size:50px;font-weight:800;text-align:right;color:${o.hot?'#ff6b5e':'#ffd166'}">${o.badge}</div>`).join('')}`:'';
+    const st=`<div class="title">오늘의 증시</div>${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
+    return [fx,st];
+  }};
+CL.weather={bg:'bg-sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
+  html:()=>{
+    const w=DATA.weather, n=w.now||{}, T=w.tomorrow;
+    const sky=w.now_sky||w.sky;
+    const kv=(k,v)=>`<div style="padding:24px 0;border-bottom:2px solid var(--line)"><div class="k">${k}</div><div style="font-size:66px;font-weight:800;line-height:1.2">${v}</div></div>`;
+    let b=kv('강수확률',`<span class="num">${w.pop}</span>%`);
+    if(w.pm) b+=kv('미세먼지',`<span style="color:${gradeColor(w.pm)}">${w.pm}</span><span class="dot" style="background:${gradeColor(w.pm)}"></span>`);
+    if(w.pm25) b+=kv('초미세먼지',`<span style="color:${gradeColor(w.pm25)}">${w.pm25}</span><span class="dot" style="background:${gradeColor(w.pm25)}"></span>`);
+    if(n.reh!=null) b+=kv('습도 · 바람',`<span class="num" style="font-size:56px">${n.reh}% · ${n.wsd}m/s</span>`);
+    return `<div class="title">오늘의 날씨</div>
+      <div class="pa" style="top:420px;display:flex;align-items:center;gap:10px">${weatherIcon(sky,250)}</div>
+      <div class="pa" style="top:690px"><div class="k">서울 역삼 · 지금</div>
+        <div class="num" style="font-size:200px;font-weight:900;line-height:1;letter-spacing:-.05em;margin-left:-8px">${n.t!=null?n.t:Math.round((w.min+w.max)/2)}°</div>
+        <div style="font-size:60px;font-weight:800;margin-top:10px">${w.text}</div>
+        <div class="num" style="font-size:52px;font-weight:700;margin-top:8px;color:#e6edf8">최저 ${w.min}° / 최고 ${w.max}°</div></div>
+      <div class="pb" style="top:400px">${b}</div>
+      <div class="hr" style="left:56px;width:1092px;top:1395px"></div>
+      <div class="pa" style="top:1420px;font-size:50px;font-weight:800;line-height:1.35">${w.tip}</div>
+      ${T?`<div class="pb" style="top:1420px;text-align:right"><div class="k">내일</div><div style="font-size:52px;font-weight:800;line-height:1.25"><span class="num">${T.min}° / ${T.max}°</span> ${({clear:'맑음',partly:'구름 많음',cloudy:'흐림',rain:'비',snow:'눈',sleet:'비/눈'})[T.sky]||''}</div>${T.pop>=40?`<div class="k">강수 ${T.pop}%</div>`:''}</div>`:''}`;
+  }};
+CL.traffic={bg:'bg-green',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.ts)return true;const [d,h]=T.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=60*60000},
+  src:()=>DATA.traffic.basis||'서울시 도시데이터',
+  html:()=>{
+    const T=DATA.traffic, segs=(T.segments||[]).slice(0,4);
+    const seg=(g,i)=>`<div style="margin-top:${i?40:0}px"><div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:44px;font-weight:700">${g.name.replace(' 부근','')}</span><span class="num" style="font-size:52px;font-weight:900;color:${SC_(ST(g.kmh))}">${g.kmh}<span style="font-size:30px"> km/h</span></span></div>
+        <div style="height:20px;border-radius:10px;background:rgba(255,255,255,.16);margin-top:12px;overflow:hidden"><div style="height:100%;width:${Math.min(100,g.kmh/40*100)}%;background:${SC_(ST(g.kmh))};border-radius:10px"></div></div></div>`;
+    const cg=T.congest, cgc={'여유':'#4ade80','보통':'#4ade80','약간 붐빔':'#facc15','붐빔':'#ff4d4f'}[cg]||'#fff';
+    return `<div class="title">오늘의 교통</div>
+      <div class="pa" style="top:430px;display:flex;align-items:center;gap:26px">${icon('car',120,4)}
+        <div><div style="font-size:64px;font-weight:900;line-height:1.1">테헤란로</div><div class="k">강남역 ↔ 삼성역</div></div></div>
+      <div class="pa" style="top:620px"><div style="font-size:210px;font-weight:900;color:${SC_(T.status)};letter-spacing:-.05em;line-height:1.05">${T.status}</div>
+        <div class="num" style="font-size:60px;font-weight:700;margin-top:6px">평균 ${T.kmh}km/h</div></div>
+      <div class="pb" style="top:430px"><div class="k" style="margin-bottom:26px">구간별 속도</div>${segs.map(seg).join('')}</div>
+      ${cg?`<div class="hr" style="left:56px;width:1092px;top:1395px"></div>
+      <div class="pa" style="top:1430px;display:flex;align-items:center;gap:22px;width:1092px">${icon('people',84,3)}<span style="font-size:48px;font-weight:700">역삼역 일대 혼잡도</span></div>
+      <div class="pb" style="top:1430px;text-align:right;font-size:72px;font-weight:900;color:${cgc};line-height:1.1">${cg}</div>`:''}`;
+  }};
+/* 데이터가 없을 때: 브랜드 화면 */
+CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="top:560px"><div class="num" id="bigtime" style="font-size:190px;font-weight:800;letter-spacing:-.03em;text-shadow:0 0 28px rgba(140,190,255,.7)"></div>
+   <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:50px 0 34px"></div><div style="font-size:72px;font-weight:800">T204</div><div style="font-size:60px;color:#dbe4f3">오늘의 인사이트</div></div>`};
+
+const COVER_SEC=6, TOTAL_SEC=30;
+const CLIPNAME={finance:'오늘의 금융',weather:'오늘의 날씨',traffic:'오늘의 교통'};
+const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
+function coverHtml(k){return `<div class="cover-bg ${k}"></div>
+  <div class="pa" style="top:470px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px"><span class="num" style="font-size:54px;font-weight:700"><span class="cdate2"></span></span><span class="campm" style="font-size:54px;font-weight:600;color:#dbe4f3"></span></div>
+    <div class="num ctime2" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.6)"></div>
+    <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:56px 0 34px"></div>
+    <div style="font-size:66px;font-weight:800">T204 오늘의 인사이트</div>
+    <div style="font-size:92px;font-weight:900;color:${CLIPCOLOR[k]};margin-top:22px;letter-spacing:-.03em">${CLIPNAME[k]}</div>
+  </div>`}
+function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
+function sponsor(){
+  const s=CFG.sponsor, show=/sponsor/.test(location.hash)||CFG.sponsorSlot;
+  if(s&&s.img) return `<span class="lab">${s.label||'제공'}</span><img src="${s.img}" alt="">`;
+  if(s&&s.text) return `<span class="lab">${s.label||'제공'}</span><span style="font-size:44px;font-weight:800">${s.text}</span>`;
+  return show?`<span class="lab">제공</span><div class="ph">후원사 로고</div>`:'';
+}
+function draw(intro){
+  let k=clipKey(); let c=CL[k]; let ok=false; try{ok=!!c.ok()}catch(e){}
+  if(!ok){k='brand';c=CL.brand}
+  $('#bg').className='bg '+c.bg;
+  let h='';try{h=c.html()}catch(e){console.warn(e);c=CL.brand;$('#bg').className='bg bg-brand';h=c.html()}
+  PAGES=Array.isArray(h)?h:[h]; CUR=c;
+  if(k!=='brand'){PAGES=[coverHtml(k),...PAGES]}
+  const n=PAGES.length; DUR=k==='brand'?[TOTAL_SEC]:[COVER_SEC,...Array(n-1).fill((TOTAL_SEC-COVER_SEC)/(n-1))];
+  $('#content').innerHTML=PAGES.map((x,i)=>`<div class="page" style="position:absolute;inset:0;transition:opacity .7s;opacity:${i===pageAt()?1:0}"><div class="${intro&&i===0?'intro':''}" style="position:absolute;inset:0">${x}</div></div>`).join('');
+  showPage(pageAt(),true);
+  $('#spon').innerHTML=k==='brand'?'':sponsor();
+  document.querySelector('.clock').style.visibility=k==='brand'?'hidden':'visible';
+  clockTick();
+}
+let PAGES=[],CUR=null,T0=performance.now(),SHOWN=-1,DUR=[30];
+function pageAt(t){if(PAGES.length<2)return 0;t=(t??(performance.now()-T0)/1000)%TOTAL_SEC;let a=0;for(let i=0;i<DUR.length;i++){a+=DUR[i];if(t<a)return i}return DUR.length-1}
+function showPage(p,force){if(p===SHOWN&&!force)return;SHOWN=p;document.querySelectorAll('#content .page').forEach((e,i)=>e.style.opacity=i===p?1:0);
+  const cov=PAGES.length>1&&p===0;
+  $('#src').textContent=cov?'':((CUR&&typeof CUR.src==='function'?CUR.src(p-(PAGES.length>1?1:0)):'')||'');
+  document.querySelector('.clock').style.opacity=cov?0:1;}
+function clockTick(){const k=kst(),h=k.getHours(),dw='일월화수목금토'[k.getDay()],hm=`${pad(h%12||12)}:${pad(k.getMinutes())}`,ap=h<12?'AM':'PM';
+  $('#cdate').textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())}(${dw})`;$('#ctime').textContent=`${hm} ${ap}`;
+  const b=document.getElementById('bigtime'); if(b) b.textContent=hm;
+  document.querySelectorAll('.ctime2').forEach(e=>e.textContent=hm);document.querySelectorAll('.campm').forEach(e=>e.textContent=ap);
+  document.querySelectorAll('.cdate2').forEach(e=>e.textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())} (${dw})`);}
+function fit(){const st=$('#stage'),s=Math.min(innerWidth/W0,innerHeight/H0);st.style.transform=`scale(${s})`;st.style.left=((innerWidth-W0*s)/2)+'px';st.style.top=((innerHeight-H0*s)/2)+'px'}
+window.T204={setData(d){DATA=d;draw(false)},renderAt(t){if(!PAGES.length)draw(false);document.querySelectorAll('#content .page').forEach(e=>e.style.transition='none');document.querySelector('.clock').style.transition='none';showPage(pageAt(t),true)},LOOP:30,W:W0,H:H0,clip:clipKey};
+
+draw(true);
+if(!window.__T204_RENDER){
+  addEventListener('resize',fit);fit();
+  if(/kiosk/.test(location.hash))document.body.classList.add('kiosk');
+  $('#gbtn').onclick=e=>{$('#stage').classList.toggle('showguide');e.target.classList.toggle('on')};
+  document.querySelectorAll('#ctl [data-c]').forEach(b=>b.onclick=()=>{location.hash=b.dataset.c+(/sponsor/.test(location.hash)?'-sponsor':'');draw(true)});
+  addEventListener('hashchange',()=>draw(true));
+  if(/diag/.test(location.hash)||CFG.diag){document.body.classList.add('kiosk');$('#stage').innerHTML='<div id="diag"></div>';window.T204_DIAG&&T204_DIAG($('#diag'));return;}
+  // 데이터: 열릴 때 1회 + 10분마다. 고정 화면이라 값만 조용히 바뀜
+  const pull=()=>(window.T204_LOAD?T204_LOAD():Promise.resolve(null)).then(d=>{if(d){DATA=d;draw(false)}}).catch(e=>console.warn('T204 load',e));
+  pull(); setInterval(pull,10*60*1000); setInterval(clockTick,5000); setInterval(()=>showPage(pageAt()),250);
+  let idle;addEventListener('mousemove',()=>{$('#ctl').style.opacity=1;clearTimeout(idle);idle=setTimeout(()=>$('#ctl').style.opacity=0,3000)});
+}
+})();
+</script>
+</body>
+</html>

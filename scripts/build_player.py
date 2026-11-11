@@ -36,10 +36,16 @@ def main():
     ap.add_argument("--zip", default="")
     ap.add_argument("--diag", action="store_true", help="열면 바로 연결 진단 화면")
     ap.add_argument("--template", default="player_v5.src.html")
+    ap.add_argument("--clip", default="", help="finance | weather | traffic (30초 고정 클립)")
+    ap.add_argument("--sponsor-slot", action="store_true", help="후원사 로고 자리 표시(시안용)")
     a = ap.parse_args()
 
     feed = json.loads(pathlib.Path(a.embed).read_text(encoding="utf-8"))
     cfg = {"mode": a.mode, "diag": a.diag}
+    if a.clip:
+        cfg["clip"] = a.clip
+    if a.sponsor_slot:
+        cfg["sponsorSlot"] = True
     if a.mode == "relay":
         cfg["feedUrl"] = a.feed_url
     else:
@@ -54,6 +60,10 @@ def main():
     if earth.exists():
         import base64
         html = html.replace("/*EARTH*/", "data:image/jpeg;base64," + base64.b64encode(earth.read_bytes()).decode())
+    logo = TPL / "assets" / "logo_joongang.png"
+    if logo.exists():
+        import base64
+        html = html.replace("/*LOGO*/", "data:image/png;base64," + base64.b64encode(logo.read_bytes()).decode())
     out = pathlib.Path(a.out)
     if out.exists():
         shutil.rmtree(out)
