@@ -25,8 +25,8 @@
   .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
   /* 헤더: 로고는 원본 비율 그대로(가로·세로 비율 고정) */
   .logo{position:absolute;left:56px;top:76px;height:54px;width:auto;display:block;z-index:3}
-  .clock{z-index:3;transition:opacity .6s;position:absolute;left:756px;width:392px;top:66px;text-align:right;font-size:44px;font-weight:700;line-height:1.3}
-  .title{position:absolute;left:56px;top:250px;font-size:88px;font-weight:900;letter-spacing:-.03em}
+  .clock{z-index:3;position:absolute;left:756px;width:392px;top:66px;text-align:right;font-size:44px;font-weight:700;line-height:1.3}
+  .title{position:absolute;left:56px;top:256px;font-size:78px;font-weight:900;letter-spacing:-.03em}
   .lbl{font-size:44px;font-weight:700;color:#dfe7f5}
   .k{font-size:40px;color:var(--sub)}
   .hr{position:absolute;height:2px;background:var(--line)}
@@ -172,8 +172,8 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
         ${it.hist&&it.hist.length>1?`<div style="margin-top:40px">${spark(it.hist,box==='pa'?510:392,260,it.d>=0?'#ff5a5f':'#4aa8ff')}</div>`:''}</div>`;
 
     const kb=((DATA.kr.basis||'').match(/(\d{2}\.\d{2})/)||[])[1];
-    const st=`<div class="title">오늘의 증시</div>
-      <div class="pa" style="top:378px;display:flex;align-items:center;gap:18px;white-space:nowrap"><span style="background:#f59e0b;color:#1a1204;font-size:34px;font-weight:800;padding:5px 24px 8px;border-radius:999px">국내</span>${kb?`<span class="k" style="font-size:34px">${kb} 종가 기준</span>`:''}</div>
+    const st=`<div class="title">오늘의 국내증시</div>
+      <div class="pa" style="top:378px;display:flex;align-items:center;gap:18px;white-space:nowrap">${kb?`<span class="k" style="font-size:34px">${kb} 종가 기준</span>`:''}</div>
       ${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
     return [fx,st];
   }};
@@ -245,25 +245,42 @@ function draw(intro){
   PAGES=Array.isArray(h)?h:[h]; CUR=c;
   if(k!=='brand'){PAGES=[coverHtml(k),...PAGES]}
   const n=PAGES.length; DUR=k==='brand'?[TOTAL_SEC]:[COVER_SEC,...Array(n-1).fill((TOTAL_SEC-COVER_SEC)/(n-1))];
-  $('#content').innerHTML=PAGES.map((x,i)=>`<div class="page" style="position:absolute;inset:0;transition:opacity .7s;opacity:${i===pageAt()?1:0}"><div class="${intro&&i===0?'intro':''}" style="position:absolute;inset:0">${x}</div></div>`).join('');
-  showPage(pageAt(),true);
+  if(intro) T0=performance.now();
+  $('#content').innerHTML=PAGES.map(x=>`<div class="page" style="position:absolute;inset:0;opacity:0;will-change:opacity,filter">${x}</div>`).join('');
+  SHOWN=-1; frame(nowT());
   $('#spon').innerHTML=k==='brand'?'':sponsor();
   document.querySelector('.clock').style.visibility=k==='brand'?'hidden':'visible';
   clockTick();
 }
 let PAGES=[],CUR=null,T0=performance.now(),SHOWN=-1,DUR=[30];
 function pageAt(t){if(PAGES.length<2)return 0;t=(t??(performance.now()-T0)/1000)%TOTAL_SEC;let a=0;for(let i=0;i<DUR.length;i++){a+=DUR[i];if(t<a)return i}return DUR.length-1}
-function showPage(p,force){if(p===SHOWN&&!force)return;SHOWN=p;document.querySelectorAll('#content .page').forEach((e,i)=>e.style.opacity=i===p?1:0);
+/* 장면 전환: 흐림 효과(나가는 화면은 흐려지며 사라지고, 들어오는 화면은 흐린 상태에서 선명해짐) */
+const TR=.8, BLUR=18, ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+const nowT=()=>(performance.now()-T0)/1000;
+function frame(t){
+  t=((t%TOTAL_SEC)+TOTAL_SEC)%TOTAL_SEC;
+  const els=document.querySelectorAll('#content .page'); let a=0;
+  els.forEach((e,i)=>{const b=a+DUR[i]; let v;
+    if(i===0&&t<TR) v=ease(t/TR);                                   // 처음 등장
+    else if(i>0&&t>=a-TR/2&&t<a+TR/2) v=ease((t-(a-TR/2))/TR);      // 들어오는 중
+    else if(i<els.length-1&&t>=b-TR/2&&t<b+TR/2) v=1-ease((t-(b-TR/2))/TR); // 나가는 중
+    else v=(t>=a&&t<b)?1:0;
+    e.style.opacity=v; e.style.filter=v>=.999?'none':`blur(${((1-v)*BLUR).toFixed(1)}px)`;
+    if(i===0&&els.length>1) document.querySelector('.clock').style.opacity=1-v;
+    a=b;});
+  showPage(pageAt(t));
+}
+function showPage(p,force){if(p===SHOWN&&!force)return;SHOWN=p;
   const cov=PAGES.length>1&&p===0;
   $('#src').textContent=cov?'':((CUR&&typeof CUR.src==='function'?CUR.src(p-(PAGES.length>1?1:0)):'')||'');
-  document.querySelector('.clock').style.opacity=cov?0:1;}
+}
 function clockTick(){const k=kst(),h=k.getHours(),dw='일월화수목금토'[k.getDay()],hm=`${pad(h%12||12)}:${pad(k.getMinutes())}`,ap=h<12?'AM':'PM';
   $('#cdate').textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())}(${dw})`;$('#ctime').textContent=`${hm} ${ap}`;
   const b=document.getElementById('bigtime'); if(b) b.textContent=hm;
   document.querySelectorAll('.ctime2').forEach(e=>e.textContent=hm);document.querySelectorAll('.campm').forEach(e=>e.textContent=ap);
   document.querySelectorAll('.cdate2').forEach(e=>e.textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())} (${dw})`);}
 function fit(){const st=$('#stage'),s=Math.min(innerWidth/W0,innerHeight/H0);st.style.transform=`scale(${s})`;st.style.left=((innerWidth-W0*s)/2)+'px';st.style.top=((innerHeight-H0*s)/2)+'px'}
-window.T204={setData(d){DATA=d;draw(false)},renderAt(t){if(!PAGES.length)draw(false);document.querySelectorAll('#content .page').forEach(e=>e.style.transition='none');document.querySelector('.clock').style.transition='none';showPage(pageAt(t),true)},LOOP:30,W:W0,H:H0,clip:clipKey};
+window.T204={setData(d){DATA=d;draw(false)},renderAt(t){if(!PAGES.length)draw(false);document.querySelector('.clock').style.transition='none';frame(t)},LOOP:30,W:W0,H:H0,clip:clipKey};
 
 draw(true);
 if(!window.__T204_RENDER){
@@ -275,7 +292,7 @@ if(!window.__T204_RENDER){
   if(/diag/.test(location.hash)||CFG.diag){document.body.classList.add('kiosk');$('#stage').innerHTML='<div id="diag"></div>';window.T204_DIAG&&T204_DIAG($('#diag'));return;}
   // 데이터: 열릴 때 1회 + 10분마다. 고정 화면이라 값만 조용히 바뀜
   const pull=()=>(window.T204_LOAD?T204_LOAD():Promise.resolve(null)).then(d=>{if(d){DATA=d;draw(false)}}).catch(e=>console.warn('T204 load',e));
-  pull(); setInterval(pull,10*60*1000); setInterval(clockTick,5000); setInterval(()=>showPage(pageAt()),250);
+  pull(); setInterval(pull,10*60*1000); setInterval(clockTick,5000); (function loop(){frame(nowT());requestAnimationFrame(loop)})();
   let idle;addEventListener('mousemove',()=>{$('#ctl').style.opacity=1;clearTimeout(idle);idle=setTimeout(()=>$('#ctl').style.opacity=0,3000)});
 }
 })();
