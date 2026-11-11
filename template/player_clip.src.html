@@ -20,6 +20,13 @@
   .pb{left:756px;width:392px}
   .bg{position:absolute;inset:0}
   .bg-navy{background:radial-gradient(80% 45% at 85% 0%,rgba(40,110,220,.35),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
+  /* 날씨 화면: 표지와 같은 보라 계열을 기본으로, 날씨·기온에 따라 색 조정 */
+  .bg-w-cool{background:linear-gradient(180deg,#1b2348 0%,#2c3463 35%,#4a4878 62%,#6e5a84 84%,#7d6178 100%)}
+  .bg-w-cold{background:linear-gradient(180deg,#0e1d3e 0%,#1d3563 38%,#365a8c 66%,#5b80ad 88%,#6f90b5 100%)}
+  .bg-w-warm{background:linear-gradient(180deg,#2a2350 0%,#4b3a6e 36%,#7a4f7c 62%,#a56478 84%,#b5706c 100%)}
+  .bg-w-hot{background:linear-gradient(180deg,#3a2350 0%,#7a3a62 36%,#b3544e 64%,#d27a3e 86%,#d98a3a 100%)}
+  .bg-w-rain{background:linear-gradient(180deg,#151c2a 0%,#25303f 40%,#3a4656 70%,#4c5868 100%)}
+  .bg-w-snow{background:linear-gradient(180deg,#1a2848 0%,#33496f 40%,#5c7699 72%,#7e95b5 100%)}
   .bg-sky{background:linear-gradient(180deg,#1b2f52 0%,#2c3f63 34%,#4d5a78 60%,#7d6a6a 82%,#4a3a3a 100%)}
   .bg-green{background:radial-gradient(70% 40% at 80% 85%,rgba(60,220,170,.22),transparent 70%),linear-gradient(180deg,#0b3a33 0%,#0a2c28 55%,#06201d 100%)}
   .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
@@ -178,7 +185,11 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
       ${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
     return [fx,st];
   }};
-CL.weather={bg:'bg-sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
+CL.weather={bg:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
+    if(sky==='rain'||sky==='sleet')return 'bg-w-rain';
+    if(sky==='snow')return 'bg-w-snow';
+    const t=n.t!=null?n.t:(w.min+w.max)/2;
+    return t>=25?'bg-w-hot':t>=17?'bg-w-warm':t<=5?'bg-w-cold':'bg-w-cool';},ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
   html:()=>{
     const w=DATA.weather, n=w.now||{}, T=w.tomorrow;
     const sky=w.now_sky||w.sky;
@@ -243,7 +254,7 @@ function sponsor(){
 function draw(intro){
   let k=clipKey(); let c=CL[k]; let ok=false; try{ok=!!c.ok()}catch(e){}
   if(!ok){k='brand';c=CL.brand}
-  $('#bg').className='bg '+c.bg;
+  $('#bg').className='bg '+(typeof c.bg==='function'?c.bg():c.bg);
   let h='';try{h=c.html()}catch(e){console.warn(e);c=CL.brand;$('#bg').className='bg bg-brand';h=c.html()}
   PAGES=Array.isArray(h)?h:[h]; CUR=c;
   if(k!=='brand'){PAGES=[coverHtml(k),...PAGES]}
