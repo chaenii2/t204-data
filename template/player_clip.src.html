@@ -172,7 +172,7 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
         ${it.hist&&it.hist.length>1?`<div style="margin-top:40px">${spark(it.hist,box==='pa'?510:392,260,it.d>=0?'#ff5a5f':'#4aa8ff')}</div>`:''}</div>`;
 
     const kb=((DATA.kr.basis||'').match(/(\d{2}\.\d{2})/)||[])[1];
-    const st=`<div class="title">오늘의 국내증시</div>
+    const st=`<div class="title" style="letter-spacing:-.045em">오늘의 국내 증시</div>
       <div class="pa" style="top:378px;display:flex;align-items:center;gap:18px;white-space:nowrap">${kb?`<span class="k" style="font-size:34px">${kb} 종가 기준</span>`:''}</div>
       ${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
     return [fx,st];
