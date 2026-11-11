@@ -187,7 +187,7 @@ CL.weather={bg:'bg-sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에�
     if(w.pm) b+=kv('미세먼지',`<span style="color:${gradeColor(w.pm)}">${w.pm}</span><span class="dot" style="background:${gradeColor(w.pm)}"></span>`);
     if(w.pm25) b+=kv('초미세먼지',`<span style="color:${gradeColor(w.pm25)}">${w.pm25}</span><span class="dot" style="background:${gradeColor(w.pm25)}"></span>`);
     if(n.reh!=null) b+=kv('습도 · 바람',`<span class="num" style="font-size:56px">${n.reh}% · ${n.wsd}m/s</span>`);
-    return `<div class="skyline" style="opacity:.9"></div><div class="title">오늘의 날씨</div>
+    return `<div class="title">오늘의 날씨</div>
       <div class="pa" style="top:420px;display:flex;align-items:center;gap:10px">${weatherIcon(sky,250)}</div>
       <div class="pa" style="top:690px"><div class="k">서울 역삼 · 지금</div>
         <div class="num" style="font-size:200px;font-weight:900;line-height:1;letter-spacing:-.05em;margin-left:-8px">${n.t!=null?n.t:Math.round((w.min+w.max)/2)}°</div>
