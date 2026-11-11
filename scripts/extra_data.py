@@ -136,12 +136,19 @@ def rates():
     if not _has("ECOS_KEY"):
         return None
     k = urllib.parse.quote(F.key("ECOS_KEY"))
-    to = F.NOW.strftime("%Y%m")
-    fr = (F.NOW - timedelta(days=200)).strftime("%Y%m")
-    d = _json(f"https://ecos.bok.or.kr/api/StatisticSearch/{k}/json/kr/1/20/722Y001/M/{fr}/{to}/0101000")
-    rows = (d.get("StatisticSearch") or {}).get("row") or []
+    rows = []
+    # 일별 값 우선(금통위 결정 당일 반영), 없으면 월별
+    for cyc, fr, to in [("D", (F.NOW - timedelta(days=40)).strftime("%Y%m%d"), F.NOW.strftime("%Y%m%d")),
+                        ("M", (F.NOW - timedelta(days=200)).strftime("%Y%m"), F.NOW.strftime("%Y%m"))]:
+        try:
+            d = _json(f"https://ecos.bok.or.kr/api/StatisticSearch/{k}/json/kr/1/100/722Y001/{cyc}/{fr}/{to}/0101000")
+            rows = (d.get("StatisticSearch") or {}).get("row") or []
+        except Exception as e:  # noqa: BLE001
+            F.log(f"⚠️ 금리({cyc}) 실패: {type(e).__name__}")
+        if rows:
+            break
     if not rows:
-        raise RuntimeError(str((d.get("RESULT") or {}).get("MESSAGE", "금리 데이터 없음"))[:100])
+        raise RuntimeError("금리 데이터 없음")
     v = float(rows[-1]["DATA_VALUE"])
-    F.log(f"금리: 한국은행 기준금리 {v}% ({rows[-1].get('TIME')})")
+    F.log(f"금리: 한국은행 기준금리 {v}% ({cyc} {rows[-1].get('TIME')})")
     return {"basis": "한국은행 ECOS", "items": [{"name": "한국은행 기준금리", "v": v}]}
