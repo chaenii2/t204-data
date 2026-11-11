@@ -28,7 +28,7 @@
   .bg-green .streak{position:absolute;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,rgba(170,255,225,.9),transparent);transform:rotate(-14deg);filter:blur(.5px)}
   /* 상단 고정 헤더 */
   .head{position:absolute;top:70px;z-index:3}
-  .logo{font-family:Georgia,'Times New Roman','Noto Serif KR',serif;font-size:66px;font-weight:700;color:#ef3b24;letter-spacing:-.02em;line-height:1}
+  .logo{font-family:Georgia,'Times New Roman','Noto Serif KR',serif;font-size:46px;font-weight:700;color:#ef3b24;letter-spacing:-.02em;line-height:1}
   .plus{font-size:34px;font-weight:700;background:var(--red);color:#fff;padding:4px 22px 6px;border-radius:999px;letter-spacing:0}
   .clock{text-align:right;font-size:34px;font-weight:700;line-height:1.35}
   /* 장면 */
@@ -297,7 +297,7 @@ function ipoItems(){
     return {badge,hot:s<=t0,name:o.name,period:`${f(s)}~${f(e)}`,price:(o.price||'').includes('확정 전')?'공모가 미정':`공모가 ${o.price}`,broker:(o.broker||'').replace('대표주관 ','')};
   });
 }
-function ipoTicker(dur,top,part){
+function ipoTicker(dur,top,part,strong){
   const it=ipoItems(); if(!it.length) return '';
   let pages=[]; for(let i=0;i<it.length;i+=2) pages.push(it.slice(i,i+2));
   // 환율·증시 두 화면이 다 있으면 페이지를 나눠 한 화면에 한 페이지씩(읽을 시간 확보)
@@ -307,7 +307,7 @@ function ipoTicker(dur,top,part){
       <div class="num" style="font-size:28px;color:#c9d6ee;margin-top:2px">${o.period} · ${o.price}</div></div>`;
   const rowB=o=>`<div style="height:104px;text-align:right"><div style="font-size:42px;font-weight:900;color:${o.hot?'#ff6b5e':'#ffd166'}">${o.badge}</div>
       <div style="font-size:26px;color:#c9d6ee;margin-top:2px">대표주관 ${o.broker}</div></div>`;
-  return `<div class="divider" style="top:${top-30}px"></div>
+  return `<div class="divider" style="top:${top-30}px${strong?';background:rgba(255,255,255,.32);height:2px':''}"></div>
    <div class="pa" style="top:${top}px;width:520px" ${A('fade',.9)}>
      <span style="background:var(--red);color:#fff;font-size:30px;font-weight:700;padding:6px 20px 8px;border-radius:999px">공모주 청약</span>
      <div style="position:relative;height:216px;margin-top:22px">${pages.map((pg,i)=>`<div class="roll" data-s="${s0+i*slot}" data-e="${s0+(i+1)*slot}" style="position:absolute;left:0;right:0;top:0;opacity:0">${pg.map(rowA).join('')}</div>`).join('')}</div>
@@ -344,11 +344,12 @@ SC.fx={dur:10,bg:'navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fre
         <span style="font-size:34px;font-weight:700">${r.code}${r.unit?` <span style="font-size:24px;color:var(--sub)">(${r.unit})</span>`:''}</span>
         <span style="text-align:right"><span class="num" style="font-size:40px;font-weight:700">${fmt(r.v)}</span><br><span class="num ${cls(r.d)}" style="font-size:26px;font-weight:700">${sgn(r.d)} ${fmt(Math.abs(r.d))}</span></span></div>`).join('')}</div>`)
     +`<div style="position:absolute;left:56px;top:840px" ${A('fade',.4)}>${spark(hist.length>1?hist:null,1090,250,'#3aa0ff','fx')}</div>`
-    +ipoTicker(SC.fx.dur,1400,0)
+    +ipoTicker(SC.fx.dur,1400,0,!!R)
     +(R?`<div class="divider" style="top:1150px"></div>
-      <div class="pa" style="top:1180px;display:flex;align-items:center;gap:34px" ${A('up',1.4)}>
-        <div style="width:120px;height:120px;border-radius:50%;border:3px solid rgba(58,160,255,.6);background:rgba(58,160,255,.12);display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:700">%</div>
-        <div><div class="num" style="font-size:72px;font-weight:900">${R.v.toFixed(2)}%</div><div class="k" style="font-size:34px;color:#dbe4f3">${R.name}</div></div></div>`:'');
+      <div class="pa" style="top:1196px;display:flex;align-items:center;gap:22px;white-space:nowrap" ${A('up',1.4)}>
+        <div style="width:76px;height:76px;border-radius:50%;border:3px solid rgba(58,160,255,.6);background:rgba(58,160,255,.12);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700;flex:none">%</div>
+        <div class="k" style="font-size:32px;color:#dbe4f3">${R.name}</div>
+        <div class="num" style="font-size:52px;font-weight:900">${R.v.toFixed(2)}%</div></div>`:'');
   }};
 
 SC.stock={dur:10,bg:'navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length>0&&fresh(4),src:()=>DATA.kr.basis||'',
@@ -403,8 +404,6 @@ SC.traffic={dur:8,bg:'green',ok:()=>!!DATA.traffic,src:()=>DATA.traffic.basis||'
         <div style="font-size:28px;color:#cfe9e0;display:flex;align-items:center;gap:14px">${icon(ic,52,2.5)}${k}</div><div style="font-size:46px;font-weight:800;margin-top:4px">${v}</div>${sub?`<div style="font-size:26px;color:#cfe9e0;margin-top:2px">${sub}</div>`:''}</div>`;
     const cards=[];
     if(T.congest) cards.push(card('people','역삼역 일대 혼잡도',`<span style="color:${({'여유':'#4ade80','보통':'#4ade80','약간 붐빔':'#facc15','붐빔':'#ff4d4f'})[T.congest]||'#fff'}">${T.congest}</span>`,T.congest_msg||'',.6));
-    if(T.subway&&T.subway.length) cards.push(card('train','2호선 역삼역 다음 열차',T.subway.map(x=>`${x.dir} <span class="num">${x.min}</span>분`).join(' · '),'',.75));
-    if(T.bike) cards.push(card('bike','따릉이 대여 가능',`<span class="num">${T.bike.n}</span>대`,T.bike.name,.9));
     if(T.roads&&T.roads.length) cards.push(card('road','주변 도로',T.roads.map(r=>`${r.name} <span style="color:${C(stOf(r.kmh))}">${stOf(r.kmh)}</span>`).join(' · '),'',1.05));
     return P(`<div class="title" ${A('up',0)}>오늘의 교통</div>
         <div style="margin-top:96px;display:flex;align-items:center;gap:26px" ${A('up',.2)}>${icon('car',112,3.5)}
