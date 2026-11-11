@@ -292,7 +292,7 @@ if(!window.__T204_RENDER){
   if(/diag/.test(location.hash)||CFG.diag){document.body.classList.add('kiosk');$('#stage').innerHTML='<div id="diag"></div>';window.T204_DIAG&&T204_DIAG($('#diag'));return;}
   // 데이터: 열릴 때 1회 + 10분마다. 고정 화면이라 값만 조용히 바뀜
   const pull=()=>(window.T204_LOAD?T204_LOAD():Promise.resolve(null)).then(d=>{if(d){DATA=d;draw(false)}}).catch(e=>console.warn('T204 load',e));
-  pull(); setInterval(pull,10*60*1000); setInterval(clockTick,5000); (function loop(){frame(nowT());requestAnimationFrame(loop)})();
+  pull(); setInterval(pull,10*60*1000); setInterval(clockTick,5000); (function loop(){frame(nowT());requestAnimationFrame(loop)})(); setInterval(()=>frame(nowT()),100); // rAF가 멈추는 환경 대비
   let idle;addEventListener('mousemove',()=>{$('#ctl').style.opacity=1;clearTimeout(idle);idle=setTimeout(()=>$('#ctl').style.opacity=0,3000)});
 }
 })();
