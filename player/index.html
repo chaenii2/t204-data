@@ -3,91 +3,91 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>T204 데일리 브리핑 송출 플레이어</title>
+<title>T204 오늘의 인사이트</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
 <style>
-  /* 캔버스 1200x1824 · A면 0–648 / B면 648–1200 · 코너(접힘) 576–720 은 글자 금지 구간 */
-  :root{
-    --ink:#fff; --sub:#9fb0cc; --line:rgba(255,255,255,.13); --card:rgba(255,255,255,.065);
-    --accent:#ff6a3d; --up:#ff5a5f; --down:#4c8dff; --ok:#3ddc84; --mid:#ffc542; --bad:#ff5a5f;
-  }
+  /* 캔버스 1200x1824 · A면 0–648 / B면 648–1200 · 코너(접힘) 576–720은 글자 금지(배경·그래프만) */
+  :root{--ink:#fff;--sub:#a9b6cc;--line:rgba(255,255,255,.14);--red:#e8362f;--up:#ff4d4f;--down:#3aa0ff;--ok:#4ade80;--mid:#facc15;--bad:#ff4d4f}
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{width:100%;height:100%;background:#000;overflow:hidden;
     font-family:'Noto Sans KR','Noto Sans CJK KR','Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all}
-  #stage{position:absolute;width:1200px;height:1824px;transform-origin:0 0;overflow:hidden;
-    background:radial-gradient(110% 60% at 85% 0%, var(--glow) 0%, transparent 55%),
-               radial-gradient(70% 40% at 0% 100%, rgba(255,106,61,.10), transparent 70%),
-               linear-gradient(180deg,var(--bg1),var(--bg2));}
-  #stage.morning{--bg1:#0c2347;--bg2:#06101f;--glow:#1f6fd1}
-  #stage.lunch{--bg1:#2b1a0d;--bg2:#0e0905;--glow:#c9671c}
-  #stage.evening{--bg1:#121a36;--bg2:#05070f;--glow:#4338ca}
-  /* 코너 구간: 장식만 */
-  .corner{position:absolute;left:576px;width:144px;top:0;bottom:0;pointer-events:none;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,.035) 50%,transparent)}
-  .corner i{position:absolute;left:71px;width:2px;top:0;height:100%;background:linear-gradient(180deg,transparent,var(--accent) 50%,transparent);opacity:.55;transform-origin:top}
-  .pa,.pb{position:absolute}
-  .pa{left:56px;width:488px}
-  .pb{left:756px;width:400px}
-  /* top */
-  .top{top:84px}
-  .lab{font-size:26px;font-weight:500;color:var(--sub);letter-spacing:.08em}
-  .ttl{font-size:60px;font-weight:900;letter-spacing:-.02em;margin-top:8px;line-height:1.1}
-  .clk{font-size:96px;font-weight:700;line-height:1;letter-spacing:-.03em;text-align:right}
-  .dte{font-size:28px;color:var(--sub);margin-top:10px;letter-spacing:.08em;text-align:right}
-  /* scenes */
-  .scene{position:absolute;inset:0;display:none}
-  .scene .pa,.scene .pb{top:290px}
-  .h2{font-size:38px;font-weight:700;color:var(--accent);letter-spacing:.01em}
-  .h1{font-size:68px;font-weight:900;letter-spacing:-.03em;margin-top:10px;line-height:1.15}
-  .card{background:var(--card);border:2px solid var(--line);border-radius:32px;padding:36px 38px}
+  #stage{position:absolute;width:1200px;height:1824px;transform-origin:0 0;overflow:hidden;background:#06101f}
   .num{font-variant-numeric:tabular-nums}
   .up{color:var(--up)} .down{color:var(--down)}
-  .chip{display:inline-block;font-size:30px;font-weight:700;padding:6px 20px;border-radius:999px;background:rgba(255,106,61,.18);color:var(--accent)}
+  .pa,.pb{position:absolute}
+  .pa{left:56px;width:500px}
+  .pb{left:756px;width:390px}
+  /* 배경 레이어 (장면마다 교차 전환) */
+  .bg{position:absolute;inset:0;opacity:0}
+  .bg-open{background:radial-gradient(90% 38% at 50% 112%, #2f7bff 0%, #123a7a 30%, rgba(8,24,56,.0) 62%),
+                     radial-gradient(130% 60% at 50% 128%, #0b2a5c 0%, transparent 70%),
+                     linear-gradient(180deg,#071630 0%,#0a1f44 55%,#0c2550 100%)}
+  .bg-open .earth{position:absolute;left:-30%;right:-30%;top:1290px;height:1400px;border-radius:50%;
+     background:radial-gradient(60% 40% at 50% 10%,#16386e,#081a38 60%,#050f22);box-shadow:0 -10px 60px 10px rgba(80,160,255,.55),inset 0 14px 40px rgba(130,190,255,.45)}
+  .bg-open .lights{position:absolute;left:0;right:0;top:1330px;height:400px;opacity:.55;
+     background-image:radial-gradient(2px 2px at 20% 30%,#ffd27a 60%,transparent),radial-gradient(2px 2px at 34% 52%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 47% 22%,#ffe2a8 60%,transparent),radial-gradient(2px 2px at 61% 40%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 73% 62%,#ffe2a8 60%,transparent),radial-gradient(2px 2px at 86% 35%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 12% 70%,#ffe2a8 60%,transparent),radial-gradient(1.5px 1.5px at 54% 75%,#ffe2a8 60%,transparent)}
+  .bg-navy{background:radial-gradient(80% 45% at 85% 0%,rgba(40,110,220,.35),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
+  .bg-sky{background:linear-gradient(180deg,#1b2f52 0%,#2c3f63 30%,#5a5f78 52%,#a7765d 70%,#e0955a 82%,#6f4a3b 100%)}
+  .bg-sky .cl{position:absolute;border-radius:50%;background:rgba(255,236,220,.55);filter:blur(28px)}
+  .bg-green{background:radial-gradient(70% 40% at 80% 85%,rgba(60,220,170,.28),transparent 70%),linear-gradient(180deg,#0b3a33 0%,#0a2c28 55%,#06201d 100%)}
+  .bg-green .streak{position:absolute;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,rgba(170,255,225,.9),transparent);transform:rotate(-14deg);filter:blur(.5px)}
+  /* 상단 고정 헤더 */
+  .head{position:absolute;top:70px;z-index:3}
+  .logo{display:flex;align-items:center;gap:16px;font-size:54px;font-weight:900;letter-spacing:-.03em}
+  .plus{font-size:34px;font-weight:700;background:var(--red);color:#fff;padding:4px 22px 6px;border-radius:999px;letter-spacing:0}
+  .clock{text-align:right;font-size:34px;font-weight:700;line-height:1.35}
+  /* 장면 */
+  .scene{position:absolute;inset:0;display:none;z-index:2}
+  .title{font-size:76px;font-weight:900;letter-spacing:-.03em}
+  .lbl{font-size:40px;font-weight:700;color:#dfe7f5}
   .k{font-size:32px;color:var(--sub)}
-  .v{font-size:60px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
-  .stack>*+*{margin-top:24px}
-  /* footer */
-  .foot{bottom:72px}
-  .prog{display:flex;gap:12px;margin-bottom:26px}
-  .prog i{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.15);overflow:hidden;position:relative}
-  .prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);border-radius:5px}
-  .brand{font-size:30px;color:var(--sub)}
-  .sp{text-align:right;font-size:44px;font-weight:900}
-  .sp em{display:block;font-style:normal;font-size:26px;font-weight:500;color:var(--sub);margin-bottom:4px}
-  .samp{position:absolute;left:756px;width:400px;top:36px;text-align:right;font-size:22px;color:rgba(255,255,255,.45)}
-  /* guide overlay (preview only) */
-  #guide{position:absolute;inset:0;pointer-events:none;display:none;z-index:5}
+  .divider{position:absolute;left:56px;right:56px;height:2px;background:var(--line)}
+  .dot{display:inline-block;width:26px;height:26px;border-radius:50%;margin-left:14px;vertical-align:middle}
+  .prog{position:absolute;left:56px;width:500px;bottom:70px;display:flex;gap:10px;z-index:3}
+  .prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden;position:relative}
+  .prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#fff}
+  .src{position:absolute;right:54px;bottom:62px;font-size:24px;color:rgba(255,255,255,.55);text-align:right;z-index:3;width:390px}
+  /* 가이드 */
+  #guide{position:absolute;inset:0;pointer-events:none;display:none;z-index:9}
   #guide .g{position:absolute;top:0;bottom:0;border:3px dashed rgba(255,255,0,.7)}
   #guide span{position:absolute;top:8px;left:8px;font:700 22px system-ui;color:#ff0;background:rgba(0,0,0,.6);padding:2px 8px}
   #stage.showguide #guide{display:block}
   #ctl{position:fixed;left:12px;bottom:12px;display:flex;gap:6px;z-index:9;font:13px system-ui;transition:opacity .4s}
   #ctl button{background:#222;color:#ddd;border:1px solid #444;border-radius:6px;padding:6px 10px;cursor:pointer}
-  #ctl button.on{background:#ff6a3d;color:#fff;border-color:#ff6a3d}
+  #ctl button.on{background:#e8362f;color:#fff;border-color:#e8362f}
   body.render #ctl, body.kiosk #ctl{display:none}
 </style>
 </head>
 <body>
 <div id="stage">
-  <div class="corner"><i id="cline"></i></div>
-  <div class="samp" id="samp">샘플 데이터 · 실제 수치 아님</div>
-  <div class="pa top"><div class="lab" id="lab"></div><div class="ttl" id="ttl"></div></div>
-  <div class="pb top"><div class="clk num" id="clk"></div><div class="dte" id="dte"></div></div>
+  <div class="bg bg-open" data-bg="open"><div class="earth"></div><div class="lights"></div></div>
+  <div class="bg bg-navy" data-bg="navy"></div>
+  <div class="bg bg-sky" data-bg="sky">
+    <div class="cl" style="left:-80px;top:1150px;width:700px;height:160px"></div>
+    <div class="cl" style="left:380px;top:1240px;width:900px;height:200px"></div>
+    <div class="cl" style="left:100px;top:1420px;width:1000px;height:180px;background:rgba(255,190,140,.5)"></div>
+  </div>
+  <div class="bg bg-green" data-bg="green">
+    <div class="streak" style="left:-100px;top:1350px;width:900px"></div>
+    <div class="streak" style="left:200px;top:1450px;width:1200px;opacity:.7"></div>
+    <div class="streak" style="left:400px;top:1560px;width:900px;opacity:.5"></div>
+    <div class="streak" style="left:-200px;top:1640px;width:1400px;opacity:.35"></div>
+  </div>
+  <div class="head" style="left:56px"><div class="logo">중앙일보<span class="plus">Plus</span></div></div>
+  <div class="head clock" style="left:756px;width:390px"><div id="cdate"></div><div id="ctime"></div></div>
   <div id="scenes"></div>
-  <div class="pa foot"><div class="prog"><i><b></b></i><i><b></b></i><i><b></b></i></div><div class="brand">중앙일보 · 테헤란로 T204</div></div>
-  <div class="pb foot"><div class="sp" id="spn"></div></div>
+  <div class="prog" id="prog"></div>
+  <div class="src" id="src"></div>
   <div id="guide">
     <div class="g" style="left:0;width:648px"><span>A면 648</span></div>
     <div class="g" style="left:648px;width:552px;border-color:rgba(0,255,255,.7)"><span style="color:#0ff;left:auto;right:8px">B면 552</span></div>
     <div class="g" style="left:576px;width:144px;background:repeating-linear-gradient(45deg,rgba(255,0,0,.25) 0 10px,transparent 10px 20px);border-color:red"><span style="color:#f66;top:40px">코너</span></div>
   </div>
 </div>
-<div id="ctl">
-  <button data-m="auto">자동(06:30/11:00/18:00)</button><button data-m="morning">출근</button><button data-m="today">오늘</button><button data-m="evening">퇴근</button>
-  <button id="gbtn">A/B면 가이드</button>
-</div>
+<div id="ctl"><button id="gbtn">A/B면 가이드</button></div>
 
-<script type="application/json" id="t204-data">{"generated_at": "2026-11-11 13:30", "location": "테헤란로 204 · 역삼", "weather": {"sky": "clear", "text": "맑음", "min": 5, "max": 16, "pop": 20, "tip": "일교차 11도, 겉옷을 챙기세요", "hourly": [{"h": "9시", "t": 8, "sky": "clear"}, {"h": "12시", "t": 13, "sky": "partly"}, {"h": "15시", "t": 16, "sky": "clear"}, {"h": "18시", "t": 11, "sky": "clear"}], "pm": "보통", "now": {"t": 13, "at": "12:00"}}, "fx": {"basis": "11.11 매매기준율 · 한국수출입은행", "items": [{"name": "미국 달러", "code": "USD", "unit": "", "v": 1343.3, "d": -12.4}, {"name": "일본 엔", "code": "JPY", "unit": "100엔", "v": 846.44, "d": -11.98}, {"name": "유로", "code": "EUR", "unit": "", "v": 1500.47, "d": -20.96}, {"name": "중국 위안", "code": "CNY", "unit": "", "v": 201.74, "d": -1.93}]}, "ipo_list": [{"name": "마더스제약", "start": "2026-12-08", "end": "2026-12-09", "price": "11,000원", "broker": "대표주관 케이비증권"}, {"name": "엠비디", "start": "2026-11-12", "end": "2026-11-13", "price": "9,600원", "broker": "대표주관 하나증권"}, {"name": "옵토닉스", "start": "2026-11-05", "end": "2026-11-06", "price": "10,000원", "broker": "대표주관 한국투자증권"}, {"name": "에스에프씨", "start": "2026-11-18", "end": "2026-11-19", "price": "31,600원", "broker": "대표주관 미래에셋증권"}, {"name": "영광와이케이엠씨", "start": "2026-11-04", "end": "2026-11-05", "price": "9,400원", "broker": "대표주관 대신증권"}, {"name": "이노보테라퓨틱스", "start": "2026-12-07", "end": "2026-12-08", "price": "20,000원", "broker": "대표주관 한국투자증권"}, {"name": "하나에어로다이내믹스", "start": "2026-11-10", "end": "2026-11-11", "price": "4,700원", "broker": "대표주관 아이비케이투자증권"}, {"name": "씨앤엠", "start": "2026-11-12", "end": "2026-11-13", "price": "10,000원", "broker": "대표주관 한국투자증권"}, {"name": "제이앤티지", "start": "2026-11-12", "end": "2026-11-13", "price": "26,400원", "broker": "대표주관 대신증권"}, {"name": "우리투자제1호기업인수목적", "start": "2026-12-02", "end": "2026-12-03", "price": "2,000원", "broker": "대표주관 우리투자증권"}, {"name": "넥스아이", "start": "2026-11-03", "end": "2026-11-04", "price": "10,500원", "broker": "대표주관 한국투자증권"}, {"name": "씨아이에스케미칼", "start": "2026-12-10", "end": "2026-12-11", "price": "5,400원", "broker": "대표주관 케이비증권"}, {"name": "에이엘로봇", "start": "2026-11-06", "end": "2026-11-09", "price": "15,700원", "broker": "대표주관 대신증권"}, {"name": "엔키화이트햇", "start": "2026-12-01", "end": "2026-12-02", "price": "13,000원", "broker": "대표주관 신영증권"}, {"name": "에이엔에이치스트럭쳐", "start": "2026-11-27", "end": "2026-11-30", "price": "11,200원", "broker": "대표주관 NH투자증권"}, {"name": "다비오", "start": "2026-12-01", "end": "2026-12-02", "price": "12,300원", "broker": "대표주관 대신증권"}, {"name": "SimwonAmericaCorp.", "start": "2026-11-05", "end": "2026-11-05", "price": "26,784원", "broker": ""}, {"name": "신영해피투모로우제12호기업인수목적", "start": "2026-11-24", "end": "2026-11-25", "price": "2,000원", "broker": "대표주관 신영증권"}, {"name": "데스틴파워", "start": "2026-12-14", "end": "2026-12-15", "price": "8,000원", "broker": "대표주관 한국투자증권"}, {"name": "KTE", "start": "2026-12-14", "end": "2026-12-15", "price": "19,000원", "broker": "대표주관 NH투자증권"}, {"name": "케이엠에프", "start": "2026-11-24", "end": "2026-11-25", "price": "15,000원", "broker": "대표주관 아이비케이투자증권"}, {"name": "아델", "start": "2026-11-23", "end": "2026-11-24", "price": "18,000원", "broker": "대표주관 삼성증권"}, {"name": "제논", "start": "2026-11-24", "end": "2026-11-25", "price": "9,700원", "broker": "대표주관 삼성증권"}, {"name": "인터엑스", "start": "2026-12-09", "end": "2026-12-10", "price": "10,000원", "broker": "대표주관 한국투자증권"}, {"name": "유캐스트", "start": "2026-11-18", "end": "2026-11-19", "price": "19,000원", "broker": "대표주관 유진증권"}], "sources": {"weather": "기상청 단기예보·초단기실황 (apis.data.go.kr)", "dust": "에어코리아 강남구 측정소 (apis.data.go.kr)", "fx": "한국수출입은행 매매기준율 (oapi.koreaexim.go.kr)", "ipo": "OpenDART 증권신고서 (opendart.fss.or.kr)"}, "stale": [], "sample": false, "updated": {"morning": "", "evening": ""}, "sponsor": {"morning": "", "evening": ""}, "date": "2026-11-11", "dow": "WED", "ipo": {"morning": [], "evening": []}}</script>
+<script type="application/json" id="t204-data">{"generated_at": "2026-11-11 13:49", "location": "테헤란로 204 · 역삼", "weather": {"sky": "clear", "now_sky": "clear", "text": "맑음", "min": 5, "max": 16, "pop": 20, "tip": "일교차 11도, 겉옷을 챙기세요", "hourly": [{"h": "9시", "t": 8, "sky": "clear"}, {"h": "12시", "t": 13, "sky": "partly"}, {"h": "15시", "t": 16, "sky": "clear"}, {"h": "18시", "t": 11, "sky": "clear"}], "pm": "보통", "pm25": "보통", "now": {"t": 15, "at": "13:00"}}, "fx": {"basis": "11.11 매매기준율 · 한국수출입은행", "items": [{"name": "미국 달러", "code": "USD", "unit": "", "v": 1343.3, "d": -12.4}, {"name": "일본 엔", "code": "JPY", "unit": "100엔", "v": 846.44, "d": -11.98}, {"name": "유로", "code": "EUR", "unit": "", "v": 1500.47, "d": -20.96}, {"name": "중국 위안", "code": "CNY", "unit": "", "v": 201.74, "d": -1.93}]}, "ipo_list": [{"name": "마더스제약", "start": "2026-12-08", "end": "2026-12-09", "price": "11,000원", "broker": "대표주관 케이비증권"}, {"name": "엠비디", "start": "2026-11-12", "end": "2026-11-13", "price": "9,600원", "broker": "대표주관 하나증권"}, {"name": "옵토닉스", "start": "2026-11-05", "end": "2026-11-06", "price": "10,000원", "broker": "대표주관 한국투자증권"}, {"name": "에스에프씨", "start": "2026-11-18", "end": "2026-11-19", "price": "31,600원", "broker": "대표주관 미래에셋증권"}, {"name": "영광와이케이엠씨", "start": "2026-11-04", "end": "2026-11-05", "price": "9,400원", "broker": "대표주관 대신증권"}, {"name": "이노보테라퓨틱스", "start": "2026-12-07", "end": "2026-12-08", "price": "20,000원", "broker": "대표주관 한국투자증권"}, {"name": "하나에어로다이내믹스", "start": "2026-11-10", "end": "2026-11-11", "price": "4,700원", "broker": "대표주관 아이비케이투자증권"}, {"name": "씨앤엠", "start": "2026-11-12", "end": "2026-11-13", "price": "10,000원", "broker": "대표주관 한국투자증권"}, {"name": "제이앤티지", "start": "2026-11-12", "end": "2026-11-13", "price": "26,400원", "broker": "대표주관 대신증권"}, {"name": "우리투자제1호기업인수목적", "start": "2026-12-02", "end": "2026-12-03", "price": "2,000원", "broker": "대표주관 우리투자증권"}, {"name": "넥스아이", "start": "2026-11-03", "end": "2026-11-04", "price": "10,500원", "broker": "대표주관 한국투자증권"}, {"name": "씨아이에스케미칼", "start": "2026-12-10", "end": "2026-12-11", "price": "5,400원", "broker": "대표주관 케이비증권"}, {"name": "에이엘로봇", "start": "2026-11-06", "end": "2026-11-09", "price": "15,700원", "broker": "대표주관 대신증권"}, {"name": "엔키화이트햇", "start": "2026-12-01", "end": "2026-12-02", "price": "13,000원", "broker": "대표주관 신영증권"}, {"name": "에이엔에이치스트럭쳐", "start": "2026-11-27", "end": "2026-11-30", "price": "11,200원", "broker": "대표주관 NH투자증권"}, {"name": "다비오", "start": "2026-12-01", "end": "2026-12-02", "price": "12,300원", "broker": "대표주관 대신증권"}, {"name": "SimwonAmericaCorp.", "start": "2026-11-05", "end": "2026-11-05", "price": "26,784원", "broker": ""}, {"name": "신영해피투모로우제12호기업인수목적", "start": "2026-11-24", "end": "2026-11-25", "price": "2,000원", "broker": "대표주관 신영증권"}, {"name": "데스틴파워", "start": "2026-12-14", "end": "2026-12-15", "price": "8,000원", "broker": "대표주관 한국투자증권"}, {"name": "KTE", "start": "2026-12-14", "end": "2026-12-15", "price": "19,000원", "broker": "대표주관 NH투자증권"}, {"name": "케이엠에프", "start": "2026-11-24", "end": "2026-11-25", "price": "15,000원", "broker": "대표주관 아이비케이투자증권"}, {"name": "아델", "start": "2026-11-23", "end": "2026-11-24", "price": "18,000원", "broker": "대표주관 삼성증권"}, {"name": "제논", "start": "2026-11-24", "end": "2026-11-25", "price": "9,700원", "broker": "대표주관 삼성증권"}, {"name": "인터엑스", "start": "2026-12-09", "end": "2026-12-10", "price": "10,000원", "broker": "대표주관 한국투자증권"}, {"name": "유캐스트", "start": "2026-11-18", "end": "2026-11-19", "price": "19,000원", "broker": "대표주관 유진증권"}], "sources": {"weather": "기상청 단기예보·초단기실황 (apis.data.go.kr)", "dust": "에어코리아 강남구 측정소 (apis.data.go.kr)", "fx": "한국수출입은행 매매기준율 (oapi.koreaexim.go.kr)", "ipo": "OpenDART 증권신고서 (opendart.fss.or.kr)"}, "stale": [], "fx_hist": [{"d": "10.13", "v": 1335.8}, {"d": "10.14", "v": 1340.5}, {"d": "10.15", "v": 1338.6}, {"d": "10.16", "v": 1348.5}, {"d": "10.19", "v": 1342.4}, {"d": "10.20", "v": 1332.1}, {"d": "10.21", "v": 1328.0}, {"d": "10.22", "v": 1325.5}, {"d": "10.23", "v": 1324.6}, {"d": "10.26", "v": 1324.3}, {"d": "10.27", "v": 1322.6}, {"d": "10.28", "v": 1324.3}, {"d": "10.29", "v": 1336.3}, {"d": "10.30", "v": 1335.3}, {"d": "11.02", "v": 1337.2}, {"d": "11.03", "v": 1341.0}, {"d": "11.04", "v": 1341.2}, {"d": "11.05", "v": 1340.7}, {"d": "11.06", "v": 1342.0}, {"d": "11.09", "v": 1357.9}, {"d": "11.10", "v": 1355.7}, {"d": "11.11", "v": 1343.3}], "sample": false, "updated": {"morning": "", "evening": ""}, "sponsor": {"morning": "", "evening": ""}, "date": "2026-11-11", "dow": "WED", "ipo": {"morning": [], "evening": []}}</script>
 <script>window.T204_CONFIG={"mode": "relay", "diag": false, "feedUrl": "https://chaenii2.github.io/t204-data/feed.json"};</script>
 <script>/* T204 데이터 로더: relay(중계 파일 1개) / direct(각 API 직접 호출) + 연결 진단 */
 (function(){
@@ -249,235 +249,188 @@ window.T204_DIAG = async function(root){
 </script>
 <script>
 (() => {
-const W0=1200, H0=1824, LOOP=30;
-const SCNS={
-  morning:[[0,2.6],[2.6,10.6],[10.6,21.0],[21.0,29.2],[29.2,30]],
-  evening:[[0,2.6],[2.6,10.6],[10.6,21.0],[21.0,29.2],[29.2,30]]};
-SCNS.today=SCNS.morning;
-let SCN=SCNS.morning;
-const MODES={
-  morning:{ttl:'출근길 브리핑',lab:'GOOD MORNING',line:['오늘 날씨','미국 증시','공모주 청약']},
-  today:{ttl:'오늘의 브리핑',lab:"TODAY'S BRIEFING",line:['오늘 날씨','미국 증시','공모주 청약']},
-  evening:{ttl:'퇴근길 브리핑',lab:'GOOD EVENING',line:['증시 마감','환율','공모주 청약']}
-};
+const W0=1200,H0=1824, FADE=.6;
 let DATA=JSON.parse(document.getElementById('t204-data').textContent);
-{const _k=new Date(Date.now()+(new Date().getTimezoneOffset()+540)*60000);DATA.date=`${_k.getFullYear()}-${String(_k.getMonth()+1).padStart(2,'0')}-${String(_k.getDate()).padStart(2,'0')}`;DATA.dow=['SUN','MON','TUE','WED','THU','FRI','SAT'][_k.getDay()];}
-if(DATA.ipo_list&&window.T204_IPO){const n=new Date();DATA.ipo={morning:T204_IPO(DATA.ipo_list,n,false),evening:T204_IPO(DATA.ipo_list,n,true)}}
 const $=s=>document.querySelector(s);
 const fmt=(v,dec=2)=>Number(v).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
 const sgn=d=>d>0?'▲':(d<0?'▼':'–'), cls=d=>d>0?'up':(d<0?'down':'');
 const clamp=x=>Math.min(1,Math.max(0,x)), seg=(t,a,b)=>clamp((t-a)/(b-a));
 const out3=x=>1-Math.pow(1-x,3), outBack=x=>{const c=1.4;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
 const A=(anim,d,extra='')=>`data-anim="${anim}" data-d="${d}" ${extra}`;
+const P=(a,b,top=300)=>`<div class="pa" style="top:${top}px">${a}</div><div class="pb" style="top:${top}px">${b}</div>`;
+const kst=()=>{const d=new Date();return new Date(d.getTime()+(d.getTimezoneOffset()+540)*60000)};
+const pad=n=>String(n).padStart(2,'0');
+const pct=(d,v)=>d/(v-d)*100;
 
-/* icons */
-function sun(r=70){let rays='';for(let i=0;i<8;i++)rays+=`<rect x="-6" y="${-r-44}" width="12" height="30" rx="6" transform="rotate(${i*45})"/>`;return `<g class="spin" fill="#FFC542"><circle r="${r}"/>${rays}</g>`}
-const cloudPath='M-90 40 a55 55 0 0 1 10-108 a75 75 0 0 1 140-10 a52 52 0 0 1 30 118 z';
-function icon(sky,size=260){
-  let g;
-  if(sky==='clear') g=sun();
-  else if(sky==='partly') g=`<g transform="translate(-40,-40) scale(.8)">${sun()}</g><g class="drift"><path d="${cloudPath}" fill="#e8eefb" transform="translate(30,40) scale(.85)"/></g>`;
-  else if(sky==='rain') g=`<path d="${cloudPath}" fill="#c7d2e6" transform="translate(0,-20)"/>`+[-50,0,50].map((x,i)=>`<rect class="drop" data-i="${i}" x="${x-5}" y="40" width="10" height="34" rx="5" fill="#6aa8ff"/>`).join('');
-  else g=`<g class="drift"><path d="${cloudPath}" fill="#dfe6f3"/></g>`;
-  return `<svg width="${size}" height="${size}" viewBox="-150 -150 300 300">${g}</svg>`;
-}
-function spark(arr,w,h,color){
+/* ---------- 그래픽 ---------- */
+function spark(arr,w,h,color,id){
+  if(!arr||arr.length<2) return '';
   const mn=Math.min(...arr),mx=Math.max(...arr),sp=(mx-mn)||1;
-  const pts=arr.map((v,i)=>[i/(arr.length-1)*(w-14), h-12-(v-mn)/sp*(h-24)]);
+  const pts=arr.map((v,i)=>[i/(arr.length-1)*(w-16)+4, h-14-(v-mn)/sp*(h-28)]);
   const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
   const L=pts[pts.length-1];
   return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="overflow:visible;display:block">
-    <path d="${d} L${L[0]} ${h} L0 ${h} Z" fill="${color}" fill-opacity=".14" ${A('fade',1.5)}/>
-    <path d="${d}" fill="none" stroke="${color}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" ${A('draw',.6,'data-dur="1.6"')}/>
-    <circle cx="${L[0]}" cy="${L[1]}" r="12" fill="${color}" ${A('pop',2.1)}/></svg>`;
+    <defs><linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${d} L${L[0]} ${h} L4 ${h} Z" fill="url(#g${id})" ${A('fade',1.2)}/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" ${A('draw',.5,'data-dur="1.8"')}/>
+    <circle cx="${L[0]}" cy="${L[1]}" r="13" fill="${color}" ${A('pop',2.1)}/><circle cx="${L[0]}" cy="${L[1]}" r="26" fill="${color}" opacity=".25" class="pulse"/></svg>`;
 }
-const spC=k=>k<15?'var(--bad)':(k<25?'var(--mid)':'var(--ok)'), spT=k=>k<15?'정체':(k<25?'서행':'원활');
-const pmC=s=>({'좋음':'var(--ok)','보통':'var(--mid)'}[s]||'var(--bad)');
-const P=(a,b)=>`<div class="pa">${a}</div><div class="pb">${b}</div>`;
+function sunSvg(r){let rays='';for(let i=0;i<8;i++)rays+=`<rect x="-7" y="${-r-46}" width="14" height="30" rx="7" transform="rotate(${i*45})"/>`;return `<g class="spin" fill="#FFC542"><circle r="${r}"/>${rays}</g>`}
+function weatherIcon(sky,size){
+  const cloud='<g class="drift"><ellipse cx="-40" cy="40" rx="95" ry="62" fill="#e9eef8"/><ellipse cx="40" cy="20" rx="85" ry="80" fill="#f4f7fc"/><ellipse cx="95" cy="55" rx="70" ry="50" fill="#dfe6f2"/><rect x="-135" y="40" width="300" height="62" rx="31" fill="#e6ecf6"/></g>';
+  let g;
+  if(sky==='clear') g=sunSvg(78);
+  else if(sky==='rain') g=`<g transform="translate(0,-30)">${cloud}</g>`+[-60,0,60].map((x,i)=>`<rect class="drop" data-i="${i}" x="${x-6}" y="90" width="12" height="40" rx="6" fill="#7cb8ff"/>`).join('');
+  else if(sky==='cloudy') g=cloud;
+  else g=`<g transform="translate(55,-60) scale(.85)">${sunSvg(70)}</g>${cloud}`;
+  return `<svg width="${size}" height="${size}" viewBox="-170 -170 340 340" style="overflow:visible">${g}</svg>`;
+}
+const gradeColor=g=>({'좋음':'#3aa0ff','보통':'#4ade80','나쁨':'#fb923c','매우나쁨':'#ff4d4f'}[g]||'#a9b6cc');
+const SKYTXT={clear:'맑은 하늘',partly:'구름 많은 하늘',cloudy:'흐린 하늘',rain:'비 오는 하늘'};
 
-/* scenes: 각 장면은 A면(pa) / B면(pb) 두 패널로 구성. 하루 고정 정보만 사용 */
-const bigDate=()=>{const [,mo,d]=DATA.date.split('-');return `${+mo}.${d}`};
-function intro(mode){
-  const m=MODES[mode];
-  return P(`<div style="padding-top:170px"><div class="chip" ${A('up',.1)}>${DATA.location}</div>
-      <div class="num" style="font-size:200px;font-weight:900;letter-spacing:-.05em;line-height:1;margin-top:40px" ${A('scale',.2)}>${bigDate()}<span style="font-size:72px;color:var(--sub);margin-left:18px;letter-spacing:0">${DATA.dow}</span></div>
-      <div style="font-size:84px;font-weight:900;letter-spacing:-.03em;margin-top:24px;line-height:1.1" ${A('up',.45)}>${m.ttl}</div></div>`,
-    `<div style="padding-top:250px" class="stack">${m.line.map((x,i)=>`<div style="font-size:60px;font-weight:900;text-align:right;letter-spacing:-.02em" ${A('up',.5+i*.15)}><span style="color:var(--accent);font-size:40px;margin-right:16px">0${i+1}</span>${x}</div>`).join('')}</div>`);
-}
-function outro(){
-  return P(`<div style="padding-top:480px;font-size:200px;font-weight:900;letter-spacing:-.05em" ${A('scale',0)}>T204</div>`,
-           `<div style="padding-top:560px;font-size:44px;color:var(--sub);text-align:right;line-height:1.4" ${A('fade',.1)}>중앙일보<br>테헤란로 미디어</div>`);
-}
-/* 출근판 장면 1: 오늘 날씨 예보 (현재 기온이 아닌 하루 예보) */
-function weatherScene(){
-  const w=DATA.weather;
-  const a=`<div class="h2" ${A('up',0)}>오늘 날씨 예보</div>
-    <div style="display:flex;align-items:flex-end;gap:26px;margin-top:30px" ${A('up',.3)}>
-      <div><div class="k">최고</div><div class="num" style="font-size:250px;font-weight:900;line-height:.92;letter-spacing:-.06em"><span data-count="${w.max}" data-from="${w.max-6}" data-dec="0">${w.max}</span><span style="font-size:120px;vertical-align:top;color:var(--sub)">°</span></div></div>
-    </div>
-    <div class="num" style="font-size:64px;font-weight:700;margin-top:18px;color:var(--sub)" ${A('up',.45)}>최저 <span style="color:var(--ink)">${w.min}°</span></div>
-    <div style="font-size:72px;font-weight:900;margin-top:24px" ${A('up',.6)}>${w.text}</div>
-    <div class="card" style="margin-top:50px;font-size:46px;font-weight:700;line-height:1.35" ${A('up',1.4)}>${w.tip}</div>`;
-  const stats=[...(w.now?[[`지금 기온 · ${w.now.at||''}`,`${w.now.t}°`]]:[]),['강수확률',`${w.pop}%`],['미세먼지',`<span style="color:${pmC(w.pm)}">${w.pm}</span>`]];
-  const b=`<div style="display:flex;justify-content:flex-end;margin-top:-20px" ${A('scale',.25)}>${icon(w.sky,280)}</div>
-    <div class="stack" style="margin-top:6px">${stats.map((s,i)=>`<div class="card" style="padding:28px 34px" ${A('up',.8+i*.12)}><div class="k">${s[0]}</div><div class="v num">${s[1]}</div></div>`).join('')}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px">${(w.hourly||[]).map((h,i)=>`<div class="card" style="padding:18px 20px;display:flex;align-items:center;justify-content:space-between" ${A('up',1.2+i*.1)}><div><div class="k" style="font-size:28px">${h.h}</div><div class="num" style="font-size:46px;font-weight:700">${h.t}°</div></div>${icon(h.sky,84)}</div>`).join('')}</div>
-    <div class="k" style="text-align:right;margin-top:26px;font-size:26px" ${A('fade',1.6)}>기상청 단기예보 · 역삼동</div>`;
-  return P(a,b);
-}
-/* 한 장씩 넘어가는 전광판형 장면. items: {name,code,v,d,pct,dec,unit,note} */
-function tickerScene(idx,{head,cat,items,basis,b}){
-  if(!items||!items.length) return P(`<div class="h2" ${A('up',0)}>${head}</div><div class="card" style="margin-top:40px;font-size:48px;font-weight:700;line-height:1.4" ${A('up',.3)}>오늘은 관련 기사가<br>아직 없습니다</div>`,'');
-  const [sa,sb]=SCN[idx], s0=.4, slot=(sb-sa-s0-.5)/items.length;
-  const a=`<div class="h2" ${A('up',0)}>${head}</div>
-    <div style="position:relative;height:820px;margin-top:40px">${items.map((it,i)=>{const st=s0+i*slot,dec=it.dec??2,pct=it.pct??(it.d/(it.v-it.d)*100);return `<div class="tick" data-s="${st}" data-e="${st+slot}" style="position:absolute;left:0;right:0;top:0;opacity:0">
-      <span class="chip">${it.cat||cat}</span>
-      <div style="display:flex;align-items:baseline;gap:18px;margin-top:30px;flex-wrap:wrap"><span style="font-size:${it.name.length>6?60:76}px;font-weight:900;letter-spacing:-.03em">${it.name}</span><span style="font-size:40px;font-weight:700;color:var(--sub)">${it.code}</span></div>
-      ${it.unit?`<div class="k" style="margin-top:4px">${it.unit} 기준</div>`:''}
-      <div class="num" style="font-size:132px;font-weight:900;letter-spacing:-.05em;line-height:1.05;margin-top:${it.unit?14:26}px"><span data-count="${it.v}" data-from="${it.v*0.994}" data-dec="${dec}" data-cs="${st}">${fmt(it.v,dec)}</span></div>
-      <div class="num ${cls(it.d)}" style="font-size:60px;font-weight:900;margin-top:12px">${sgn(it.d)} ${fmt(Math.abs(it.d),dec)} <span style="font-size:44px">(${pct>0?'+':''}${pct.toFixed(2)}%)</span></div>
-      ${it.note?`<div style="display:inline-block;margin-top:30px;font-size:46px;font-weight:700;padding:14px 26px;border-radius:18px;background:rgba(255,255,255,.09)">${it.note}</div>`:''}
-      </div>`}).join('')}</div>
-    <div class="k" style="margin-top:10px" ${A('fade',.6)}>${basis}</div>`;
-  return P(a,b(items,s0,slot));
-}
-/* B면 기본: 전체 목록 + 현재 항목 강조 */
-const listB=(title)=>(items,s0,slot)=>`<div class="h2" style="text-align:right;padding-top:24px" ${A('up',.2)}>${title}</div>
-  <div style="margin-top:30px">${items.map((it,i)=>{const st=s0+i*slot,dec=it.dec??2;return `<div class="tickidx" data-s="${st}" data-e="${st+slot}" style="display:flex;justify-content:space-between;align-items:baseline;padding:22px 26px;border-radius:20px;border:2px solid transparent;margin-top:${i?8:0}px" ${A('up',.3+i*.06)}>
-    <span style="font-size:${it.short&&it.short.length>4?30:36}px;font-weight:700">${it.short||it.code}</span>
-    <span style="text-align:right"><span class="num" style="font-size:38px;font-weight:700">${fmt(it.v,dec)}</span><br><span class="num ${cls(it.d)}" style="font-size:28px;font-weight:700">${sgn(it.d)} ${fmt(Math.abs(it.d),dec)}</span></span></div>`}).join('')}</div>`;
-/* 퇴근판 B면: 투자자별 매매 동향 */
-const flowB=()=>(items,s0,slot)=>{const f=DATA.kr.flow||[];if(!f.length)return listB('KOREA')(items,s0,slot);return `<div class="h2" style="text-align:right;padding-top:24px" ${A('up',.2)}>코스피 투자자별 매매</div>
-  <div class="k" style="text-align:right;font-size:26px;margin-top:6px" ${A('fade',.3)}>순매수 · 억 원</div>
-  <div class="stack" style="margin-top:30px">${f.map((x,i)=>`<div class="card" style="display:flex;justify-content:space-between;align-items:center;padding:30px 34px" ${A('up',.5+i*.15)}>
-    <span style="font-size:46px;font-weight:700">${x.who}</span><span class="num ${cls(x.v)}" style="font-size:58px;font-weight:900">${x.v>0?'+':''}${fmt(x.v,0)}</span></div>`).join('')}</div>`};
-/* 공모주 청약 장면: A면·B면에 한 종목씩 */
-function scheduleScene(mode){
-  const I=DATA.ipo[mode]||[];
-  if(!I.length) return P(`<div class="h2" ${A('up',0)}>공모주 청약</div><div class="card" style="margin-top:40px;font-size:48px;font-weight:700;line-height:1.4" ${A('up',.3)}>이번 주 예정된<br>청약이 없습니다</div>`,'');
-  const card=(p,d)=>`<div class="card" style="padding:44px 40px" ${A('up',d)}>
-      <span class="chip">${p.badge}</span>
-      <div style="font-size:${p.name.length>5?56:66}px;font-weight:900;letter-spacing:-.03em;line-height:1.15;margin-top:20px;word-break:keep-all">${p.name}</div>
-      ${p.rate?`<div class="k" style="margin-top:26px">최종 경쟁률</div><div class="num" style="font-size:104px;font-weight:900;line-height:1.05;letter-spacing:-.03em">${p.rate}<span style="font-size:48px"> : 1</span></div>`:''}
-      ${p.period?`<div class="k" style="margin-top:26px">청약일</div><div class="num" style="font-size:48px;font-weight:700;white-space:nowrap">${p.period}</div>`:''}
-      ${p.price?`<div class="k" style="margin-top:18px">공모가</div><div class="num" style="font-size:54px;font-weight:700">${p.price}</div>`:''}
-      <div class="k" style="margin-top:22px">${p.broker}</div></div>`;
-  return P(`<div class="h2" ${A('up',0)}>공모주 청약</div>
-      <div class="h1" ${A('up',.15)}>${I.some(p=>p.rate)?'오늘<br>청약 결과':(mode==='evening'?'다가오는<br>청약 일정':'이번 주<br>청약 일정')}</div>
-      <div style="margin-top:50px">${card(I[0],.4)}</div>`,
-    `<div style="padding-top:330px">${I[1]?card(I[1],.7):''}</div>`);
-}
-function trafficScene(){
-  const T=DATA.traffic;
-  const a=`<div class="h2" ${A('up',0)}>지금 역삼역 일대</div>
-    <div class="h1" ${A('up',.15)}>${T.congest||'-'}</div>
-    <div class="card" style="margin-top:40px;font-size:46px;font-weight:700;line-height:1.4" ${A('up',.4)}>${T.msg||''}</div>`;
-  const b=`<div class="stack" style="padding-top:24px">${(T.roads||[]).map((r,i)=>`<div class="card" ${A('up',.6+i*.15)}><div class="k">${r.name}</div><div class="v num" style="color:${spC(r.kmh)}">${r.kmh}<span style="font-size:32px"> km/h · ${spT(r.kmh)}</span></div></div>`).join('')}</div>`;
-  return P(a,b);
-}
-function rateScene(){
-  const R=DATA.rates.items||[];
-  const a=`<div class="h2" ${A('up',0)}>오늘의 금리</div>${R.slice(0,1).map(r=>`<div class="k" style="margin-top:50px" ${A('up',.2)}>${r.name}</div><div class="num" style="font-size:180px;font-weight:900;letter-spacing:-.05em" ${A('up',.3)}>${r.v.toFixed(2)}<span style="font-size:80px">%</span></div>`).join('')}`;
-  const b=`<div class="stack" style="padding-top:24px">${R.slice(1).map((r,i)=>`<div class="card" ${A('up',.6+i*.15)}><div class="k">${r.name}</div><div class="v num">${r.v.toFixed(2)}%</div></div>`).join('')}</div>`;
-  return P(a,b);
-}
-function build(mode){
-  const dm=mode==='today'?'morning':mode;
-  SCN=SCNS[mode]; $('.prog').innerHTML=SCN.slice(1,-1).map(()=>'<i><b></b></i>').join('');
-  const has=k=>{const x=DATA[k];return !!x&&(Array.isArray(x.items)?x.items.length>0:true)};
-  // 오래된 데이터는 표시하지 않음: 날씨=오늘 데이터만, 환율=2일 이내
-  const kd=()=>{const d=new Date();return new Date(d.getTime()+(d.getTimezoneOffset()+540)*60000)};
-  const ageDays=()=>{if(!DATA.generated_at)return 99;const [y,m,d]=DATA.generated_at.slice(0,10).split('-').map(Number);const t=kd();return Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(y,m-1,d))/86400000)};
-  const freshDay=()=>ageDays()===0, fresh2=()=>ageDays()<=2;
-  const S={
-    weather:{ok:()=>!!DATA.weather&&freshDay(),t:'날씨',f:()=>weatherScene()},
-    traffic:{ok:()=>!!DATA.traffic,t:'교통',f:()=>trafficScene()},
-    fx:{ok:()=>has('fx')&&fresh2(),t:'환율',f:i=>tickerScene(i,{head:'오늘의 환율',cat:'환율',items:DATA.fx.items,basis:DATA.fx.basis,b:listB('원/외화')})},
-    stock:{ok:()=>has('kr'),t:'증시',f:i=>tickerScene(i,{head:'국내 증시 마감',cat:'국내',items:DATA.kr.items,basis:DATA.kr.basis,b:flowB()})},
-    rate:{ok:()=>!!DATA.rates,t:'금리',f:()=>rateScene()},
-    ipo:{ok:()=>DATA.ipo&&(DATA.ipo[dm]||[]).length>0,t:'공모주 청약',f:()=>scheduleScene(dm)},
-  };
-  const order={morning:['weather','traffic','ipo','fx','stock'],today:['weather','fx','stock','ipo','rate'],evening:['traffic','fx','stock','rate','ipo','weather']}[mode];
-  const picked=order.filter(k=>S[k].ok()).slice(0,3);
-  MODES[mode].line=picked.length?picked.map(k=>S[k].t):['중앙일보','테헤란로 T204'];
-  const body=picked.map((k,n)=>S[k].f(n+1)); while(body.length<3) body.push(outro());
-  $('#scenes').innerHTML=[intro(mode),...body,outro()].map(h=>`<section class="scene">${h}</section>`).join('');
-  const st=$('#stage'); st.classList.remove('morning','lunch','evening'); st.classList.add(mode==='today'?'lunch':mode);
-  $('#ttl').textContent=MODES[mode].ttl; $('#lab').textContent=MODES[mode].lab;
-  $('#clk').textContent=bigDate(); $('#dte').textContent=DATA.dow+' · '+(DATA.generated_at?DATA.generated_at.slice(11,16)+' 기준':DATA.updated[dm]);
-  const sp=DATA.sponsor[dm]; $('#spn').innerHTML=sp?`<em>제공</em>${sp}`:'';
-  $('#samp').style.display=DATA.sample?'block':'none';
-  scenes=[...document.querySelectorAll('.scene')].map((el,i)=>({el,a:SCN[i][0],b:SCN[i][1],
+/* ---------- 장면 ---------- */
+const SC={};
+SC.open={dur:8,bg:'open',src:'',ok:()=>true,html:()=>P(`
+  <div style="padding-top:330px">
+    <div style="font-size:64px;font-weight:500;color:#c9d6ee;letter-spacing:.02em" ${A('up',.1)}>T204</div>
+    <div style="font-size:150px;font-weight:900;line-height:1.08;letter-spacing:-.05em;margin-top:18px" ${A('up',.3)}>오늘의<br>인사이트</div>
+    <div style="width:110px;height:10px;background:var(--red);border-radius:5px;margin:60px 0 50px" ${A('grow',.7)}></div>
+    <div style="font-size:46px;font-weight:500;line-height:1.5;color:#dbe4f3" ${A('up',.9)}>중앙일보가 전하는<br>오늘의 주요 경제 소식</div>
+  </div>`,`
+  <div style="padding-top:560px">${lineup().map((t,i)=>`<div style="font-size:40px;font-weight:700;margin-top:${i?26:0}px;color:#dbe4f3" ${A('up',1.1+i*.12)}><span class="num" style="color:var(--red);margin-right:16px">0${i+1}</span>${t}</div>`).join('')}</div>`)};
+
+SC.fx={dur:10,bg:'navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fresh(2),src:()=>`${DATA.fx.basis||''}`,
+  html:()=>{
+    const F=DATA.fx, u=F.items[0], hist=(DATA.fx_hist||[]).map(x=>x.v), rest=F.items.slice(1);
+    const R=(DATA.rates&&DATA.rates.items||[])[0];
+    return P(`
+      <div class="title" ${A('up',0)}>오늘의 환율</div>
+      <div class="lbl" style="margin-top:70px" ${A('up',.2)}>USD / KRW</div>
+      <div class="num" style="font-size:120px;font-weight:900;letter-spacing:-.04em;line-height:1.05;margin:6px 0 0 -6px" ${A('up',.3)}><span data-count="${u.v}" data-from="${u.v*0.995}" data-dec="2">${fmt(u.v)}</span></div>
+      <div class="num ${cls(u.d)}" style="font-size:56px;font-weight:700;margin-top:10px" ${A('fade',.8)}>${sgn(u.d)} ${fmt(Math.abs(u.d))} &nbsp;${u.d>0?'+':''}${pct(u.d,u.v).toFixed(2)}%</div>`,
+    `<div style="padding-top:150px">${rest.map((r,i)=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;border-bottom:2px solid var(--line)" ${A('up',.6+i*.12)}>
+        <span style="font-size:34px;font-weight:700">${r.code}${r.unit?` <span style="font-size:24px;color:var(--sub)">(${r.unit})</span>`:''}</span>
+        <span style="text-align:right"><span class="num" style="font-size:40px;font-weight:700">${fmt(r.v)}</span><br><span class="num ${cls(r.d)}" style="font-size:26px;font-weight:700">${sgn(r.d)} ${fmt(Math.abs(r.d))}</span></span></div>`).join('')}</div>`)
+    +`<div style="position:absolute;left:56px;top:1010px" ${A('fade',.4)}>${spark(hist.length>1?hist:null,1090,330,'#3aa0ff','fx')}</div>`
+    +(R?`<div class="divider" style="top:1440px"></div>
+      <div class="pa" style="top:1510px;display:flex;align-items:center;gap:34px" ${A('up',1.4)}>
+        <div style="width:120px;height:120px;border-radius:50%;border:3px solid rgba(58,160,255,.6);background:rgba(58,160,255,.12);display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:700">%</div>
+        <div><div class="num" style="font-size:72px;font-weight:900">${R.v.toFixed(2)}%</div><div class="k" style="font-size:34px;color:#dbe4f3">${R.name}</div></div></div>`:'');
+  }};
+
+SC.stock={dur:10,bg:'navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length>0&&fresh(4),src:()=>DATA.kr.basis||'',
+  html:()=>{
+    const K=DATA.kr.items, blk=(it,w,d)=>`<div class="lbl" ${A('up',d)}>${it.code}</div>
+      <div class="num" style="font-size:${w>450?120:104}px;font-weight:900;letter-spacing:-.04em;line-height:1.05;margin-left:-4px" ${A('up',d+.1)}><span data-count="${it.v}" data-from="${it.v*0.99}" data-dec="2">${fmt(it.v)}</span></div>
+      <div class="num ${cls(it.d)}" style="font-size:50px;font-weight:700;margin-top:6px" ${A('fade',d+.6)}>${sgn(it.d)} ${fmt(Math.abs(it.d))} &nbsp;${it.pct>0?'+':''}${(it.pct??pct(it.d,it.v)).toFixed(2)}%</div>
+      <div style="margin-top:40px" ${A('fade',d+.3)}>${spark(it.hist,w,240,it.d>=0?'#ff4d4f':'#3aa0ff','s'+it.code)}</div>`;
+    return P(`<div class="title" ${A('up',0)}>국내 증시</div><div style="margin-top:80px">${blk(K[0],480,.2)}</div>`,
+             `<div style="padding-top:194px">${K[1]?blk(K[1],380,.5):''}</div>`);
+  }};
+
+SC.weather={dur:8,bg:'sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
+  html:()=>{
+    const w=DATA.weather, now=w.now||{}, sky=w.now_sky||w.sky;
+    return P(`<div class="title" ${A('up',0)}>오늘의 날씨</div>
+        <div style="margin:110px 0 0 40px" ${A('scale',.3)}>${weatherIcon(sky,400)}</div>`,
+      `<div style="padding-top:180px;border-left:3px solid rgba(255,255,255,.35);padding-left:40px;margin-left:-40px">
+        <div style="font-size:44px;font-weight:700" ${A('up',.4)}>서울 역삼</div>
+        <div class="num" style="font-size:170px;font-weight:900;letter-spacing:-.05em;line-height:1.05" ${A('up',.5)}>${now.t??w.max}°C</div>
+        <div style="font-size:44px;font-weight:500;color:#eef2f8" ${A('up',.7)}>${SKYTXT[sky]||w.text}</div>
+        <div class="num" style="font-size:36px;color:#e6ebf3;margin-top:22px" ${A('up',.9)}>최저 ${w.min}° · 최고 ${w.max}°</div></div>`)
+     +`<div class="divider" style="top:1600px;background:rgba(255,255,255,.3)"></div>
+       <div class="pa" style="top:1640px;font-size:40px;font-weight:700" ${A('up',1.1)}>미세먼지 <span style="color:${gradeColor(w.pm)}">${w.pm}</span><span class="dot" style="background:${gradeColor(w.pm)}"></span></div>
+       <div class="pb" style="top:1640px;font-size:40px;font-weight:700" ${A('up',1.2)}>초미세먼지 <span style="color:${gradeColor(w.pm25||w.pm)}">${w.pm25||w.pm}</span><span class="dot" style="background:${gradeColor(w.pm25||w.pm)}"></span></div>`;
+  }};
+
+SC.traffic={dur:8,bg:'green',ok:()=>!!DATA.traffic,src:()=>'서울시 실시간 도시데이터',
+  html:()=>{
+    const T=DATA.traffic, c={'원활':'#4ade80','서행':'#facc15','정체':'#ff4d4f'}[T.status]||'#4ade80';
+    return P(`<div class="title" ${A('up',0)}>오늘의 교통</div>
+        <div style="margin:200px 0 0 60px;width:240px;height:240px;border-radius:50%;border:5px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center" ${A('scale',.3)}>
+          <svg width="130" height="110" viewBox="0 0 130 110" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"><path d="M18 58 L30 24 Q33 16 42 16 H88 Q97 16 100 24 L112 58"/><rect x="10" y="56" width="110" height="34" rx="12"/><path d="M22 90 v12 M108 90 v12"/><circle cx="34" cy="73" r="6" fill="#fff"/><circle cx="96" cy="73" r="6" fill="#fff"/></svg></div>`,
+      `<div style="padding-top:300px;border-left:3px solid rgba(255,255,255,.35);padding-left:40px;margin-left:-40px">
+        <div style="font-size:46px;font-weight:700" ${A('up',.4)}>테헤란로</div><div style="font-size:34px;color:#cfe9e0" ${A('up',.5)}>역삼 ↔ 삼성</div>
+        <div style="font-size:150px;font-weight:900;color:${c};letter-spacing:-.04em;margin-top:20px" ${A('up',.7)}>${T.status||'-'}</div>
+        ${T.kmh?`<div class="num" style="font-size:40px;color:#e6f5ef" ${A('up',.9)}>평균 ${T.kmh}km/h</div>`:''}
+        ${T.congest?`<div style="font-size:36px;color:#e6f5ef;margin-top:30px" ${A('up',1.1)}>역삼역 일대 ${T.congest}</div>`:''}</div>`);
+  }};
+
+const ORDER=['open','fx','stock','weather','traffic'];
+const TITLES={fx:'오늘의 환율',stock:'국내 증시',weather:'오늘의 날씨',traffic:'오늘의 교통'};
+function fresh(maxDays){if(!DATA.generated_at)return false;const [y,m,d]=DATA.generated_at.slice(0,10).split('-').map(Number);const t=kst();return Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(y,m-1,d))/86400000)<=maxDays}
+let LIST=[]; const lineup=()=>LIST.filter(k=>k!=='open').map(k=>TITLES[k]);
+let scenes=[],LOOP=8,pending=null;
+
+function build(){
+  LIST=ORDER.filter(k=>{try{return SC[k].ok()}catch(e){return false}});
+  let t=0; const html=[];
+  scenes=LIST.map(k=>{const s={key:k,a:t,b:t+SC[k].dur,bg:SC[k].bg};t+=SC[k].dur;return s});
+  LOOP=t;
+  $('#scenes').innerHTML=LIST.map(k=>`<section class="scene">${SC[k].html()}</section>`).join('');
+  $('#prog').innerHTML=LIST.map(()=>'<i><b></b></i>').join('');
+  const els=[...document.querySelectorAll('#scenes .scene')];
+  scenes.forEach((s,i)=>{const el=els[i];Object.assign(s,{el,src:typeof SC[s.key].src==='function'?SC[s.key].src():'',
     items:[...el.querySelectorAll('[data-anim]')],counts:[...el.querySelectorAll('[data-count]')],
-    heads:[...el.querySelectorAll('.tick')],idx:[...el.querySelectorAll('.tickidx')],
-    spins:[...el.querySelectorAll('.spin')],drifts:[...el.querySelectorAll('.drift')],drops:[...el.querySelectorAll('.drop')]}));
-  for(const s of scenes){ if(s.a===0||s.b===LOOP) continue;
-    s.el.style.display='block';
-    const ps=[...s.el.querySelectorAll(':scope>.pa,:scope>.pb')];
-    const h=Math.max(...ps.map(p=>p.scrollHeight));
-    const top=290+Math.max(0,(1310-h)/2*0.8);
-    ps.forEach(p=>p.style.top=top+'px'); s.el.style.display='none'; }
-  curMode=mode;
+    spins:[...el.querySelectorAll('.spin')],drifts:[...el.querySelectorAll('.drift')],drops:[...el.querySelectorAll('.drop')],pulses:[...el.querySelectorAll('.pulse')]})});
 }
-let scenes=[],curMode=null;
+const bgs=()=>[...document.querySelectorAll('.bg')];
+function clockTick(){const k=kst(),h=k.getHours();$('#cdate').textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())}(${'일월화수목금토'[k.getDay()]})`;$('#ctime').textContent=`${pad(h%12||12)}:${pad(k.getMinutes())} ${h<12?'AM':'PM'}`}
 
-function render(t,clockText){
+function render(t){
   t=((t%LOOP)+LOOP)%LOOP;
   for(const s of scenes){
-    if(t<s.a||t>=s.b){s.el.style.display='none';continue}
+    const vis=t>=s.a&&t<s.b; const L=t-s.a;
+    if(!vis){s.el.style.display='none';continue}
     s.el.style.display='block';
-    const L=t-s.a,inP=out3(seg(L,0,.35)),outP=seg(t,s.b-.45,s.b);
+    const inP=out3(seg(L,0,FADE)),outP=seg(t,s.b-FADE*.8,s.b);
     s.el.style.opacity=Math.min(inP,1-outP);
-    s.el.style.transform=`translateY(${-40*out3(outP)}px)`;
+    s.el.style.transform=`translateY(${(1-inP)*30-40*out3(outP)}px)`;
     for(const e of s.items){
       const d=+e.dataset.d||0,dur=+(e.dataset.dur||.7),p=seg(L,d,d+dur),q=out3(p);
       switch(e.dataset.anim){
         case 'up':e.style.opacity=q;e.style.transform=`translateY(${(1-q)*60}px)`;break;
         case 'fade':e.style.opacity=q;break;
-        case 'scale':e.style.opacity=q;e.style.transform=`scale(${.85+.15*outBack(p)})`;e.style.transformOrigin='left center';break;
-        case 'grow':e.style.transform=`scaleX(${q})`;break;
+        case 'scale':e.style.opacity=q;e.style.transform=`scale(${.85+.15*outBack(p)})`;break;
+        case 'grow':e.style.transformOrigin='left';e.style.transform=`scaleX(${q})`;break;
         case 'draw':e.style.strokeDashoffset=1-q;break;
-        case 'pop':e.style.opacity=q;e.setAttribute('r',12*(p<1?outBack(p):1));break;
-        case 'pop2':e.style.opacity=q;break;
+        case 'pop':e.style.opacity=q;break;
       }
     }
-    for(const c of s.counts){const to=+c.dataset.count,fr=+c.dataset.from,dec=+c.dataset.dec,cs=+(c.dataset.cs||0),q=out3(seg(L,cs+.4,cs+1.4));c.textContent=dec?fmt(fr+(to-fr)*q,dec):Math.round(fr+(to-fr)*q)}
-    for(const h of s.heads){const a=+h.dataset.s,e=+h.dataset.e,last=h===s.heads[s.heads.length-1];
-      const pin=out3(seg(L,a,a+.5)),pout=last?0:out3(seg(L,e-.4,e));
-      h.style.opacity=Math.max(0,pin-pout);h.style.transform=`translateY(${(1-pin)*50-pout*40}px)`}
-    for(const n of s.idx){const a=+n.dataset.s,e=+n.dataset.e,last=n===s.idx[s.idx.length-1],on=L>=a&&(L<e||last);
-      n.style.borderColor=on?'var(--accent)':'var(--line)';n.style.background=on?'rgba(255,106,61,.16)':'transparent'}
-    s.spins.forEach(g=>g.setAttribute('transform',`rotate(${t*12})`));
-    s.drifts.forEach(g=>g.setAttribute('transform',`translate(${Math.sin(t*.8)*10},0)`));
+    for(const c of s.counts){const to=+c.dataset.count,fr=+c.dataset.from,dec=+c.dataset.dec,q=out3(seg(L,.3,1.5));c.textContent=fmt(fr+(to-fr)*q,dec)}
+    s.spins.forEach(g=>g.setAttribute('transform',`rotate(${t*14})`));
+    s.drifts.forEach(g=>g.setAttribute('transform',`translate(${Math.sin(t*.7)*12},0)`));
     s.drops.forEach(r=>{const k=(t*1.3+(+r.dataset.i)*.33)%1;r.setAttribute('transform',`translate(0,${k*70})`);r.style.opacity=1-k});
+    s.pulses.forEach(c=>{const k=(t*.8)%1;c.setAttribute('r',13+k*26);c.setAttribute('opacity',.35*(1-k))});
+    $('#src').textContent=s.src||'';
   }
-  document.querySelectorAll('.prog b').forEach((b,i)=>{const [a,e]=SCN[i+1];b.style.width=(seg(t,a,e)*100)+'%'});
-  $('#cline').style.transform=`scaleY(${.6+.4*Math.sin(t*.6)})`;
+  // 배경: 현재 장면 배경으로 교차 전환
+  const cur=scenes.find(s=>t>=s.a&&t<s.b); const nxt=scenes[(scenes.indexOf(cur)+1)%scenes.length];
+  const mix=cur?seg(t,cur.b-FADE,cur.b):0;
+  bgs().forEach(b=>{const k=b.dataset.bg;let o=0;if(cur&&k===cur.bg)o=1-mix;if(nxt&&k===nxt.bg)o=Math.max(o,mix);if(cur&&nxt&&cur.bg===nxt.bg&&k===cur.bg)o=1;b.style.opacity=o});
+  document.querySelectorAll('#prog b').forEach((b,i)=>{const s=scenes[i];b.style.width=(seg(t,s.a,s.b)*100)+'%'});
 }
 
-function fit(){const st=$('#stage'),s=Math.min(innerWidth/W0,innerHeight/H0);
-  st.style.transform=`scale(${s})`;st.style.left=((innerWidth-W0*s)/2)+'px';st.style.top=((innerHeight-H0*s)/2)+'px'}
-function autoMode(d=new Date()){const m=d.getHours()*60+d.getMinutes();
-  return (m>=6*60+30&&m<11*60)?'morning':(m>=11*60&&m<18*60)?'today':'evening'}
-function nowText(){const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function fit(){const st=$('#stage'),s=Math.min(innerWidth/W0,innerHeight/H0);st.style.transform=`scale(${s})`;st.style.left=((innerWidth-W0*s)/2)+'px';st.style.top=((innerHeight-H0*s)/2)+'px'}
+window.T204={setData(d){pending=d},renderAt(t){if(!scenes.length)build();clockTick();render(t)},get LOOP(){if(!scenes.length)build();return LOOP},W:W0,H:H0};
 
-window.T204={setData(d){DATA=d;if(curMode)build(curMode)},renderAt(t,mode){if(mode!==curMode)build(mode);render(t)},LOOP,W:W0,H:H0};
-
+build(); clockTick();
 if(!window.__T204_RENDER){
   addEventListener('resize',fit);fit();
   if(/kiosk/.test(location.hash))document.body.classList.add('kiosk');
-  const pick=()=>{const h=location.hash.replace('#','').replace(/-?kiosk/,'');return MODES[h]?h:'auto'};
-  let sel=pick();const t0=performance.now();
-  const paint=()=>document.querySelectorAll('#ctl button[data-m]').forEach(b=>b.classList.toggle('on',b.dataset.m===sel));
-  document.querySelectorAll('#ctl button[data-m]').forEach(b=>b.onclick=()=>{sel=b.dataset.m;location.hash=sel==='auto'?'':sel;paint()});
   $('#gbtn').onclick=e=>{$('#stage').classList.toggle('showguide');e.target.classList.toggle('on')};
-  addEventListener('hashchange',()=>{sel=pick();paint()});paint();
   if(/diag/.test(location.hash)||(window.T204_CONFIG||{}).diag){document.body.classList.add('kiosk');$('#stage').innerHTML='<div id="diag"></div>';window.T204_DIAG&&T204_DIAG($('#diag'));return;}
-  const pull=()=>(window.T204_LOAD?T204_LOAD():Promise.resolve(null)).then(d=>{if(d)T204.setData(d)}).catch(e=>console.warn('T204 load',e));
-  pull();setInterval(pull,10*60*1000);
+  let first=true;
+  const pull=()=>(window.T204_LOAD?T204_LOAD():Promise.resolve(null)).then(d=>{if(!d)return;
+      if(first){DATA=d;build();start=performance.now()}else pending=d; first=false}).catch(e=>{first=false;console.warn('T204 load',e)});setInterval(pull,10*60*1000);setInterval(clockTick,5000);
   let idle;addEventListener('mousemove',()=>{$('#ctl').style.opacity=1;clearTimeout(idle);idle=setTimeout(()=>$('#ctl').style.opacity=0,3000)});
-  (function loop(){const mode=sel==='auto'?autoMode():sel;if(mode!==curMode)build(mode);
-    render((performance.now()-t0)/1000);requestAnimationFrame(loop)})();
+  var start=performance.now();
+  pull();
+  (function loop(){
+    let t=(performance.now()-start)/1000;
+    if(t>=LOOP){ start=performance.now(); t=0; if(pending){DATA=pending;pending=null;build()} }
+    render(t); requestAnimationFrame(loop);
+  })();
 }
 })();
 </script>
