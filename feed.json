@@ -1,51 +1,51 @@
 {
- "generated_at": "2026-11-11 23:49",
+ "generated_at": "2026-11-12 00:04",
  "location": "테헤란로 204 · 역삼",
  "weather": {
-  "sky": "clear",
+  "sky": "partly",
   "now_sky": "clear",
-  "text": "맑음",
+  "text": "구름많음",
   "min": 5,
   "max": 16,
-  "pop": 20,
+  "pop": 30,
   "tip": "일교차 11도, 겉옷을 챙기세요",
   "hourly": [
    {
     "h": "6시",
-    "t": 5,
-    "sky": "partly"
+    "t": 6,
+    "sky": "cloudy"
    },
    {
     "h": "9시",
     "t": 8,
-    "sky": "clear"
+    "sky": "partly"
    },
    {
     "h": "12시",
-    "t": 13,
+    "t": 14,
     "sky": "partly"
    },
    {
     "h": "15시",
     "t": 16,
-    "sky": "clear"
+    "sky": "partly"
    },
    {
     "h": "18시",
-    "t": 11,
-    "sky": "clear"
+    "t": 12,
+    "sky": "partly"
    },
    {
     "h": "21시",
-    "t": 9,
-    "sky": "clear"
+    "t": 11,
+    "sky": "cloudy"
    }
   ],
   "tomorrow": {
-   "min": 6,
-   "max": 16,
+   "min": 8,
+   "max": 18,
    "pop": 30,
-   "sky": "clear"
+   "sky": "partly"
   },
   "pm": "보통",
   "pm25": "보통",
@@ -152,13 +152,6 @@
    "end": "2026-12-09",
    "price": "11,000원",
    "broker": "대표주관 케이비증권"
-  },
-  {
-   "name": "엠비디",
-   "start": "2026-11-12",
-   "end": "2026-11-13",
-   "price": "9,600원",
-   "broker": "대표주관 하나증권"
   },
   {
    "name": "옵토닉스",
@@ -269,13 +262,13 @@
   "rates": "한국은행 ECOS (ecos.bok.or.kr)"
  },
  "traffic": {
-  "basis": "23:45 기준 · 서울시 도시데이터",
+  "basis": "00:00 기준 · 서울시 도시데이터",
   "status": "원활",
-  "kmh": 27,
+  "kmh": 26,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 25
+    "kmh": 32
    },
    {
     "name": "역삼역 부근",
@@ -283,26 +276,26 @@
    },
    {
     "name": "선릉역 부근",
-    "kmh": 31
+    "kmh": 28
    },
    {
     "name": "삼성역 부근",
-    "kmh": 20
+    "kmh": 17
    }
   ],
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 23
+    "kmh": 21
    },
    {
     "name": "선릉로",
-    "kmh": 24
+    "kmh": 30
    }
   ],
   "congest": "여유",
   "congest_msg": "사람이 몰려있을 가능성이 낮고 붐빔은 거의 느껴지지 않아요",
-  "ts": "2026-11-11 23:49"
+  "ts": "2026-11-12 00:04"
  },
  "kr_hist": {
   "KOSPI": [
