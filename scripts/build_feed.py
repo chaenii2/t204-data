@@ -26,7 +26,7 @@ def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "data"
     w = F.safe(F.weather, None)
     if w:
-        w["pm"], w["pm25"] = F.safe(F.dust_both, ("보통", "보통"))
+        w["pm"], w["pm25"] = F.safe(F.dust_both, (None, None))
         now = F.safe(weather_now, None)
         if now:
             w["now"] = now

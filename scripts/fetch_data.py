@@ -119,23 +119,37 @@ def weather():
 GRADE = {"1": "좋음", "2": "보통", "3": "나쁨", "4": "매우나쁨"}
 
 
+def _grade(v, cuts):
+    try:
+        x = float(v)
+    except (TypeError, ValueError):
+        return None
+    for lim, g in zip(cuts, ["좋음", "보통", "나쁨"]):
+        if x <= lim:
+            return g
+    return "매우나쁨"
+
+
 def dust_both():
-    """(미세먼지 등급, 초미세먼지 등급) — 최근 측정값 기준"""
-    d = json.loads(get("https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty", {
-        "serviceKey": key("DATA_GO_KR_KEY"), "returnType": "json", "numOfRows": 12, "pageNo": 1,
-        "stationName": "강남구", "dataTerm": "DAILY", "ver": "1.0"}))
+    """(미세먼지 등급, 초미세먼지 등급) — 강남 일대 측정소 최근 측정값. 모르면 None."""
     pm10 = pm25 = None
-    for it in d["response"]["body"]["items"]:
-        for f in ("pm10Grade", "pm10Grade1h"):
-            if pm10 is None and it.get(f) not in (None, "", "-"):
-                pm10 = GRADE.get(str(it[f]))
-        for f in ("pm25Grade", "pm25Grade1h"):
-            if pm25 is None and it.get(f) not in (None, "", "-"):
-                pm25 = GRADE.get(str(it[f]))
-        if pm10 and pm25:
-            break
-    log(f"미세먼지: {pm10} / 초미세먼지: {pm25} (강남구 측정소)")
-    return pm10 or "보통", pm25 or pm10 or "보통"
+    for st in ["강남구", "도산대로", "강남대로"]:
+        try:
+            d = json.loads(get("https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty", {
+                "serviceKey": key("DATA_GO_KR_KEY"), "returnType": "json", "numOfRows": 6, "pageNo": 1,
+                "stationName": st, "dataTerm": "DAILY", "ver": "1.0"}))
+        except Exception:  # noqa: BLE001
+            continue
+        for it in d["response"]["body"]["items"]:
+            if pm10 is None:
+                pm10 = GRADE.get(str(it.get("pm10Grade1h") or it.get("pm10Grade") or "")) or _grade(it.get("pm10Value"), [30, 80, 150])
+            if pm25 is None:
+                pm25 = GRADE.get(str(it.get("pm25Grade1h") or it.get("pm25Grade") or "")) or _grade(it.get("pm25Value"), [15, 35, 75])
+            if pm10 and pm25:
+                log(f"미세먼지: {pm10} / 초미세먼지: {pm25} ({st} 측정소 {it.get('dataTime')})")
+                return pm10, pm25
+    log(f"미세먼지: {pm10} / 초미세먼지: {pm25} (측정값 일부 없음)")
+    return pm10, pm25
 
 
 def dust():
