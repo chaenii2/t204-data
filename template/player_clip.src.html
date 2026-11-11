@@ -144,26 +144,6 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
     const K=(DATA.kr&&DATA.kr.items&&fresh(4))?DATA.kr.items:[];
     const R=(DATA.rates&&DATA.rates.items||[])[0];
     const hist=(DATA.fx_hist||[]).map(h=>h.v);
-    const row=(lbl,v,sub)=>`<div style="padding:30px 0;border-bottom:2px solid var(--line)"><div class="k">${lbl}</div><div class="num" style="font-size:76px;font-weight:800;line-height:1.15">${v}</div>${sub?`<div class="num ${sub[1]}" style="font-size:42px;font-weight:700">${sub[0]}</div>`:''}</div>`;
-    let fb='';
-    if(F.JPY) fb+=row('엔 (100엔)',fmt(F.JPY.v),[`${sgn(F.JPY.d)} ${fmt(Math.abs(F.JPY.d))}`,cls(F.JPY.d)]);
-    if(F.EUR) fb+=row('유로',fmt(F.EUR.v),[`${sgn(F.EUR.d)} ${fmt(Math.abs(F.EUR.d))}`,cls(F.EUR.d)]);
-    if(F.CNY) fb+=row('위안',fmt(F.CNY.v),[`${sgn(F.CNY.d)} ${fmt(Math.abs(F.CNY.d))}`,cls(F.CNY.d)]);
-    const fx=`<div class="title">오늘의 환율</div>
-      <div class="pa" style="top:440px"><div class="lbl">원/달러</div>
-        <div class="num" style="font-size:118px;font-weight:900;line-height:1.1;margin-left:-4px;letter-spacing:-.03em">${fmt(U.v)}</div>
-        <div class="num ${cls(U.d)}" style="font-size:58px;font-weight:700">${sgn(U.d)} ${fmt(Math.abs(U.d))}원</div></div>
-      ${hist.length>1?`<div class="pa" style="top:850px"><div class="k" style="margin-bottom:18px">최근 달러 흐름</div>${spark(hist.slice(-15),510,320,'#4aa8ff')}</div>`:''}
-      <div class="pb" style="top:420px">${fb}</div>
-      ${R?`<div class="hr" style="left:56px;width:1092px;top:1360px"></div>
-        <div class="pa" style="top:1410px;font-size:48px;font-weight:700">한국은행 기준금리</div>
-        <div class="pb num" style="top:1390px;text-align:right;font-size:84px;font-weight:900">${R.v.toFixed(2)}%</div>`:''}`;
-    if(!K.length) return [fx];
-    const idx=(it,box)=>`<div class="${box}" style="top:${box==='pa'?480:480}px"><div class="lbl">${it.code==='KOSPI'?'코스피':'코스닥'}</div>
-        <div class="num" style="font-size:${box==='pa'?112:96}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>
-        <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${sgn(it.d)} ${fmt(Math.abs(it.d))}</div>
-        <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${(v=>(v>0?'+':'')+v.toFixed(2))(it.pct??pct(it.d,it.v))}%</div>
-        ${it.hist&&it.hist.length>1?`<div style="margin-top:40px">${spark(it.hist,box==='pa'?510:392,260,it.d>=0?'#ff5a5f':'#4aa8ff')}</div>`:''}</div>`;
     const ipo=ipoItems().slice(0,2);
     const ip=ipo.length?`<div class="hr" style="left:56px;width:1092px;top:1260px"></div>
       <div class="pa" style="top:1295px"><span style="background:var(--red);font-size:38px;font-weight:700;padding:6px 26px 9px;border-radius:999px">공모주 청약</span></div>
@@ -171,6 +151,26 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
            <div class="num" style="font-size:32px;color:var(--sub);margin-top:4px">${o.period} · ${o.price}</div></div>
          <div class="pb" style="top:${1380+i*130}px;text-align:right"><div style="font-size:48px;font-weight:800;line-height:1.2;color:${o.hot?'#ff6b5e':'#ffd166'}">${o.badge}</div>
            <div style="font-size:32px;color:var(--sub);margin-top:4px;white-space:nowrap">대표주관 ${o.broker}</div></div>`).join('')}`:'';
+    const row=(lbl,v,sub)=>`<div style="padding:20px 0;border-bottom:2px solid var(--line)"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="k">${lbl}</span>${sub?`<span class="num ${sub[1]}" style="font-size:36px;font-weight:700">${sub[0]}</span>`:''}</div><div class="num" style="font-size:70px;font-weight:800;line-height:1.12">${v}</div></div>`;
+    let fb='';
+    if(F.JPY) fb+=row('엔 (100엔)',fmt(F.JPY.v),[`${sgn(F.JPY.d)} ${fmt(Math.abs(F.JPY.d))}`,cls(F.JPY.d)]);
+    if(F.EUR) fb+=row('유로',fmt(F.EUR.v),[`${sgn(F.EUR.d)} ${fmt(Math.abs(F.EUR.d))}`,cls(F.EUR.d)]);
+    if(F.CNY) fb+=row('위안',fmt(F.CNY.v),[`${sgn(F.CNY.d)} ${fmt(Math.abs(F.CNY.d))}`,cls(F.CNY.d)]);
+    if(R) fb+=row('기준금리',`${R.v.toFixed(2)}%`,null);
+    const fx=`<div class="title">오늘의 환율</div>
+      <div class="pa" style="top:440px"><div class="lbl">원/달러</div>
+        <div class="num" style="font-size:118px;font-weight:900;line-height:1.1;margin-left:-4px;letter-spacing:-.03em">${fmt(U.v)}</div>
+        <div class="num ${cls(U.d)}" style="font-size:58px;font-weight:700">${sgn(U.d)} ${fmt(Math.abs(U.d))}원</div></div>
+      ${hist.length>1?`<div class="pa" style="top:850px"><div class="k" style="margin-bottom:18px">최근 달러 흐름</div>${spark(hist.slice(-15),510,250,'#4aa8ff')}</div>`:''}
+      <div class="pb" style="top:420px">${fb}</div>
+      ${ip}`;
+    if(!K.length) return [fx];
+    const idx=(it,box)=>`<div class="${box}" style="top:${box==='pa'?480:480}px"><div class="lbl">${it.code==='KOSPI'?'코스피':'코스닥'}</div>
+        <div class="num" style="font-size:${box==='pa'?112:96}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>
+        <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${sgn(it.d)} ${fmt(Math.abs(it.d))}</div>
+        <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${(v=>(v>0?'+':'')+v.toFixed(2))(it.pct??pct(it.d,it.v))}%</div>
+        ${it.hist&&it.hist.length>1?`<div style="margin-top:40px">${spark(it.hist,box==='pa'?510:392,260,it.d>=0?'#ff5a5f':'#4aa8ff')}</div>`:''}</div>`;
+
     const kb=((DATA.kr.basis||'').match(/(\d{2}\.\d{2})/)||[])[1];
     const st=`<div class="title">오늘의 증시</div>
       <div class="pa" style="top:378px;display:flex;align-items:center;gap:18px;white-space:nowrap"><span style="background:#f59e0b;color:#1a1204;font-size:34px;font-weight:800;padding:5px 24px 8px;border-radius:999px">국내</span>${kb?`<span class="k" style="font-size:34px">${kb} 종가 기준</span>`:''}</div>
