@@ -33,7 +33,7 @@ jobs:
           DART_KEY: ${{ secrets.DART_KEY }}
         run: python scripts/build_feed.py .
       - name: 링크용 플레이어 갱신 (player/index.html)
-        run: python scripts/build_player.py relay --embed feed.json --feed-url https://chaenii2.github.io/t204-data/feed.json --out player
+        run: python scripts/build_player.py relay --embed feed.json --feed-url https://chaenii2.github.io/t204-data/feed.json --out player && python scripts/build_player.py relay --embed feed.json --feed-url https://chaenii2.github.io/t204-data/feed.json --out player/v4 --template player_v4.src.html
       - name: 저장
         run: |
           git config user.name "t204-bot"

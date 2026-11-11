@@ -25,7 +25,7 @@ def main():
     out = sys.argv[1] if len(sys.argv) > 1 else "data"
     w = F.safe(F.weather, None)
     if w:
-        w["pm"] = F.safe(F.dust, "보통")
+        w["pm"], w["pm25"] = F.safe(F.dust_both, ("보통", "보통"))
         now = F.safe(weather_now, None)
         if now:
             w["now"] = now
@@ -60,6 +60,24 @@ def main():
     if kept:
         F.log("직전 값 유지: " + ", ".join(kept))
     feed["stale"] = kept
+    # 달러 환율 추이(그래프용): 날짜별 값을 누적, 처음엔 최근 30일 채움
+    hist = {h["d"]: h["v"] for h in prev.get("fx_hist", [])}
+    usd = next((i for i in feed["fx"].get("items", []) if i["code"] == "USD"), None)
+    if usd:
+        hist[feed["fx"]["basis"][:5]] = usd["v"]
+    if len(hist) < 5:
+        for back in range(1, 45):
+            day = F.NOW - timedelta(days=back)
+            r = F.safe(F.fx_day, None, day)
+            if r and "USD" in r:
+                hist[day.strftime("%m.%d")] = r["USD"]
+            if len(hist) >= 22:
+                break
+    def _key(md):
+        m, d = md.split(".")
+        y = F.NOW.year - (1 if int(m) > F.NOW.month else 0)
+        return (y, int(m), int(d))
+    feed["fx_hist"] = [{"d": k, "v": hist[k]} for k in sorted(hist, key=_key)][-22:]
     os.makedirs(out, exist_ok=True)
     with open(os.path.join(out, "feed.json"), "w", encoding="utf-8") as f:
         json.dump(feed, f, ensure_ascii=False, indent=1)

@@ -35,6 +35,7 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--zip", default="")
     ap.add_argument("--diag", action="store_true", help="열면 바로 연결 진단 화면")
+    ap.add_argument("--template", default="player_v5.src.html")
     a = ap.parse_args()
 
     feed = json.loads(pathlib.Path(a.embed).read_text(encoding="utf-8"))
@@ -45,7 +46,7 @@ def main():
         # 브라우저 직접 호출을 허용하는 공공데이터포털 키만 넣음 (수출입은행·DART는 CORS 미허용 → 중계)
         cfg["keys"] = {"DATA_GO_KR_KEY": os.environ.get("DATA_GO_KR_KEY", "").strip()}
         cfg["feedUrl"] = a.feed_url
-    html = (TPL / "player_v4.src.html").read_text(encoding="utf-8")
+    html = (TPL / a.template).read_text(encoding="utf-8")
     html = html.replace("/*DATA*/", json.dumps(finalize_embedded(feed), ensure_ascii=False))
     html = html.replace("/*CONFIG*/", json.dumps(cfg, ensure_ascii=False))
     html = html.replace("/*LOADER*/", (TPL / "loader.js").read_text(encoding="utf-8"))

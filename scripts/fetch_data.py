@@ -91,8 +91,32 @@ def weather():
         tip = "한파 주의, 따뜻하게 입으세요"
     else:
         tip = "활동하기 좋은 날씨예요"
-    log(f"날씨: 최저 {tmn} / 최고 {tmx}, {text}, 강수 {pop}% (발표 {base:%m-%d %H}시)")
-    return {"sky": sky, "text": text, "min": round(tmn), "max": round(tmx), "pop": pop, "tip": tip, "hourly": hourly}
+    # 지금 시각에 가장 가까운 예보 시각의 하늘 상태
+    cur = NOW.strftime("%H00")
+    near = min((t for t in v if "SKY" in v[t]), key=lambda t: abs(int(t[:2]) - int(cur[:2])), default=None)
+    now_sky = icon_of(v[near].get("SKY"), v[near].get("PTY")) if near else sky
+    log(f"날씨: 최저 {tmn} / 최고 {tmx}, {text}, 강수 {pop}%, 지금 하늘 {now_sky} (발표 {base:%m-%d %H}시)")
+    return {"sky": sky, "now_sky": now_sky, "text": text, "min": round(tmn), "max": round(tmx), "pop": pop, "tip": tip, "hourly": hourly}
+
+
+GRADE = {"1": "좋음", "2": "보통", "3": "나쁨", "4": "매우나쁨"}
+
+
+def dust_both():
+    """(미세먼지 등급, 초미세먼지 등급) — 최근 측정값 기준"""
+    d = json.loads(get("https://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty", {
+        "serviceKey": key("DATA_GO_KR_KEY"), "returnType": "json", "numOfRows": 12, "pageNo": 1,
+        "stationName": "강남구", "dataTerm": "DAILY", "ver": "1.0"}))
+    pm10 = pm25 = None
+    for it in d["response"]["body"]["items"]:
+        if pm10 is None and it.get("pm10Grade") not in (None, "", "-"):
+            pm10 = GRADE.get(str(it["pm10Grade"]))
+        if pm25 is None and it.get("pm25Grade") not in (None, "", "-"):
+            pm25 = GRADE.get(str(it["pm25Grade"]))
+        if pm10 and pm25:
+            break
+    log(f"미세먼지: {pm10} / 초미세먼지: {pm25} (강남구 측정소)")
+    return pm10 or "보통", pm25 or pm10 or "보통"
 
 
 def dust():

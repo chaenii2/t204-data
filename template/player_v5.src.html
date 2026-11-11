@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T204 오늘의 인사이트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+  /* 캔버스 1200x1824 · A면 0–648 / B면 648–1200 · 코너(접힘) 576–720은 글자 금지(배경·그래프만) */
+  :root{--ink:#fff;--sub:#a9b6cc;--line:rgba(255,255,255,.14);--red:#e8362f;--up:#ff4d4f;--down:#3aa0ff;--ok:#4ade80;--mid:#facc15;--bad:#ff4d4f}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden;
+    font-family:'Noto Sans KR','Noto Sans CJK KR','Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;word-break:keep-all}
+  #stage{position:absolute;width:1200px;height:1824px;transform-origin:0 0;overflow:hidden;background:#06101f}
+  .num{font-variant-numeric:tabular-nums}
+  .up{color:var(--up)} .down{color:var(--down)}
+  .pa,.pb{position:absolute}
+  .pa{left:56px;width:500px}
+  .pb{left:756px;width:390px}
+  /* 배경 레이어 (장면마다 교차 전환) */
+  .bg{position:absolute;inset:0;opacity:0}
+  .bg-open{background:radial-gradient(90% 38% at 50% 112%, #2f7bff 0%, #123a7a 30%, rgba(8,24,56,.0) 62%),
+                     radial-gradient(130% 60% at 50% 128%, #0b2a5c 0%, transparent 70%),
+                     linear-gradient(180deg,#071630 0%,#0a1f44 55%,#0c2550 100%)}
+  .bg-open .earth{position:absolute;left:-30%;right:-30%;top:1290px;height:1400px;border-radius:50%;
+     background:radial-gradient(60% 40% at 50% 10%,#16386e,#081a38 60%,#050f22);box-shadow:0 -10px 60px 10px rgba(80,160,255,.55),inset 0 14px 40px rgba(130,190,255,.45)}
+  .bg-open .lights{position:absolute;left:0;right:0;top:1330px;height:400px;opacity:.55;
+     background-image:radial-gradient(2px 2px at 20% 30%,#ffd27a 60%,transparent),radial-gradient(2px 2px at 34% 52%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 47% 22%,#ffe2a8 60%,transparent),radial-gradient(2px 2px at 61% 40%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 73% 62%,#ffe2a8 60%,transparent),radial-gradient(2px 2px at 86% 35%,#ffd27a 60%,transparent),radial-gradient(1.5px 1.5px at 12% 70%,#ffe2a8 60%,transparent),radial-gradient(1.5px 1.5px at 54% 75%,#ffe2a8 60%,transparent)}
+  .bg-navy{background:radial-gradient(80% 45% at 85% 0%,rgba(40,110,220,.35),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
+  .bg-sky{background:linear-gradient(180deg,#1b2f52 0%,#2c3f63 30%,#5a5f78 52%,#a7765d 70%,#e0955a 82%,#6f4a3b 100%)}
+  .bg-sky .cl{position:absolute;border-radius:50%;background:rgba(255,236,220,.55);filter:blur(28px)}
+  .bg-green{background:radial-gradient(70% 40% at 80% 85%,rgba(60,220,170,.28),transparent 70%),linear-gradient(180deg,#0b3a33 0%,#0a2c28 55%,#06201d 100%)}
+  .bg-green .streak{position:absolute;height:3px;border-radius:3px;background:linear-gradient(90deg,transparent,rgba(170,255,225,.9),transparent);transform:rotate(-14deg);filter:blur(.5px)}
+  /* 상단 고정 헤더 */
+  .head{position:absolute;top:70px;z-index:3}
+  .logo{display:flex;align-items:center;gap:16px;font-size:54px;font-weight:900;letter-spacing:-.03em}
+  .plus{font-size:34px;font-weight:700;background:var(--red);color:#fff;padding:4px 22px 6px;border-radius:999px;letter-spacing:0}
+  .clock{text-align:right;font-size:34px;font-weight:700;line-height:1.35}
+  /* 장면 */
+  .scene{position:absolute;inset:0;display:none;z-index:2}
+  .title{font-size:76px;font-weight:900;letter-spacing:-.03em}
+  .lbl{font-size:40px;font-weight:700;color:#dfe7f5}
+  .k{font-size:32px;color:var(--sub)}
+  .divider{position:absolute;left:56px;right:56px;height:2px;background:var(--line)}
+  .dot{display:inline-block;width:26px;height:26px;border-radius:50%;margin-left:14px;vertical-align:middle}
+  .prog{position:absolute;left:56px;width:500px;bottom:70px;display:flex;gap:10px;z-index:3}
+  .prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden;position:relative}
+  .prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#fff}
+  .src{position:absolute;right:54px;bottom:62px;font-size:24px;color:rgba(255,255,255,.55);text-align:right;z-index:3;width:390px}
+  /* 가이드 */
+  #guide{position:absolute;inset:0;pointer-events:none;display:none;z-index:9}
+  #guide .g{position:absolute;top:0;bottom:0;border:3px dashed rgba(255,255,0,.7)}
+  #guide span{position:absolute;top:8px;left:8px;font:700 22px system-ui;color:#ff0;background:rgba(0,0,0,.6);padding:2px 8px}
+  #stage.showguide #guide{display:block}
+  #ctl{position:fixed;left:12px;bottom:12px;display:flex;gap:6px;z-index:9;font:13px system-ui;transition:opacity .4s}
+  #ctl button{background:#222;color:#ddd;border:1px solid #444;border-radius:6px;padding:6px 10px;cursor:pointer}
+  #ctl button.on{background:#e8362f;color:#fff;border-color:#e8362f}
+  body.render #ctl, body.kiosk #ctl{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="bg bg-open" data-bg="open"><div class="earth"></div><div class="lights"></div></div>
+  <div class="bg bg-navy" data-bg="navy"></div>
+  <div class="bg bg-sky" data-bg="sky">
+    <div class="cl" style="left:-80px;top:1150px;width:700px;height:160px"></div>
+    <div class="cl" style="left:380px;top:1240px;width:900px;height:200px"></div>
+    <div class="cl" style="left:100px;top:1420px;width:1000px;height:180px;background:rgba(255,190,140,.5)"></div>
+  </div>
+  <div class="bg bg-green" data-bg="green">
+    <div class="streak" style="left:-100px;top:1350px;width:900px"></div>
+    <div class="streak" style="left:200px;top:1450px;width:1200px;opacity:.7"></div>
+    <div class="streak" style="left:400px;top:1560px;width:900px;opacity:.5"></div>
+    <div class="streak" style="left:-200px;top:1640px;width:1400px;opacity:.35"></div>
+  </div>
+  <div class="head" style="left:56px"><div class="logo">중앙일보<span class="plus">Plus</span></div></div>
+  <div class="head clock" style="left:756px;width:390px"><div id="cdate"></div><div id="ctime"></div></div>
+  <div id="scenes"></div>
+  <div class="prog" id="prog"></div>
+  <div class="src" id="src"></div>
+  <div id="guide">
+    <div class="g" style="left:0;width:648px"><span>A면 648</span></div>
+    <div class="g" style="left:648px;width:552px;border-color:rgba(0,255,255,.7)"><span style="color:#0ff;left:auto;right:8px">B면 552</span></div>
+    <div class="g" style="left:576px;width:144px;background:repeating-linear-gradient(45deg,rgba(255,0,0,.25) 0 10px,transparent 10px 20px);border-color:red"><span style="color:#f66;top:40px">코너</span></div>
+  </div>
+</div>
+<div id="ctl"><button id="gbtn">A/B면 가이드</button></div>
+
+<script type="application/json" id="t204-data">/*DATA*/</script>
+<script>window.T204_CONFIG=/*CONFIG*/;</script>
+<script>/*LOADER*/</script>
+<script>
+(() => {
+const W0=1200,H0=1824, FADE=.6;
+let DATA=JSON.parse(document.getElementById('t204-data').textContent);
+const $=s=>document.querySelector(s);
+const fmt=(v,dec=2)=>Number(v).toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec});
+const sgn=d=>d>0?'▲':(d<0?'▼':'–'), cls=d=>d>0?'up':(d<0?'down':'');
+const clamp=x=>Math.min(1,Math.max(0,x)), seg=(t,a,b)=>clamp((t-a)/(b-a));
+const out3=x=>1-Math.pow(1-x,3), outBack=x=>{const c=1.4;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const A=(anim,d,extra='')=>`data-anim="${anim}" data-d="${d}" ${extra}`;
+const P=(a,b,top=300)=>`<div class="pa" style="top:${top}px">${a}</div><div class="pb" style="top:${top}px">${b}</div>`;
+const kst=()=>{const d=new Date();return new Date(d.getTime()+(d.getTimezoneOffset()+540)*60000)};
+const pad=n=>String(n).padStart(2,'0');
+const pct=(d,v)=>d/(v-d)*100;
+
+/* ---------- 그래픽 ---------- */
+function spark(arr,w,h,color,id){
+  if(!arr||arr.length<2) return '';
+  const mn=Math.min(...arr),mx=Math.max(...arr),sp=(mx-mn)||1;
+  const pts=arr.map((v,i)=>[i/(arr.length-1)*(w-16)+4, h-14-(v-mn)/sp*(h-28)]);
+  const d=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const L=pts[pts.length-1];
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" style="overflow:visible;display:block">
+    <defs><linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${color}" stop-opacity=".35"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></linearGradient></defs>
+    <path d="${d} L${L[0]} ${h} L4 ${h} Z" fill="url(#g${id})" ${A('fade',1.2)}/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1" ${A('draw',.5,'data-dur="1.8"')}/>
+    <circle cx="${L[0]}" cy="${L[1]}" r="13" fill="${color}" ${A('pop',2.1)}/><circle cx="${L[0]}" cy="${L[1]}" r="26" fill="${color}" opacity=".25" class="pulse"/></svg>`;
+}
+function sunSvg(r){let rays='';for(let i=0;i<8;i++)rays+=`<rect x="-7" y="${-r-46}" width="14" height="30" rx="7" transform="rotate(${i*45})"/>`;return `<g class="spin" fill="#FFC542"><circle r="${r}"/>${rays}</g>`}
+function weatherIcon(sky,size){
+  const cloud='<g class="drift"><ellipse cx="-40" cy="40" rx="95" ry="62" fill="#e9eef8"/><ellipse cx="40" cy="20" rx="85" ry="80" fill="#f4f7fc"/><ellipse cx="95" cy="55" rx="70" ry="50" fill="#dfe6f2"/><rect x="-135" y="40" width="300" height="62" rx="31" fill="#e6ecf6"/></g>';
+  let g;
+  if(sky==='clear') g=sunSvg(78);
+  else if(sky==='rain') g=`<g transform="translate(0,-30)">${cloud}</g>`+[-60,0,60].map((x,i)=>`<rect class="drop" data-i="${i}" x="${x-6}" y="90" width="12" height="40" rx="6" fill="#7cb8ff"/>`).join('');
+  else if(sky==='cloudy') g=cloud;
+  else g=`<g transform="translate(55,-60) scale(.85)">${sunSvg(70)}</g>${cloud}`;
+  return `<svg width="${size}" height="${size}" viewBox="-170 -170 340 340" style="overflow:visible">${g}</svg>`;
+}
+const gradeColor=g=>({'좋음':'#3aa0ff','보통':'#4ade80','나쁨':'#fb923c','매우나쁨':'#ff4d4f'}[g]||'#a9b6cc');
+const SKYTXT={clear:'맑은 하늘',partly:'구름 많은 하늘',cloudy:'흐린 하늘',rain:'비 오는 하늘'};
+
+/* ---------- 장면 ---------- */
+const SC={};
+SC.open={dur:8,bg:'open',src:'',ok:()=>true,html:()=>P(`
+  <div style="padding-top:330px">
+    <div style="font-size:64px;font-weight:500;color:#c9d6ee;letter-spacing:.02em" ${A('up',.1)}>T204</div>
+    <div style="font-size:150px;font-weight:900;line-height:1.08;letter-spacing:-.05em;margin-top:18px" ${A('up',.3)}>오늘의<br>인사이트</div>
+    <div style="width:110px;height:10px;background:var(--red);border-radius:5px;margin:60px 0 50px" ${A('grow',.7)}></div>
+    <div style="font-size:46px;font-weight:500;line-height:1.5;color:#dbe4f3" ${A('up',.9)}>중앙일보가 전하는<br>오늘의 주요 경제 소식</div>
+  </div>`,`
+  <div style="padding-top:560px">${lineup().map((t,i)=>`<div style="font-size:40px;font-weight:700;margin-top:${i?26:0}px;color:#dbe4f3" ${A('up',1.1+i*.12)}><span class="num" style="color:var(--red);margin-right:16px">0${i+1}</span>${t}</div>`).join('')}</div>`)};
+
+SC.fx={dur:10,bg:'navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fresh(2),src:()=>`${DATA.fx.basis||''}`,
+  html:()=>{
+    const F=DATA.fx, u=F.items[0], hist=(DATA.fx_hist||[]).map(x=>x.v), rest=F.items.slice(1);
+    const R=(DATA.rates&&DATA.rates.items||[])[0];
+    return P(`
+      <div class="title" ${A('up',0)}>오늘의 환율</div>
+      <div class="lbl" style="margin-top:70px" ${A('up',.2)}>USD / KRW</div>
+      <div class="num" style="font-size:120px;font-weight:900;letter-spacing:-.04em;line-height:1.05;margin:6px 0 0 -6px" ${A('up',.3)}><span data-count="${u.v}" data-from="${u.v*0.995}" data-dec="2">${fmt(u.v)}</span></div>
+      <div class="num ${cls(u.d)}" style="font-size:56px;font-weight:700;margin-top:10px" ${A('fade',.8)}>${sgn(u.d)} ${fmt(Math.abs(u.d))} &nbsp;${u.d>0?'+':''}${pct(u.d,u.v).toFixed(2)}%</div>`,
+    `<div style="padding-top:150px">${rest.map((r,i)=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;border-bottom:2px solid var(--line)" ${A('up',.6+i*.12)}>
+        <span style="font-size:34px;font-weight:700">${r.code}${r.unit?` <span style="font-size:24px;color:var(--sub)">(${r.unit})</span>`:''}</span>
+        <span style="text-align:right"><span class="num" style="font-size:40px;font-weight:700">${fmt(r.v)}</span><br><span class="num ${cls(r.d)}" style="font-size:26px;font-weight:700">${sgn(r.d)} ${fmt(Math.abs(r.d))}</span></span></div>`).join('')}</div>`)
+    +`<div style="position:absolute;left:56px;top:1010px" ${A('fade',.4)}>${spark(hist.length>1?hist:null,1090,330,'#3aa0ff','fx')}</div>`
+    +(R?`<div class="divider" style="top:1440px"></div>
+      <div class="pa" style="top:1510px;display:flex;align-items:center;gap:34px" ${A('up',1.4)}>
+        <div style="width:120px;height:120px;border-radius:50%;border:3px solid rgba(58,160,255,.6);background:rgba(58,160,255,.12);display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:700">%</div>
+        <div><div class="num" style="font-size:72px;font-weight:900">${R.v.toFixed(2)}%</div><div class="k" style="font-size:34px;color:#dbe4f3">${R.name}</div></div></div>`:'');
+  }};
+
+SC.stock={dur:10,bg:'navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length>0&&fresh(4),src:()=>DATA.kr.basis||'',
+  html:()=>{
+    const K=DATA.kr.items, blk=(it,w,d)=>`<div class="lbl" ${A('up',d)}>${it.code}</div>
+      <div class="num" style="font-size:${w>450?120:104}px;font-weight:900;letter-spacing:-.04em;line-height:1.05;margin-left:-4px" ${A('up',d+.1)}><span data-count="${it.v}" data-from="${it.v*0.99}" data-dec="2">${fmt(it.v)}</span></div>
+      <div class="num ${cls(it.d)}" style="font-size:50px;font-weight:700;margin-top:6px" ${A('fade',d+.6)}>${sgn(it.d)} ${fmt(Math.abs(it.d))} &nbsp;${it.pct>0?'+':''}${(it.pct??pct(it.d,it.v)).toFixed(2)}%</div>
+      <div style="margin-top:40px" ${A('fade',d+.3)}>${spark(it.hist,w,240,it.d>=0?'#ff4d4f':'#3aa0ff','s'+it.code)}</div>`;
+    return P(`<div class="title" ${A('up',0)}>국내 증시</div><div style="margin-top:80px">${blk(K[0],480,.2)}</div>`,
+             `<div style="padding-top:194px">${K[1]?blk(K[1],380,.5):''}</div>`);
+  }};
+
+SC.weather={dur:8,bg:'sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
+  html:()=>{
+    const w=DATA.weather, now=w.now||{}, sky=w.now_sky||w.sky;
+    return P(`<div class="title" ${A('up',0)}>오늘의 날씨</div>
+        <div style="margin:110px 0 0 40px" ${A('scale',.3)}>${weatherIcon(sky,400)}</div>`,
+      `<div style="padding-top:180px;border-left:3px solid rgba(255,255,255,.35);padding-left:40px;margin-left:-40px">
+        <div style="font-size:44px;font-weight:700" ${A('up',.4)}>서울 역삼</div>
+        <div class="num" style="font-size:170px;font-weight:900;letter-spacing:-.05em;line-height:1.05" ${A('up',.5)}>${now.t??w.max}°C</div>
+        <div style="font-size:44px;font-weight:500;color:#eef2f8" ${A('up',.7)}>${SKYTXT[sky]||w.text}</div>
+        <div class="num" style="font-size:36px;color:#e6ebf3;margin-top:22px" ${A('up',.9)}>최저 ${w.min}° · 최고 ${w.max}°</div></div>`)
+     +`<div class="divider" style="top:1600px;background:rgba(255,255,255,.3)"></div>
+       <div class="pa" style="top:1640px;font-size:40px;font-weight:700" ${A('up',1.1)}>미세먼지 <span style="color:${gradeColor(w.pm)}">${w.pm}</span><span class="dot" style="background:${gradeColor(w.pm)}"></span></div>
+       <div class="pb" style="top:1640px;font-size:40px;font-weight:700" ${A('up',1.2)}>초미세먼지 <span style="color:${gradeColor(w.pm25||w.pm)}">${w.pm25||w.pm}</span><span class="dot" style="background:${gradeColor(w.pm25||w.pm)}"></span></div>`;
+  }};
+
+SC.traffic={dur:8,bg:'green',ok:()=>!!DATA.traffic,src:()=>'서울시 실시간 도시데이터',
+  html:()=>{
+    const T=DATA.traffic, c={'원활':'#4ade80','서행':'#facc15','정체':'#ff4d4f'}[T.status]||'#4ade80';
+    return P(`<div class="title" ${A('up',0)}>오늘의 교통</div>
+        <div style="margin:200px 0 0 60px;width:240px;height:240px;border-radius:50%;border:5px solid rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center" ${A('scale',.3)}>
+          <svg width="130" height="110" viewBox="0 0 130 110" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"><path d="M18 58 L30 24 Q33 16 42 16 H88 Q97 16 100 24 L112 58"/><rect x="10" y="56" width="110" height="34" rx="12"/><path d="M22 90 v12 M108 90 v12"/><circle cx="34" cy="73" r="6" fill="#fff"/><circle cx="96" cy="73" r="6" fill="#fff"/></svg></div>`,
+      `<div style="padding-top:300px;border-left:3px solid rgba(255,255,255,.35);padding-left:40px;margin-left:-40px">
+        <div style="font-size:46px;font-weight:700" ${A('up',.4)}>테헤란로</div><div style="font-size:34px;color:#cfe9e0" ${A('up',.5)}>역삼 ↔ 삼성</div>
+        <div style="font-size:150px;font-weight:900;color:${c};letter-spacing:-.04em;margin-top:20px" ${A('up',.7)}>${T.status||'-'}</div>
+        ${T.kmh?`<div class="num" style="font-size:40px;color:#e6f5ef" ${A('up',.9)}>평균 ${T.kmh}km/h</div>`:''}
+        ${T.congest?`<div style="font-size:36px;color:#e6f5ef;margin-top:30px" ${A('up',1.1)}>역삼역 일대 ${T.congest}</div>`:''}</div>`);
+  }};
+
+const ORDER=['open','fx','stock','weather','traffic'];
+const TITLES={fx:'오늘의 환율',stock:'국내 증시',weather:'오늘의 날씨',traffic:'오늘의 교통'};
+function fresh(maxDays){if(!DATA.generated_at)return false;const [y,m,d]=DATA.generated_at.slice(0,10).split('-').map(Number);const t=kst();return Math.round((new Date(t.getFullYear(),t.getMonth(),t.getDate())-new Date(y,m-1,d))/86400000)<=maxDays}
+let LIST=[]; const lineup=()=>LIST.filter(k=>k!=='open').map(k=>TITLES[k]);
+let scenes=[],LOOP=8,pending=null;
+
+function build(){
+  LIST=ORDER.filter(k=>{try{return SC[k].ok()}catch(e){return false}});
+  let t=0; const html=[];
+  scenes=LIST.map(k=>{const s={key:k,a:t,b:t+SC[k].dur,bg:SC[k].bg};t+=SC[k].dur;return s});
+  LOOP=t;
+  $('#scenes').innerHTML=LIST.map(k=>`<section class="scene">${SC[k].html()}</section>`).join('');
+  $('#prog').innerHTML=LIST.map(()=>'<i><b></b></i>').join('');
+  const els=[...document.querySelectorAll('#scenes .scene')];
+  scenes.forEach((s,i)=>{const el=els[i];Object.assign(s,{el,src:typeof SC[s.key].src==='function'?SC[s.key].src():'',
+    items:[...el.querySelectorAll('[data-anim]')],counts:[...el.querySelectorAll('[data-count]')],
+    spins:[...el.querySelectorAll('.spin')],drifts:[...el.querySelectorAll('.drift')],drops:[...el.querySelectorAll('.drop')],pulses:[...el.querySelectorAll('.pulse')]})});
+}
+const bgs=()=>[...document.querySelectorAll('.bg')];
+function clockTick(){const k=kst(),h=k.getHours();$('#cdate').textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())}(${'일월화수목금토'[k.getDay()]})`;$('#ctime').textContent=`${pad(h%12||12)}:${pad(k.getMinutes())} ${h<12?'AM':'PM'}`}
+
+function render(t){
+  t=((t%LOOP)+LOOP)%LOOP;
+  for(const s of scenes){
+    const vis=t>=s.a&&t<s.b; const L=t-s.a;
+    if(!vis){s.el.style.display='none';continue}
+    s.el.style.display='block';
+    const inP=out3(seg(L,0,FADE)),outP=seg(t,s.b-FADE*.8,s.b);
+    s.el.style.opacity=Math.min(inP,1-outP);
+    s.el.style.transform=`translateY(${(1-inP)*30-40*out3(outP)}px)`;
+    for(const e of s.items){
+      const d=+e.dataset.d||0,dur=+(e.dataset.dur||.7),p=seg(L,d,d+dur),q=out3(p);
+      switch(e.dataset.anim){
+        case 'up':e.style.opacity=q;e.style.transform=`translateY(${(1-q)*60}px)`;break;
+        case 'fade':e.style.opacity=q;break;
+        case 'scale':e.style.opacity=q;e.style.transform=`scale(${.85+.15*outBack(p)})`;break;
+        case 'grow':e.style.transformOrigin='left';e.style.transform=`scaleX(${q})`;break;
+        case 'draw':e.style.strokeDashoffset=1-q;break;
+        case 'pop':e.style.opacity=q;break;
+      }
+    }
+    for(const c of s.counts){const to=+c.dataset.count,fr=+c.dataset.from,dec=+c.dataset.dec,q=out3(seg(L,.3,1.5));c.textContent=fmt(fr+(to-fr)*q,dec)}
+    s.spins.forEach(g=>g.setAttribute('transform',`rotate(${t*14})`));
+    s.drifts.forEach(g=>g.setAttribute('transform',`translate(${Math.sin(t*.7)*12},0)`));
+    s.drops.forEach(r=>{const k=(t*1.3+(+r.dataset.i)*.33)%1;r.setAttribute('transform',`translate(0,${k*70})`);r.style.opacity=1-k});
+    s.pulses.forEach(c=>{const k=(t*.8)%1;c.setAttribute('r',13+k*26);c.setAttribute('opacity',.35*(1-k))});
+    $('#src').textContent=s.src||'';
+  }
+  // 배경: 현재 장면 배경으로 교차 전환
+  const cur=scenes.find(s=>t>=s.a&&t<s.b); const nxt=scenes[(scenes.indexOf(cur)+1)%scenes.length];
+  const mix=cur?seg(t,cur.b-FADE,cur.b):0;
+  bgs().forEach(b=>{const k=b.dataset.bg;let o=0;if(cur&&k===cur.bg)o=1-mix;if(nxt&&k===nxt.bg)o=Math.max(o,mix);if(cur&&nxt&&cur.bg===nxt.bg&&k===cur.bg)o=1;b.style.opacity=o});
+  document.querySelectorAll('#prog b').forEach((b,i)=>{const s=scenes[i];b.style.width=(seg(t,s.a,s.b)*100)+'%'});
+}
+
+function fit(){const st=$('#stage'),s=Math.min(innerWidth/W0,innerHeight/H0);st.style.transform=`scale(${s})`;st.style.left=((innerWidth-W0*s)/2)+'px';st.style.top=((innerHeight-H0*s)/2)+'px'}
+window.T204={setData(d){pending=d},renderAt(t){if(!scenes.length)build();clockTick();render(t)},get LOOP(){if(!scenes.length)build();return LOOP},W:W0,H:H0};
+
+build(); clockTick();
+if(!window.__T204_RENDER){
+  addEventListener('resize',fit);fit();
+  if(/kiosk/.test(location.hash))document.body.classList.add('kiosk');
+  $('#gbtn').onclick=e=>{$('#stage').classList.toggle('showguide');e.target.classList.toggle('on')};
+  if(/diag/.test(location.hash)||(window.T204_CONFIG||{}).diag){document.body.classList.add('kiosk');$('#stage').innerHTML='<div id="diag"></div>';window.T204_DIAG&&T204_DIAG($('#diag'));return;}
+  let first=true;
+  const pull=()=>(window.T204_LOAD?T204_LOAD():Promise.resolve(null)).then(d=>{if(!d)return;
+      if(first){DATA=d;build();start=performance.now()}else pending=d; first=false}).catch(e=>{first=false;console.warn('T204 load',e)});setInterval(pull,10*60*1000);setInterval(clockTick,5000);
+  let idle;addEventListener('mousemove',()=>{$('#ctl').style.opacity=1;clearTimeout(idle);idle=setTimeout(()=>$('#ctl').style.opacity=0,3000)});
+  var start=performance.now();
+  pull();
+  (function loop(){
+    let t=(performance.now()-start)/1000;
+    if(t>=LOOP){ start=performance.now(); t=0; if(pending){DATA=pending;pending=null;build()} }
+    render(t); requestAnimationFrame(loop);
+  })();
+}
+})();
+</script>
+</body>
+</html>
