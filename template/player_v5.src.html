@@ -221,6 +221,13 @@ SC.weather={dur:8,bg:'sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · �
      +(w.pm25?`<div class="pb" style="top:1615px;font-size:40px;font-weight:700" ${A('up',1.2)}>초미세먼지 <span style="color:${gradeColor(w.pm25)}">${w.pm25}</span><span class="dot" style="background:${gradeColor(w.pm25)}"></span></div>`:'');
   }};
 
+const ICO={
+  car:'<path fill="#fff" stroke="none" d="M6.9 6.6A2 2 0 0 1 8.8 5.2h6.4a2 2 0 0 1 1.9 1.4l1.4 4.2A2 2 0 0 1 20 12.7V17a1 1 0 0 1-1 1h-.6v1.3a1 1 0 0 1-1 1h-1.2a1 1 0 0 1-1-1V18H8.8v1.3a1 1 0 0 1-1 1H6.6a1 1 0 0 1-1-1V18H5a1 1 0 0 1-1-1v-4.3a2 2 0 0 1 1.5-1.9Zm1.6.6-1.1 3.4h9.2l-1.1-3.4ZM7.5 13.1a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Zm9 0a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z"/>',
+  people:'<circle cx="9" cy="8.5" r="2.6"/><path d="M4.5 18c0-2.6 2-4.5 4.5-4.5s4.5 1.9 4.5 4.5"/><circle cx="16.2" cy="9.5" r="2.1"/><path d="M15 13.6c2.4-.3 4.5 1.5 4.5 4"/>',
+  train:'<rect x="6.5" y="4.5" width="11" height="12" rx="2.5"/><path d="M6.5 11h11"/><circle cx="9.3" cy="13.8" r=".8" fill="currentColor"/><circle cx="14.7" cy="13.8" r=".8" fill="currentColor"/><path d="M9 16.5 7.5 19.5M15 16.5l1.5 3"/>',
+  bike:'<circle cx="7" cy="15.5" r="3.2"/><circle cx="17" cy="15.5" r="3.2"/><path d="M7 15.5 10 9h5l2 6.5M10 9l3 6.5h4M9 7h2.5"/>',
+  road:'<path d="M9 4.5 6 19.5M15 4.5l3 15M12 6v2.5M12 11v2.5M12 16v2.5"/>'};
+const icon=(k,sz,stroke)=>`<span style="display:inline-flex;align-items:center;justify-content:center;width:${sz}px;height:${sz}px;border-radius:50%;border:${stroke}px solid rgba(255,255,255,.85);flex:none;vertical-align:middle"><svg viewBox="0 0 24 24" width="${Math.round(sz*.58)}" height="${Math.round(sz*.58)}" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fff">${ICO[k]}</svg></span>`;
 SC.traffic={dur:8,bg:'green',ok:()=>!!DATA.traffic,src:()=>DATA.traffic.basis||'서울시 실시간 도시데이터',
   html:()=>{
     const T=DATA.traffic, C=st=>({'원활':'#4ade80','서행':'#facc15','정체':'#ff4d4f'}[st]||'#4ade80');
@@ -229,16 +236,16 @@ SC.traffic={dur:8,bg:'green',ok:()=>!!DATA.traffic,src:()=>DATA.traffic.basis||'
         <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:32px;font-weight:700">${g.name}</span>
         <span class="num" style="font-size:34px;font-weight:800;color:${C(stOf(g.kmh))}">${g.kmh}<span style="font-size:24px"> km/h</span></span></div>
         <div style="height:20px;border-radius:10px;background:rgba(255,255,255,.14);margin-top:12px;overflow:hidden"><div style="height:100%;width:${Math.min(100,g.kmh/40*100)}%;background:${C(stOf(g.kmh))};border-radius:8px" ${A('grow',1.1+i*.12,'data-dur="1"')}></div></div></div>`).join('');
-    const card=(icon,k,v,sub,d)=>`<div style="padding:26px 0;border-bottom:2px solid rgba(255,255,255,.16)" ${A('up',d)}>
-        <div style="font-size:28px;color:#cfe9e0">${icon} ${k}</div><div style="font-size:46px;font-weight:800;margin-top:4px">${v}</div>${sub?`<div style="font-size:26px;color:#cfe9e0;margin-top:2px">${sub}</div>`:''}</div>`;
+    const card=(ic,k,v,sub,d)=>`<div style="padding:26px 0;border-bottom:2px solid rgba(255,255,255,.16)" ${A('up',d)}>
+        <div style="font-size:28px;color:#cfe9e0;display:flex;align-items:center;gap:14px">${icon(ic,52,2.5)}${k}</div><div style="font-size:46px;font-weight:800;margin-top:4px">${v}</div>${sub?`<div style="font-size:26px;color:#cfe9e0;margin-top:2px">${sub}</div>`:''}</div>`;
     const cards=[];
-    if(T.congest) cards.push(card('👥','역삼역 일대 혼잡도',`<span style="color:${({'여유':'#4ade80','보통':'#4ade80','약간 붐빔':'#facc15','붐빔':'#ff4d4f'})[T.congest]||'#fff'}">${T.congest}</span>`,T.congest_msg||'',.6));
-    if(T.subway&&T.subway.length) cards.push(card('🚇','2호선 역삼역 다음 열차',T.subway.map(x=>`${x.dir} <span class="num">${x.min}</span>분`).join(' · '),'',.75));
-    if(T.bike) cards.push(card('🚲','따릉이 대여 가능',`<span class="num">${T.bike.n}</span>대`,T.bike.name,.9));
-    if(T.roads&&T.roads.length) cards.push(card('🛣️','주변 도로',T.roads.map(r=>`${r.name} <span style="color:${C(stOf(r.kmh))}">${stOf(r.kmh)}</span>`).join(' · '),'',1.05));
+    if(T.congest) cards.push(card('people','역삼역 일대 혼잡도',`<span style="color:${({'여유':'#4ade80','보통':'#4ade80','약간 붐빔':'#facc15','붐빔':'#ff4d4f'})[T.congest]||'#fff'}">${T.congest}</span>`,T.congest_msg||'',.6));
+    if(T.subway&&T.subway.length) cards.push(card('train','2호선 역삼역 다음 열차',T.subway.map(x=>`${x.dir} <span class="num">${x.min}</span>분`).join(' · '),'',.75));
+    if(T.bike) cards.push(card('bike','따릉이 대여 가능',`<span class="num">${T.bike.n}</span>대`,T.bike.name,.9));
+    if(T.roads&&T.roads.length) cards.push(card('road','주변 도로',T.roads.map(r=>`${r.name} <span style="color:${C(stOf(r.kmh))}">${stOf(r.kmh)}</span>`).join(' · '),'',1.05));
     return P(`<div class="title" ${A('up',0)}>오늘의 교통</div>
-        <div style="margin-top:110px;font-size:56px;font-weight:800" ${A('up',.2)}>테헤란로</div>
-        <div style="font-size:32px;color:#cfe9e0" ${A('up',.25)}>강남역 ↔ 삼성역</div>
+        <div style="margin-top:96px;display:flex;align-items:center;gap:26px" ${A('up',.2)}>${icon('car',112,3.5)}
+          <div><div style="font-size:56px;font-weight:800;line-height:1.1">테헤란로</div><div style="font-size:32px;color:#cfe9e0">강남역 ↔ 삼성역</div></div></div>
         <div style="display:flex;align-items:baseline;gap:24px;margin-top:6px" ${A('up',.35)}>
           <span style="font-size:150px;font-weight:900;color:${C(T.status)};letter-spacing:-.04em">${T.status||'-'}</span>
           ${T.kmh?`<span class="num" style="font-size:44px;color:#e6f5ef;white-space:nowrap">평균 ${T.kmh}km/h</span>`:''}</div>
