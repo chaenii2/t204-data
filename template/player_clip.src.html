@@ -31,7 +31,7 @@
   .k{font-size:40px;color:var(--sub)}
   .hr{position:absolute;height:2px;background:var(--line)}
   .dot{display:inline-block;width:30px;height:30px;border-radius:50%;margin-left:14px;vertical-align:middle}
-  .src{position:absolute;left:56px;width:510px;bottom:66px;font-size:28px;color:rgba(255,255,255,.6)}
+  .src{position:absolute;left:56px;width:510px;bottom:66px;font-size:28px;color:rgba(255,255,255,.75);text-shadow:0 1px 8px rgba(0,0,0,.8)}
   /* 후원사 자리 (B면 하단) */
   .spon{position:absolute;left:756px;width:392px;bottom:56px;height:120px;display:flex;align-items:center;justify-content:flex-end;gap:18px}
   .spon .lab{font-size:28px;color:rgba(255,255,255,.7)}
@@ -40,6 +40,7 @@
   #content{position:absolute;inset:0;z-index:1}
   .src,.spon{z-index:3}
   .cover-bg{position:absolute;inset:0;background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
+  .skyline{position:absolute;left:0;right:0;bottom:0;height:620px;background:url(/*SKYLINE*/) center bottom/100% 620px no-repeat;pointer-events:none}
   .cover-bg.weather{background:#1b2a4a url(/*COVER_WEATHER*/) center/cover no-repeat}
   .cover-bg.traffic{background:#06201f url(/*COVER_TRAFFIC*/) center/cover no-repeat}
   .intro{animation:in .9s cubic-bezier(.2,.7,.2,1) both}
@@ -186,7 +187,7 @@ CL.weather={bg:'bg-sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에�
     if(w.pm) b+=kv('미세먼지',`<span style="color:${gradeColor(w.pm)}">${w.pm}</span><span class="dot" style="background:${gradeColor(w.pm)}"></span>`);
     if(w.pm25) b+=kv('초미세먼지',`<span style="color:${gradeColor(w.pm25)}">${w.pm25}</span><span class="dot" style="background:${gradeColor(w.pm25)}"></span>`);
     if(n.reh!=null) b+=kv('습도 · 바람',`<span class="num" style="font-size:56px">${n.reh}% · ${n.wsd}m/s</span>`);
-    return `<div class="title">오늘의 날씨</div>
+    return `<div class="skyline" style="opacity:.9"></div><div class="title">오늘의 날씨</div>
       <div class="pa" style="top:420px;display:flex;align-items:center;gap:10px">${weatherIcon(sky,250)}</div>
       <div class="pa" style="top:690px"><div class="k">서울 역삼 · 지금</div>
         <div class="num" style="font-size:200px;font-weight:900;line-height:1;letter-spacing:-.05em;margin-left:-8px">${n.t!=null?n.t:Math.round((w.min+w.max)/2)}°</div>
@@ -194,8 +195,8 @@ CL.weather={bg:'bg-sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에�
         <div class="num" style="font-size:52px;font-weight:700;margin-top:8px;color:#e6edf8">최저 ${w.min}° / 최고 ${w.max}°</div></div>
       <div class="pb" style="top:400px">${b}</div>
       <div class="hr" style="left:56px;width:1092px;top:1395px"></div>
-      <div class="pa" style="top:1420px;font-size:50px;font-weight:800;line-height:1.35">${w.tip}</div>
-      ${T?`<div class="pb" style="top:1420px;text-align:right"><div class="k">내일</div><div style="font-size:52px;font-weight:800;line-height:1.25"><span class="num">${T.min}° / ${T.max}°</span> ${({clear:'맑음',partly:'구름 많음',cloudy:'흐림',rain:'비',snow:'눈',sleet:'비/눈'})[T.sky]||''}</div>${T.pop>=40?`<div class="k">강수 ${T.pop}%</div>`:''}</div>`:''}`;
+      <div class="pa" style="top:1420px;font-size:50px;font-weight:800;line-height:1.35;text-shadow:0 2px 14px rgba(0,0,0,.7)">${w.tip}</div>
+      ${T?`<div class="pb" style="top:1420px;text-align:right;text-shadow:0 2px 14px rgba(0,0,0,.7)"><div class="k">내일</div><div class="num" style="font-size:52px;font-weight:800;line-height:1.2">${T.min}° / ${T.max}°</div><div style="font-size:44px;font-weight:700;line-height:1.25">${({clear:'맑음',partly:'구름 많음',cloudy:'흐림',rain:'비',snow:'눈',sleet:'비/눈'})[T.sky]||''}</div>${T.pop>=40?`<div class="k">강수 ${T.pop}%</div>`:''}</div>`:''}`;
   }};
 CL.traffic={bg:'bg-green',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.ts)return true;const [d,h]=T.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=60*60000},
   src:()=>DATA.traffic.basis||'서울시 도시데이터',
@@ -221,15 +222,16 @@ CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="
 
 const COVER_SEC=6, TOTAL_SEC=30;
 const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통'};
+const TAGLINE={finance:'오늘의 주요 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식'};
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
-function coverHtml(k){return `<div class="cover-bg ${k}"></div>
+function coverHtml(k){return `<div class="cover-bg ${k}"></div>${k==='weather'?'<div class="skyline"></div>':''}
   <div class="pa" style="top:470px;text-shadow:0 2px 14px rgba(0,0,0,.55),0 0 2px rgba(0,0,0,.4)">
     <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px"><span class="num" style="font-size:54px;font-weight:700"><span class="cdate2"></span></span><span class="campm" style="font-size:54px;font-weight:600;color:#dbe4f3"></span></div>
     <div class="num ctime2" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.6)"></div>
     <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:56px 0 34px"></div>
     <div style="font-size:76px;font-weight:800;line-height:1.15">T204</div><div style="font-size:58px;font-weight:400;color:#dbe4f3;margin-top:4px">오늘의 인사이트</div>
     <div style="font-size:44px;font-weight:700;color:${CLIPCOLOR[k]};margin-top:26px">${CLIPNAME[k]}</div>
-    <div style="font-size:40px;line-height:1.45;color:#eef3fb;margin-top:44px">중앙일보가 전하는<br>오늘의 주요 경제 소식</div>
+    <div style="font-size:40px;line-height:1.45;color:#eef3fb;margin-top:44px">중앙일보가 전하는<br>${TAGLINE[k]}</div>
   </div>`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
