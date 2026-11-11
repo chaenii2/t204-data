@@ -58,6 +58,32 @@ def main():
         feed["fx"] = prev["fx"]; kept.append("fx")
     if not feed["ipo_list"] and prev.get("ipo_list"):
         feed["ipo_list"] = prev["ipo_list"]; kept.append("ipo")
+    # 교통·증시·금리 (키가 있을 때만)
+    import extra_data as X
+    tr = F.safe(X.traffic, None)
+    if tr:
+        tr["ts"] = F.NOW.strftime("%Y-%m-%d %H:%M")
+        feed["traffic"] = tr
+    elif prev.get("traffic", {}).get("ts"):
+        # 실시간 정보라 1시간 넘은 값은 쓰지 않음
+        from datetime import datetime
+        age = (F.NOW.replace(tzinfo=None) - datetime.strptime(prev["traffic"]["ts"], "%Y-%m-%d %H:%M")).total_seconds()
+        if age <= 3600:
+            feed["traffic"] = prev["traffic"]; kept.append("traffic")
+    krd, kh = F.safe(X.kr, (None, prev.get("kr_hist")), prev.get("kr_hist"))
+    if kh:
+        feed["kr_hist"] = kh
+    if krd:
+        feed["kr"] = krd
+    elif prev.get("kr"):
+        feed["kr"] = prev["kr"]; kept.append("kr")
+    rt = F.safe(X.rates, None)
+    if rt:
+        feed["rates"] = rt
+    elif prev.get("rates"):
+        feed["rates"] = prev["rates"]; kept.append("rates")
+    feed["sources"].update({"traffic": "서울시 실시간 도시데이터 (openapi.seoul.go.kr)",
+                            "kr": "한국거래소 KRX Open API (data-dbg.krx.co.kr)", "rates": "한국은행 ECOS (ecos.bok.or.kr)"})
     if kept:
         F.log("직전 값 유지: " + ", ".join(kept))
     feed["stale"] = kept
