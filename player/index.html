@@ -337,10 +337,10 @@ SC.fx={dur:10,bg:'navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fre
     `<div style="padding-top:150px">${rest.map((r,i)=>`<div style="display:flex;justify-content:space-between;align-items:baseline;padding:20px 0;border-bottom:2px solid var(--line)" ${A('up',.6+i*.12)}>
         <span style="font-size:34px;font-weight:700">${r.code}${r.unit?` <span style="font-size:24px;color:var(--sub)">(${r.unit})</span>`:''}</span>
         <span style="text-align:right"><span class="num" style="font-size:40px;font-weight:700">${fmt(r.v)}</span><br><span class="num ${cls(r.d)}" style="font-size:26px;font-weight:700">${sgn(r.d)} ${fmt(Math.abs(r.d))}</span></span></div>`).join('')}</div>`)
-    +`<div style="position:absolute;left:56px;top:930px" ${A('fade',.4)}>${spark(hist.length>1?hist:null,1090,300,'#3aa0ff','fx')}</div>`
-    +ipoTicker(SC.fx.dur,1590)
-    +(R?`<div class="divider" style="top:1310px"></div>
-      <div class="pa" style="top:1350px;display:flex;align-items:center;gap:34px" ${A('up',1.4)}>
+    +`<div style="position:absolute;left:56px;top:880px" ${A('fade',.4)}>${spark(hist.length>1?hist:null,1090,280,'#3aa0ff','fx')}</div>`
+    +ipoTicker(SC.fx.dur,1480)
+    +(R?`<div class="divider" style="top:1215px"></div>
+      <div class="pa" style="top:1250px;display:flex;align-items:center;gap:34px" ${A('up',1.4)}>
         <div style="width:120px;height:120px;border-radius:50%;border:3px solid rgba(58,160,255,.6);background:rgba(58,160,255,.12);display:flex;align-items:center;justify-content:center;font-size:58px;font-weight:700">%</div>
         <div><div class="num" style="font-size:72px;font-weight:900">${R.v.toFixed(2)}%</div><div class="k" style="font-size:34px;color:#dbe4f3">${R.name}</div></div></div>`:'');
   }};
@@ -352,7 +352,7 @@ SC.stock={dur:10,bg:'navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length>0
       <div class="num ${cls(it.d)}" style="font-size:50px;font-weight:700;margin-top:6px" ${A('fade',d+.6)}>${sgn(it.d)} ${fmt(Math.abs(it.d))} &nbsp;${it.pct>0?'+':''}${(it.pct??pct(it.d,it.v)).toFixed(2)}%</div>
       <div style="margin-top:40px" ${A('fade',d+.3)}>${spark(it.hist,w,240,it.d>=0?'#ff4d4f':'#3aa0ff','s'+it.code)}</div>`;
     return P(`<div class="title" ${A('up',0)}>국내 증시</div><div style="margin-top:80px">${blk(K[0],480,.2)}</div>`,
-             `<div style="padding-top:194px">${K[1]?blk(K[1],380,.5):''}</div>`)+ipoTicker(SC.stock.dur,1590);
+             `<div style="padding-top:194px">${K[1]?blk(K[1],380,.5):''}</div>`)+ipoTicker(SC.stock.dur,1480);
   }};
 
 SC.weather={dur:8,bg:'sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
