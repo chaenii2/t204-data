@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>T204 오늘의 인사이트</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@300;500;700&family=Cormorant+Garamond:wght@500;600&display=swap">
 <style>
   /* 30초 고정 클립 · 캔버스 1200x1824 · A면 0–648 / B면 648–1200 · 코너 576–720 글자 금지 */
   :root{--ink:#fff;--sub:#c3cee0;--line:rgba(255,255,255,.18);--red:#e8362f;--up:#ff5a5f;--down:#4aa8ff;--ok:#4ade80;--mid:#facc15;--bad:#ff4d4f}
@@ -47,6 +47,12 @@
   #content{position:absolute;inset:0;z-index:1}
   .src,.spon{z-index:3}
   .cover-bg{position:absolute;inset:0;background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
+  /* 표지(고급형, A면 중앙 정렬) */
+  .cv{position:absolute;left:56px;width:520px;text-align:center;text-shadow:0 2px 18px rgba(0,0,0,.55)}
+  .cv-serif{font-family:'Cormorant Garamond','Noto Serif KR',Georgia,'Times New Roman',serif}
+  .cv-ko{font-family:'Noto Serif KR','Nanum Myeongjo',Georgia,serif}
+  .cv-rule{height:2px;margin:0 auto;background:linear-gradient(90deg,transparent,#d9b878,transparent)}
+  .cv-vig{position:absolute;inset:0;background:radial-gradient(120% 70% at 26% 45%,transparent 35%,rgba(0,0,0,.55) 100%),linear-gradient(180deg,rgba(0,0,0,.35),transparent 22%,transparent 70%,rgba(0,0,0,.45))}
   .wtint{position:absolute;inset:0;mix-blend-mode:color;opacity:.85}
   .wtint.bg-w-cool{opacity:.35}
   .skyline{position:absolute;left:0;right:0;bottom:0;height:620px;background:url(/*SKYLINE*/) center bottom/100% 620px no-repeat;pointer-events:none}
@@ -237,16 +243,24 @@ const COVER_SEC=6, TOTAL_SEC=30;
 const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통'};
 const TAGLINE={finance:'오늘의 주요 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식'};
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
+const LOGO_SRC=(document.querySelector('.logo')||{}).getAttribute?document.querySelector('.logo').getAttribute('src'):'';
 function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e){}
-  return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="wtint ${wc}"></div><div class="skyline"></div>`:''}
-  <div class="pa" style="top:470px;text-shadow:0 2px 14px rgba(0,0,0,.55),0 0 2px rgba(0,0,0,.4)">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px"><span class="num" style="font-size:54px;font-weight:700"><span class="cdate2"></span></span><span class="campm" style="font-size:54px;font-weight:600;color:#dbe4f3"></span></div>
-    <div class="num ctime2" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.6)"></div>
-    <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:56px 0 34px"></div>
-    <div style="font-size:76px;font-weight:800;line-height:1.15">T204</div><div style="font-size:58px;font-weight:400;color:#dbe4f3;margin-top:4px">오늘의 인사이트</div>
-    <div style="font-size:44px;font-weight:700;color:${CLIPCOLOR[k]};margin-top:26px">${CLIPNAME[k]}</div>
-    <div style="font-size:40px;line-height:1.45;color:#eef3fb;margin-top:44px">중앙일보가 전하는<br>${TAGLINE[k]}</div>
-  </div>`}
+  return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="wtint ${wc}"></div><div class="skyline"></div>`:''}<div class="cv-vig"></div>
+  <div class="cv" style="top:250px">
+    <div class="cv-rule" style="width:300px"></div>
+    <div class="cv-serif" style="font-size:76px;font-weight:600;letter-spacing:.12em;margin:30px 0 26px;padding-left:.12em;color:#fff;white-space:nowrap">T204 NEWS</div>
+    <div class="cv-rule" style="width:300px"></div>
+  </div>
+  <div class="cv" style="top:600px">
+    <div class="num" style="font-size:40px;font-weight:500;letter-spacing:.22em;color:#e9dcc0;padding-left:.22em"><span class="cdate2"></span>&nbsp;&nbsp;<span class="campm"></span></div>
+    <div class="cv-serif num ctime2" style="font-size:184px;font-weight:600;line-height:1;margin-top:18px;letter-spacing:.01em;text-shadow:0 0 36px rgba(255,236,200,.35),0 4px 24px rgba(0,0,0,.5)"></div>
+  </div>
+  <div class="cv" style="top:1090px">
+    <div style="width:10px;height:10px;margin:0 auto 40px;transform:rotate(45deg);background:#d9b878"></div>
+    <div class="cv-ko" style="font-size:40px;font-weight:300;letter-spacing:.12em;color:#efe6d4">중앙일보가 전하는</div>
+    <div class="cv-ko" style="font-size:50px;font-weight:700;letter-spacing:.02em;margin-top:14px;white-space:nowrap">${TAGLINE[k]}</div>
+  </div>
+  <div class="cv" style="top:1600px"><img src="${LOGO_SRC}" alt="The JoongAng" style="height:54px;width:auto;display:inline-block;filter:drop-shadow(0 2px 10px rgba(0,0,0,.6))"></div>`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
   const s=CFG.sponsor, show=/sponsor/.test(location.hash)||CFG.sponsorSlot;
@@ -283,7 +297,7 @@ function frame(t){
     else if(i<els.length-1&&t>=b-TR/2&&t<b+TR/2) v=1-ease((t-(b-TR/2))/TR); // 나가는 중
     else v=(t>=a&&t<b)?1:0;
     e.style.opacity=v; e.style.filter=v>=.999?'none':`blur(${((1-v)*BLUR).toFixed(1)}px)`;
-    if(i===0&&els.length>1) document.querySelector('.clock').style.opacity=1-v;
+    if(i===0&&els.length>1){document.querySelector('.clock').style.opacity=1-v;document.querySelector('.logo').style.opacity=1-v;}
     a=b;});
   showPage(pageAt(t));
 }
