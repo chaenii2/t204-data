@@ -76,7 +76,7 @@ def weather():
         main = max(set(skies), key=skies.count)
         text, sky = SKY.get(main, "구름많음"), icon_of(main, "0")
     hourly = []
-    for hh in ["0900", "1200", "1500", "1800"]:
+    for hh in ["0600", "0900", "1200", "1500", "1800", "2100"]:
         x = v.get(hh, {})
         if "TMP" in x:
             hourly.append({"h": f"{int(hh[:2])}시", "t": round(float(x["TMP"])), "sky": icon_of(x.get("SKY"), x.get("PTY"))})
@@ -96,7 +96,24 @@ def weather():
     near = min((t for t in v if "SKY" in v[t]), key=lambda t: abs(int(t[:2]) - int(cur[:2])), default=None)
     now_sky = icon_of(v[near].get("SKY"), v[near].get("PTY")) if near else sky
     log(f"날씨: 최저 {tmn} / 최고 {tmx}, {text}, 강수 {pop}%, 지금 하늘 {now_sky} (발표 {base:%m-%d %H}시)")
-    return {"sky": sky, "now_sky": now_sky, "text": text, "min": round(tmn), "max": round(tmx), "pop": pop, "tip": tip, "hourly": hourly}
+    # 내일 예보
+    tmr = (NOW + timedelta(days=1)).strftime("%Y%m%d")
+    tv = {}
+    for i in items:
+        if i["fcstDate"] == tmr:
+            tv.setdefault(i["fcstTime"], {})[i["category"]] = i["fcstValue"]
+    tomorrow = None
+    if tv:
+        ttmp = [float(x["TMP"]) for x in tv.values() if "TMP" in x]
+        tn = next((float(x["TMN"]) for x in tv.values() if "TMN" in x), min(ttmp))
+        tx = next((float(x["TMX"]) for x in tv.values() if "TMX" in x), max(ttmp))
+        tday = [t for t in sorted(tv) if "0600" <= t <= "2100"]
+        tpop = max(int(tv[t].get("POP", 0)) for t in tday) if tday else 0
+        tp = [tv[t].get("PTY", "0") for t in tday if tv[t].get("PTY", "0") != "0"]
+        ts = [tv[t].get("SKY", "1") for t in tday]
+        tsky = "rain" if tp else icon_of(max(set(ts), key=ts.count), "0") if ts else "partly"
+        tomorrow = {"min": round(tn), "max": round(tx), "pop": tpop, "sky": tsky}
+    return {"sky": sky, "now_sky": now_sky, "text": text, "min": round(tmn), "max": round(tmx), "pop": pop, "tip": tip, "hourly": hourly, "tomorrow": tomorrow}
 
 
 GRADE = {"1": "좋음", "2": "보통", "3": "나쁨", "4": "매우나쁨"}

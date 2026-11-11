@@ -16,9 +16,10 @@ def weather_now():
     d = json.loads(F.get("https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtNcst", {
         "serviceKey": F.key("DATA_GO_KR_KEY"), "pageNo": 1, "numOfRows": 20, "dataType": "JSON",
         "base_date": b.strftime("%Y%m%d"), "base_time": b.strftime("%H00"), "nx": 61, "ny": 125}))
-    t = next(i for i in d["response"]["body"]["items"]["item"] if i["category"] == "T1H")
-    F.log(f"지금 기온: {t['obsrValue']}° ({b:%H}:00 관측)")
-    return {"t": round(float(t["obsrValue"])), "at": b.strftime("%H:00")}
+    it = {i["category"]: i["obsrValue"] for i in d["response"]["body"]["items"]["item"]}
+    F.log(f"지금 기온: {it.get('T1H')}°, 습도 {it.get('REH')}%, 바람 {it.get('WSD')}m/s ({b:%H}:00 관측)")
+    return {"t": round(float(it["T1H"])), "at": b.strftime("%H:00"),
+            "reh": round(float(it["REH"])) if "REH" in it else None, "wsd": round(float(it["WSD"]), 1) if "WSD" in it else None}
 
 
 def main():
