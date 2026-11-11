@@ -162,7 +162,7 @@ CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fr
     const idx=(it,box)=>`<div class="${box}" style="top:440px"><div class="lbl">${it.code==='KOSPI'?'코스피':'코스닥'}</div>
         <div class="num" style="font-size:${box==='pa'?112:96}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>
         <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${sgn(it.d)} ${fmt(Math.abs(it.d))}</div>
-        <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${(it.pct??pct(it.d,it.v)).toFixed(2)}%</div>
+        <div class="num ${cls(it.d)}" style="font-size:${box==='pa'?54:46}px;font-weight:700">${(v=>(v>0?'+':'')+v.toFixed(2))(it.pct??pct(it.d,it.v))}%</div>
         ${it.hist&&it.hist.length>1?`<div style="margin-top:40px">${spark(it.hist,box==='pa'?510:392,260,it.d>=0?'#ff5a5f':'#4aa8ff')}</div>`:''}</div>`;
     const ipo=ipoItems().slice(0,2);
     const ip=ipo.length?`<div class="hr" style="left:56px;width:1092px;top:1260px"></div>
