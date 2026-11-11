@@ -372,7 +372,7 @@ CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="
    <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:50px 0 34px"></div><div style="font-size:72px;font-weight:800">T204</div><div style="font-size:60px;color:#dbe4f3">오늘의 인사이트</div></div>`};
 
 const COVER_SEC=6, TOTAL_SEC=30;
-const CLIPNAME={finance:'오늘의 금융',weather:'오늘의 날씨',traffic:'오늘의 교통'};
+const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통'};
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
 function coverHtml(k){return `<div class="cover-bg ${k}"></div>
   <div class="pa" style="top:470px">
@@ -380,7 +380,7 @@ function coverHtml(k){return `<div class="cover-bg ${k}"></div>
     <div class="num ctime2" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.6)"></div>
     <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:56px 0 34px"></div>
     <div style="font-size:66px;font-weight:800">T204 오늘의 인사이트</div>
-    <div style="font-size:92px;font-weight:900;color:${CLIPCOLOR[k]};margin-top:22px;letter-spacing:-.03em">${CLIPNAME[k]}</div>
+    <div style="font-size:52px;font-weight:800;color:${CLIPCOLOR[k]};margin-top:20px">${CLIPNAME[k]}</div>
   </div>`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
