@@ -60,6 +60,11 @@ def main():
     if earth.exists():
         import base64
         html = html.replace("/*EARTH*/", "data:image/jpeg;base64," + base64.b64encode(earth.read_bytes()).decode())
+    for ph, fn in [("/*COVER_WEATHER*/", "cover_weather.jpg"), ("/*COVER_TRAFFIC*/", "cover_traffic.jpg")]:
+        f = TPL / "assets" / fn
+        if f.exists() and ph in html:
+            import base64
+            html = html.replace(ph, "data:image/jpeg;base64," + base64.b64encode(f.read_bytes()).decode())
     logo = TPL / "assets" / "logo_joongang.png"
     if logo.exists():
         import base64
