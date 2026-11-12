@@ -32,13 +32,14 @@
   .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
   /* 헤더: 로고는 원본 비율 그대로(가로·세로 비율 고정) */
   .logo{position:absolute;left:56px;top:76px;height:54px;width:auto;display:block;z-index:3}
+  .logo-w{position:absolute;left:56px;bottom:84px;height:40px;width:auto;z-index:3;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
   .clock{z-index:3;position:absolute;left:756px;width:392px;top:66px;text-align:right;font-size:44px;font-weight:700;line-height:1.3}
   .title{position:absolute;left:56px;top:256px;font-size:78px;font-weight:900;letter-spacing:-.03em}
   .lbl{font-size:44px;font-weight:700;color:#dfe7f5}
   .k{font-size:40px;color:var(--sub)}
   .hr{position:absolute;height:2px;background:var(--line)}
   .dot{display:inline-block;width:30px;height:30px;border-radius:50%;margin-left:14px;vertical-align:middle}
-  .src{position:absolute;left:56px;width:510px;bottom:66px;font-size:28px;color:rgba(255,255,255,.75);text-shadow:0 1px 8px rgba(0,0,0,.8)}
+  .src{position:absolute;left:56px;width:510px;bottom:140px;font-size:28px;color:rgba(255,255,255,.75);text-shadow:0 1px 8px rgba(0,0,0,.8)}
   /* 후원사 자리 (B면 하단) */
   .spon{position:absolute;left:756px;width:392px;bottom:56px;height:120px;display:flex;align-items:center;justify-content:flex-end;gap:18px}
   .spon .lab{font-size:28px;color:rgba(255,255,255,.7)}
@@ -68,7 +69,8 @@
 <body>
 <div id="stage">
   <div class="bg" id="bg"></div>
-  <img class="logo" src="/*LOGO*/" alt="The JoongAng">
+  <img class="logo" src="/*LOGO*/" alt="The JoongAng" style="display:none">
+  <img class="logo-w" src="/*LOGO_WHITE*/" alt="The JoongAng">
   <div class="clock"><div id="cdate"></div><div id="ctime"></div></div>
   <div id="content"></div>
   <div class="spon" id="spon"></div>
@@ -235,21 +237,21 @@ CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="
 
 const COVER_SEC=6, TOTAL_SEC=30;
 const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통'};
-const TAGLINE={finance:'오늘의 주요 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식'};
+const TAGLINE={finance:'오늘의 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식'};
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
 function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e){}
   return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="wtint ${wc}"></div><div class="skyline"></div>`:''}
   <div class="pa" style="top:470px;text-shadow:0 2px 14px rgba(0,0,0,.55),0 0 2px rgba(0,0,0,.4)">
     <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px"><span class="num" style="font-size:54px;font-weight:700"><span class="cdate2"></span></span><span class="campm" style="font-size:54px;font-weight:600;color:#dbe4f3"></span></div>
     <div class="num ctime2" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.6)"></div>
-    <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:56px 0 34px"></div>
+    <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:96px 0 54px"></div>
     <div style="font-size:44px;line-height:1.45;color:#eef3fb">중앙일보가 전하는<br>${TAGLINE[k]}</div>
   </div>
   <div style="position:absolute;left:56px;top:64px;display:inline-block;text-shadow:0 2px 12px rgba(0,0,0,.5)">
     <div style="font-size:78px;font-weight:900;line-height:.95;letter-spacing:-.01em">T204</div>
     <div style="display:flex;justify-content:space-between;font-size:25px;font-weight:500;line-height:1;margin-top:9px;padding:0 3px"><span>N</span><span>E</span><span>W</span><span>S</span></div>
   </div>
-  <img src="/*LOGO_WHITE*/" alt="The JoongAng" style="position:absolute;left:56px;bottom:84px;height:40px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))">`}
+`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
   const s=CFG.sponsor, show=/sponsor/.test(location.hash)||CFG.sponsorSlot;
