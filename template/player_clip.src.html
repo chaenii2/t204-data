@@ -32,14 +32,14 @@
   .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
   /* 헤더: 로고는 원본 비율 그대로(가로·세로 비율 고정) */
   .logo{position:absolute;left:56px;top:76px;height:54px;width:auto;display:block;z-index:3}
-  .logo-w{position:absolute;left:56px;bottom:84px;height:40px;width:auto;z-index:3;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+  .logo-w{position:absolute;left:56px;top:76px;height:46px;width:auto;z-index:3;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
   .clock{z-index:3;position:absolute;left:756px;width:392px;top:66px;text-align:right;font-size:44px;font-weight:700;line-height:1.3}
   .title{position:absolute;left:56px;top:256px;font-size:78px;font-weight:900;letter-spacing:-.03em}
   .lbl{font-size:44px;font-weight:700;color:#dfe7f5}
   .k{font-size:40px;color:var(--sub)}
   .hr{position:absolute;height:2px;background:var(--line)}
   .dot{display:inline-block;width:30px;height:30px;border-radius:50%;margin-left:14px;vertical-align:middle}
-  .src{position:absolute;left:56px;width:510px;bottom:140px;font-size:28px;color:rgba(255,255,255,.75);text-shadow:0 1px 8px rgba(0,0,0,.8)}
+  .src{position:absolute;left:56px;width:510px;bottom:66px;font-size:28px;color:rgba(255,255,255,.75);text-shadow:0 1px 8px rgba(0,0,0,.8)}
   /* 후원사 자리 (B면 하단) */
   .spon{position:absolute;left:756px;width:392px;bottom:56px;height:120px;display:flex;align-items:center;justify-content:flex-end;gap:18px}
   .spon .lab{font-size:28px;color:rgba(255,255,255,.7)}
@@ -251,7 +251,7 @@ function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e)
     <div style="font-size:78px;font-weight:900;line-height:.95;letter-spacing:-.01em">T204</div>
     <div style="display:flex;justify-content:space-between;font-size:25px;font-weight:500;line-height:1;margin-top:9px;padding:0 3px"><span>N</span><span>E</span><span>W</span><span>S</span></div>
   </div>
-`}
+  <img src="/*LOGO_WHITE*/" alt="The JoongAng" style="position:absolute;left:56px;bottom:84px;height:40px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))">`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
   const s=CFG.sponsor, show=/sponsor/.test(location.hash)||CFG.sponsorSlot;
@@ -283,12 +283,11 @@ function frame(t){
   t=((t%TOTAL_SEC)+TOTAL_SEC)%TOTAL_SEC;
   const els=document.querySelectorAll('#content .page'); let a=0;
   els.forEach((e,i)=>{const b=a+DUR[i]; let v;
-    if(i===0&&t<TR) v=ease(t/TR);                                   // 처음 등장
-    else if(i>0&&t>=a-TR/2&&t<a+TR/2) v=ease((t-(a-TR/2))/TR);      // 들어오는 중
+    if(i>0&&t>=a-TR/2&&t<a+TR/2) v=ease((t-(a-TR/2))/TR);      // 들어오는 중
     else if(i<els.length-1&&t>=b-TR/2&&t<b+TR/2) v=1-ease((t-(b-TR/2))/TR); // 나가는 중
     else v=(t>=a&&t<b)?1:0;
     e.style.opacity=v; e.style.filter=v>=.999?'none':`blur(${((1-v)*BLUR).toFixed(1)}px)`;
-    if(i===0&&els.length>1){document.querySelector('.clock').style.opacity=1-v;document.querySelector('.logo').style.opacity=1-v;}
+    if(i===0&&els.length>1){document.querySelector('.clock').style.opacity=1-v;document.querySelector('.logo').style.opacity=1-v;document.querySelector('.logo-w').style.opacity=1-v;}
     a=b;});
   showPage(pageAt(t));
 }
