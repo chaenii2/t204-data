@@ -28,7 +28,7 @@
   .bg-w-rain{background:linear-gradient(180deg,#151c2a 0%,#25303f 40%,#3a4656 70%,#4c5868 100%)}
   .bg-w-snow{background:linear-gradient(180deg,#1a2848 0%,#33496f 40%,#5c7699 72%,#7e95b5 100%)}
   .bg-sky{background:linear-gradient(180deg,#1b2f52 0%,#2c3f63 34%,#4d5a78 60%,#7d6a6a 82%,#4a3a3a 100%)}
-  .bg-green{background:radial-gradient(70% 40% at 80% 85%,rgba(60,220,170,.22),transparent 70%),linear-gradient(180deg,#0b3a33 0%,#0a2c28 55%,#06201d 100%)}
+  .bg-green{background:radial-gradient(90% 45% at 80% 92%,rgba(80,230,195,.38),transparent 70%),radial-gradient(70% 35% at 10% 0%,rgba(40,160,140,.22),transparent 70%),linear-gradient(180deg,#0a2f2b 0%,#0d4740 45%,#11685b 78%,#178a74 100%)}
   .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
   /* 헤더: 로고는 원본 비율 그대로(가로·세로 비율 고정) */
   .logo{position:absolute;left:56px;top:76px;height:54px;width:auto;display:block;z-index:3}
@@ -229,7 +229,7 @@ CL.traffic={bg:'bg-green',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.
       <div class="pb" style="top:430px"><div class="k" style="margin-bottom:26px">구간별 속도</div>${segs.map(seg).join('')}</div>
       ${cg?`<div class="hr" style="left:56px;width:1092px;top:1395px"></div>
       <div class="pa" style="top:1430px;display:flex;align-items:center;gap:22px;width:1092px">${icon('people',84,3)}<span style="font-size:48px;font-weight:700">역삼역 일대 혼잡도</span></div>
-      <div class="pb" style="top:1430px;text-align:right;font-size:72px;font-weight:900;color:${cgc};line-height:1.1">${cg}</div>`:''}`;
+      <div class="pb" style="top:1430px;text-align:right;font-size:72px;font-weight:900;color:${cgc};line-height:1.1;text-shadow:0 2px 14px rgba(0,0,0,.55)">${cg}</div>`:''}`;
   }};
 /* 데이터가 없을 때: 브랜드 화면 */
 CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="top:560px"><div class="num" id="bigtime" style="font-size:190px;font-weight:800;letter-spacing:-.03em;text-shadow:0 0 28px rgba(140,190,255,.7)"></div>
