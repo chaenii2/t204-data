@@ -64,7 +64,7 @@ def main():
     if sk.exists() and "/*SKYLINE*/" in html:
         import base64
         html = html.replace("/*SKYLINE*/", "data:image/png;base64," + base64.b64encode(sk.read_bytes()).decode())
-    for ph, fn in [("/*COVER_WEATHER*/", "cover_weather.jpg"), ("/*COVER_TRAFFIC*/", "cover_traffic.jpg")]:
+    for ph, fn in [("/*COVER_WEATHER*/", "cover_weather.jpg"), ("/*COVER_TRAFFIC*/", "cover_traffic.jpg"), ("/*COVER_FINANCE*/", "cover_finance.jpg")]:
         f = TPL / "assets" / fn
         if f.exists() and ph in html:
             import base64

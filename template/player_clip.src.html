@@ -56,6 +56,7 @@
   .wtint{position:absolute;inset:0;mix-blend-mode:color;opacity:.85}
   .wtint.bg-w-cool{opacity:.35}
   .skyline{position:absolute;left:0;right:0;bottom:0;height:620px;background:url(/*SKYLINE*/) center bottom/100% 620px no-repeat;pointer-events:none}
+  .cover-bg.finance{background:#0a1a3c url(/*COVER_FINANCE*/) center/cover no-repeat}
   .cover-bg.weather{background:#1b2a4a url(/*COVER_WEATHER*/) center/cover no-repeat}
   .cover-bg.traffic{background:#06201f url(/*COVER_TRAFFIC*/) center/cover no-repeat}
   .intro{animation:in .9s cubic-bezier(.2,.7,.2,1) both}
@@ -245,22 +246,18 @@ const TAGLINE={finance:'오늘의 주요 경제 소식',weather:'오늘의 날�
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
 const LOGO_SRC=(document.querySelector('.logo')||{}).getAttribute?document.querySelector('.logo').getAttribute('src'):'';
 function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e){}
-  return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="wtint ${wc}"></div><div class="skyline"></div>`:''}<div class="cv-vig"></div>
-  <div class="cv" style="top:250px">
-    <div class="cv-rule" style="width:300px"></div>
-    <div class="cv-serif" style="font-size:76px;font-weight:600;letter-spacing:.12em;margin:30px 0 26px;padding-left:.12em;color:#fff;white-space:nowrap">T204 NEWS</div>
-    <div class="cv-rule" style="width:300px"></div>
+  return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="wtint ${wc}"></div><div class="skyline"></div>`:''}<div class="cv-vig" style="opacity:.6"></div>
+  <div class="cv" style="top:200px">
+    <div style="font-size:150px;font-weight:900;line-height:1;letter-spacing:-.03em">T204</div>
+    <div style="width:340px;height:12px;margin:26px auto 26px;border-radius:2px;background:linear-gradient(90deg,#ff2020 0%,#e5121c 55%,rgba(150,10,20,.0) 100%)"></div>
+    <div style="font-size:50px;font-weight:500;letter-spacing:.9em;padding-left:.9em;line-height:1">NEWS</div>
   </div>
-  <div class="cv" style="top:600px">
-    <div class="num" style="font-size:40px;font-weight:500;letter-spacing:.22em;color:#e9dcc0;padding-left:.22em"><span class="cdate2"></span>&nbsp;&nbsp;<span class="campm"></span></div>
-    <div class="cv-serif num ctime2" style="font-size:184px;font-weight:600;line-height:1;margin-top:18px;letter-spacing:.01em;text-shadow:0 0 36px rgba(255,236,200,.35),0 4px 24px rgba(0,0,0,.5)"></div>
+  <div class="cv" style="top:640px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;width:470px;margin:0 auto;font-size:46px;font-weight:700"><span class="num cdate2"></span><span class="campm"></span></div>
+    <div class="num ctime2" style="font-size:168px;font-weight:900;line-height:1.05;margin-top:12px;letter-spacing:-.02em;text-shadow:0 0 30px rgba(170,210,255,.75),0 0 8px rgba(255,255,255,.5)"></div>
   </div>
-  <div class="cv" style="top:1090px">
-    <div style="width:10px;height:10px;margin:0 auto 40px;transform:rotate(45deg);background:#d9b878"></div>
-    <div class="cv-ko" style="font-size:40px;font-weight:300;letter-spacing:.12em;color:#efe6d4">중앙일보가 전하는</div>
-    <div class="cv-ko" style="font-size:50px;font-weight:700;letter-spacing:.02em;margin-top:14px;white-space:nowrap">${TAGLINE[k]}</div>
-  </div>
-  <div class="cv" style="top:1600px"><img src="${LOGO_SRC}" alt="The JoongAng" style="height:54px;width:auto;display:inline-block;filter:drop-shadow(0 2px 10px rgba(0,0,0,.6))"></div>`}
+  <div class="cv" style="top:1040px;font-size:48px;font-weight:400;line-height:1.45">중앙일보가 전하는<br>${TAGLINE[k]}</div>
+  <div class="cv" style="top:1640px"><img src="${LOGO_SRC}" alt="The JoongAng" style="height:54px;width:auto;display:inline-block;filter:drop-shadow(0 2px 10px rgba(0,0,0,.6))"></div>`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
   const s=CFG.sponsor, show=/sponsor/.test(location.hash)||CFG.sponsorSlot;
