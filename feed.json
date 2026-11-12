@@ -1,51 +1,51 @@
 {
- "generated_at": "2026-11-12 23:58",
+ "generated_at": "2026-11-13 00:12",
  "location": "테헤란로 204 · 역삼",
  "weather": {
   "sky": "partly",
   "now_sky": "partly",
   "text": "구름많음",
-  "min": 5,
-  "max": 16,
+  "min": 8,
+  "max": 17,
   "pop": 30,
-  "tip": "일교차 11도, 겉옷을 챙기세요",
+  "tip": "활동하기 좋은 날씨예요",
   "hourly": [
    {
     "h": "6시",
-    "t": 6,
+    "t": 8,
     "sky": "cloudy"
    },
    {
     "h": "9시",
-    "t": 8,
+    "t": 10,
     "sky": "partly"
    },
    {
     "h": "12시",
-    "t": 14,
+    "t": 15,
     "sky": "partly"
    },
    {
     "h": "15시",
-    "t": 16,
+    "t": 17,
     "sky": "partly"
    },
    {
     "h": "18시",
-    "t": 12,
+    "t": 14,
     "sky": "partly"
    },
    {
     "h": "21시",
-    "t": 11,
+    "t": 12,
     "sky": "cloudy"
    }
   ],
   "tomorrow": {
-   "min": 8,
-   "max": 18,
-   "pop": 30,
-   "sky": "partly"
+   "min": 11,
+   "max": 16,
+   "pop": 60,
+   "sky": "rain"
   },
   "pm": "보통",
   "pm25": "보통",
@@ -272,9 +272,9 @@
   "rates": "한국은행 ECOS (ecos.bok.or.kr)"
  },
  "traffic": {
-  "basis": "23:55 기준 · 서울시 도시데이터",
-  "status": "서행",
-  "kmh": 24,
+  "basis": "00:10 기준 · 서울시 도시데이터",
+  "status": "원활",
+  "kmh": 30,
   "segments": [
    {
     "name": "강남역 부근",
@@ -282,30 +282,30 @@
    },
    {
     "name": "역삼역 부근",
-    "kmh": 26
+    "kmh": 31
    },
    {
     "name": "선릉역 부근",
-    "kmh": 25
+    "kmh": 34
    },
    {
     "name": "삼성역 부근",
-    "kmh": 18
+    "kmh": 22
    }
   ],
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 20
+    "kmh": 24
    },
    {
     "name": "선릉로",
-    "kmh": 28
+    "kmh": 31
    }
   ],
   "congest": "여유",
   "congest_msg": "사람이 몰려있을 가능성이 낮고 붐빔은 거의 느껴지지 않아요",
-  "ts": "2026-11-12 23:58"
+  "ts": "2026-11-13 00:12"
  },
  "kr_hist": {
   "KOSPI": [
