@@ -53,6 +53,10 @@
   .cover-bg{position:absolute;inset:0;background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
   .wtint{position:absolute;inset:0;mix-blend-mode:color;opacity:.85}
   .wtint.bg-w-cool{opacity:.35}
+  .sk-clear{filter:brightness(1.55) saturate(1.1)}
+  .sk-partly{filter:brightness(1.35)}
+  .sk-cloudy{filter:brightness(1.15)}
+  .sk-wet{filter:brightness(.95)}
   .skyline{position:absolute;left:0;right:0;bottom:0;height:620px;background:url(/*SKYLINE*/) center bottom/100% 620px no-repeat;pointer-events:none}
   .cover-bg.weather{background:#1b2a4a url(/*COVER_WEATHER*/) center/cover no-repeat}
   .cover-bg.traffic{background:#06201f url(/*COVER_TRAFFIC*/) center/cover no-repeat}
@@ -242,8 +246,9 @@ const COVER_SEC=6, TOTAL_SEC=30;
 const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통'};
 const TAGLINE={finance:'오늘의 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식'};
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
+function skyLvl(){const w=DATA.weather||{},s=w.now_sky||w.sky;return s==='clear'?'clear':s==='partly'?'partly':s==='cloudy'?'cloudy':'wet'}
 function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e){}
-  return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="wtint ${wc}"></div><div class="skyline"></div>`:''}
+  return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="skyline sk-${skyLvl()}"></div><div class="wtint ${wc}"></div>`:''}
   <div class="pa" style="top:470px;text-shadow:0 2px 14px rgba(0,0,0,.55),0 0 2px rgba(0,0,0,.4)">
     <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px"><span class="num" style="font-size:54px;font-weight:700"><span class="cdate2"></span></span><span class="campm" style="font-size:54px;font-weight:600;color:#dbe4f3"></span></div>
     <div class="num ctime2" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.6)"></div>
