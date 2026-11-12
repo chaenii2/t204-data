@@ -77,7 +77,7 @@
 <div id="stage">
   <div class="bg" id="bg"></div>
   <img class="logo" src="/*LOGO*/" alt="The JoongAng" style="display:none">
-  <div class="t204n"><div class="t204n-t">T204</div><div class="t204n-n"><span>N</span><span>E</span><span>W</span><span>S</span></div></div>
+  <div class="t204n"><div class="t204n-t">T204</div></div>
   <div class="clock"><div id="cdate"></div><div id="ctime"></div></div>
   <div id="content"></div>
   <div class="spon" id="spon"></div>
@@ -242,7 +242,7 @@ CL.traffic={bg:'bg-green',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.
 CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="top:560px"><div class="num" id="bigtime" style="font-size:190px;font-weight:800;letter-spacing:-.03em;text-shadow:0 0 28px rgba(140,190,255,.7)"></div>
    <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:50px 0 34px"></div><div style="font-size:72px;font-weight:800">T204</div><div style="font-size:60px;color:#dbe4f3">오늘의 인사이트</div></div>`};
 
-const COVER_SEC=6, TOTAL_SEC=30;
+const COVER_SEC=6, TOTAL_SEC=30, USE_COVER=false;   // 표지 없이 설명지만 송출
 const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통'};
 const TAGLINE={finance:'오늘의 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식'};
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
@@ -269,8 +269,8 @@ function draw(intro){
   $('#bg').className='bg '+(typeof c.bg==='function'?c.bg():c.bg);
   let h='';try{h=c.html()}catch(e){console.warn(e);c=CL.brand;$('#bg').className='bg bg-brand';h=c.html()}
   PAGES=Array.isArray(h)?h:[h]; CUR=c;
-  if(k!=='brand'){PAGES=[coverHtml(k),...PAGES]}
-  const n=PAGES.length; DUR=k==='brand'?[TOTAL_SEC]:[COVER_SEC,...Array(n-1).fill((TOTAL_SEC-COVER_SEC)/(n-1))];
+  if(k!=='brand'&&USE_COVER){PAGES=[coverHtml(k),...PAGES]}
+  const n=PAGES.length; DUR=(k==='brand'||!USE_COVER)?Array(n).fill(TOTAL_SEC/n):[COVER_SEC,...Array(n-1).fill((TOTAL_SEC-COVER_SEC)/(n-1))];
   if(intro) T0=performance.now();
   $('#content').innerHTML=PAGES.map(x=>`<div class="page" style="position:absolute;inset:0;opacity:0;will-change:opacity,filter">${x}</div>`).join('');
   SHOWN=-1; frame(nowT());
@@ -291,13 +291,13 @@ function frame(t){
     else if(i<els.length-1&&t>=b-TR/2&&t<b+TR/2) v=1-ease((t-(b-TR/2))/TR); // 나가는 중
     else v=(t>=a&&t<b)?1:0;
     e.style.opacity=v; e.style.filter=v>=.999?'none':`blur(${((1-v)*BLUR).toFixed(1)}px)`;
-    if(i===0&&els.length>1){document.querySelector('.clock').style.opacity=1-v;document.querySelector('.logo').style.opacity=1-v;}
+    if(USE_COVER&&i===0&&els.length>1){document.querySelector('.clock').style.opacity=1-v;document.querySelector('.logo').style.opacity=1-v;}
     a=b;});
   showPage(pageAt(t));
 }
 function showPage(p,force){if(p===SHOWN&&!force)return;SHOWN=p;
-  const cov=PAGES.length>1&&p===0;
-  $('#src').textContent=cov?'':((CUR&&typeof CUR.src==='function'?CUR.src(p-(PAGES.length>1?1:0)):'')||'');
+  const cov=USE_COVER&&PAGES.length>1&&p===0;
+  $('#src').textContent=cov?'':((CUR&&typeof CUR.src==='function'?CUR.src(p-(USE_COVER&&PAGES.length>1?1:0)):'')||'');
 }
 function clockTick(){const k=kst(),h=k.getHours(),dw='일월화수목금토'[k.getDay()],hm=`${pad(h%12||12)}:${pad(k.getMinutes())}`,ap=h<12?'AM':'PM';
   $('#cdate').textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())}(${dw})`;$('#ctime').textContent=`${hm} ${ap}`;
