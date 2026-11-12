@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-12 17:22",
+ "generated_at": "2026-11-12 17:37",
  "location": "테헤란로 204 · 역삼",
  "weather": {
   "sky": "partly",
@@ -93,6 +93,13 @@
   ]
  },
  "ipo_list": [
+  {
+   "name": "KTE",
+   "start": "2026-12-14",
+   "end": "2026-12-15",
+   "price": "19,000원",
+   "broker": "대표주관 NH투자증권"
+  },
   {
    "name": "유캐스트",
    "start": "2026-11-18",
@@ -258,40 +265,40 @@
   "rates": "한국은행 ECOS (ecos.bok.or.kr)"
  },
  "traffic": {
-  "basis": "17:20 기준 · 서울시 도시데이터",
-  "status": "서행",
-  "kmh": 15,
+  "basis": "17:35 기준 · 서울시 도시데이터",
+  "status": "정체",
+  "kmh": 14,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 8
+    "kmh": 13
    },
    {
     "name": "역삼역 부근",
-    "kmh": 10
+    "kmh": 12
    },
    {
     "name": "선릉역 부근",
-    "kmh": 20
+    "kmh": 17
    },
    {
     "name": "삼성역 부근",
-    "kmh": 14
+    "kmh": 10
    }
   ],
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 12
+    "kmh": 13
    },
    {
     "name": "선릉로",
-    "kmh": 18
+    "kmh": 14
    }
   ],
   "congest": "약간 붐빔",
   "congest_msg": "사람들이 몰려있을 가능성이 크고 붐빈다고 느낄 수 있어요",
-  "ts": "2026-11-12 17:22"
+  "ts": "2026-11-12 17:37"
  },
  "kr_hist": {
   "KOSPI": [
