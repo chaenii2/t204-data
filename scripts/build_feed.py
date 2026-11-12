@@ -18,8 +18,24 @@ def weather_now():
         "base_date": b.strftime("%Y%m%d"), "base_time": b.strftime("%H00"), "nx": 61, "ny": 125}))
     it = {i["category"]: i["obsrValue"] for i in d["response"]["body"]["items"]["item"]}
     F.log(f"지금 기온: {it.get('T1H')}°, 습도 {it.get('REH')}%, 바람 {it.get('WSD')}m/s ({b:%H}:00 관측)")
-    return {"t": round(float(it["T1H"])), "at": b.strftime("%H:00"),
+    return {"t": round(float(it["T1H"])), "at": b.strftime("%H:00"), "pty": str(it.get("PTY", "0")).split(".")[0],
             "reh": round(float(it["REH"])) if "REH" in it else None, "wsd": round(float(it["WSD"]), 1) if "WSD" in it else None}
+
+
+def weather_ultra():
+    """초단기예보(30분마다 발표): 지금 시각의 하늘 상태(SKY)"""
+    b = F.NOW - timedelta(minutes=45)
+    d = json.loads(F.get("https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getUltraSrtFcst", {
+        "serviceKey": F.key("DATA_GO_KR_KEY"), "pageNo": 1, "numOfRows": 60, "dataType": "JSON",
+        "base_date": b.strftime("%Y%m%d"), "base_time": b.strftime("%H30"), "nx": 61, "ny": 125}))
+    v = {}
+    for i in d["response"]["body"]["items"]["item"]:
+        v.setdefault(i["fcstDate"] + i["fcstTime"], {})[i["category"]] = i["fcstValue"]
+    cur = F.NOW.strftime("%Y%m%d%H00")
+    t = min((k for k in v if k >= cur and "SKY" in v[k]), default=None) or max((k for k in v if "SKY" in v[k]), default=None)
+    if not t:
+        return None
+    return {"sky": v[t].get("SKY"), "pty": v[t].get("PTY", "0"), "at": f"{t[8:10]}:{t[10:]}", "base": b.strftime("%H:30")}
 
 
 def main():
@@ -30,6 +46,15 @@ def main():
         now = F.safe(weather_now, None)
         if now:
             w["now"] = now
+        # 지금 하늘: 실제 관측된 비·눈(초단기실황) 우선, 아니면 초단기예보의 현재 시각 하늘
+        ul = F.safe(weather_ultra, None)
+        if now and now.get("pty", "0") not in ("0", ""):
+            w["now_sky"], w["now_text"] = F.pty_icon(now["pty"]), F.PTY.get(now["pty"], "비")
+            w["now_basis"] = f"{now['at']} 관측"
+        elif ul:
+            w["now_sky"], w["now_text"] = F.icon_of(ul["sky"], "0"), F.SKY.get(ul["sky"], "구름많음")
+            w["now_basis"] = f"{ul['at']} 초단기예보({ul['base']} 발표)"
+        F.log(f"지금 하늘: {w.get('now_sky')} / {w.get('now_text')} ({w.get('now_basis', '단기예보 기준')})")
     ipos = F.safe(F.ipo, [])
     feed = {
         "generated_at": F.NOW.strftime("%Y-%m-%d %H:%M"),
