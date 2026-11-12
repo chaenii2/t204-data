@@ -243,9 +243,11 @@ function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e)
     <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px"><span class="num" style="font-size:54px;font-weight:700"><span class="cdate2"></span></span><span class="campm" style="font-size:54px;font-weight:600;color:#dbe4f3"></span></div>
     <div class="num ctime2" style="font-size:192px;font-weight:800;letter-spacing:-.03em;line-height:1.02;margin:6px 0 0 -8px;text-shadow:0 0 28px rgba(140,190,255,.6)"></div>
     <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:56px 0 34px"></div>
-    <div style="font-size:76px;font-weight:800;line-height:1.15">T204</div><div style="font-size:58px;font-weight:400;color:#dbe4f3;margin-top:4px">오늘의 인사이트</div>
-    <div style="font-size:44px;font-weight:700;color:${CLIPCOLOR[k]};margin-top:26px">${CLIPNAME[k]}</div>
-    <div style="font-size:40px;line-height:1.45;color:#eef3fb;margin-top:44px">중앙일보가 전하는<br>${TAGLINE[k]}</div>
+    <div style="display:inline-block">
+      <div style="font-size:124px;font-weight:900;line-height:.95;letter-spacing:-.01em">T204</div>
+      <div style="display:flex;justify-content:space-between;font-size:40px;font-weight:500;line-height:1;margin-top:14px;padding:0 4px"><span>N</span><span>E</span><span>W</span><span>S</span></div>
+    </div>
+    <div style="font-size:40px;line-height:1.45;color:#eef3fb;margin-top:60px">중앙일보가 전하는<br>${TAGLINE[k]}</div>
   </div>`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
