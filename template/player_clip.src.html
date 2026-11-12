@@ -248,7 +248,8 @@ function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e)
       <div style="display:flex;justify-content:space-between;font-size:40px;font-weight:500;line-height:1;margin-top:14px;padding:0 4px"><span>N</span><span>E</span><span>W</span><span>S</span></div>
     </div>
     <div style="font-size:40px;line-height:1.45;color:#eef3fb;margin-top:60px">중앙일보가 전하는<br>${TAGLINE[k]}</div>
-  </div>`}
+  </div>
+  <img src="/*LOGO_WHITE*/" alt="The JoongAng" style="position:absolute;left:56px;bottom:84px;height:40px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))">`}
 function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
   const s=CFG.sponsor, show=/sponsor/.test(location.hash)||CFG.sponsorSlot;
@@ -285,7 +286,7 @@ function frame(t){
     else if(i<els.length-1&&t>=b-TR/2&&t<b+TR/2) v=1-ease((t-(b-TR/2))/TR); // 나가는 중
     else v=(t>=a&&t<b)?1:0;
     e.style.opacity=v; e.style.filter=v>=.999?'none':`blur(${((1-v)*BLUR).toFixed(1)}px)`;
-    if(i===0&&els.length>1) document.querySelector('.clock').style.opacity=1-v;
+    if(i===0&&els.length>1){document.querySelector('.clock').style.opacity=1-v;document.querySelector('.logo').style.opacity=1-v;}
     a=b;});
   showPage(pageAt(t));
 }

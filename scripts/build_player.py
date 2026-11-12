@@ -69,6 +69,10 @@ def main():
         if f.exists() and ph in html:
             import base64
             html = html.replace(ph, "data:image/jpeg;base64," + base64.b64encode(f.read_bytes()).decode())
+    lw = TPL / "assets" / "logo_joongang_white.png"
+    if lw.exists() and "/*LOGO_WHITE*/" in html:
+        import base64
+        html = html.replace("/*LOGO_WHITE*/", "data:image/png;base64," + base64.b64encode(lw.read_bytes()).decode())
     logo = TPL / "assets" / "logo_joongang.png"
     if logo.exists():
         import base64
