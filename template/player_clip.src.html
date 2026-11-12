@@ -32,17 +32,17 @@
   .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
   /* 헤더: 로고는 원본 비율 그대로(가로·세로 비율 고정) */
   .logo{position:absolute;left:56px;top:76px;height:54px;width:auto;display:block;z-index:3}
-  .t204n{position:absolute;left:56px;top:64px;display:inline-block;z-index:3;text-shadow:0 2px 12px rgba(0,0,0,.5)}
-  .t204n-t{font-size:78px;font-weight:900;line-height:.95;letter-spacing:-.01em}
+  .t204n{position:absolute;left:56px;top:178px;display:inline-block;z-index:3;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+  .t204n-t{font-size:56px;font-weight:900;line-height:.95;letter-spacing:-.01em}
   .t204n-n{display:flex;justify-content:space-between;font-size:34px;font-weight:700;line-height:1;margin-top:10px;padding:0 2px}
-  .logo-w{position:absolute;left:56px;top:76px;height:40px;width:auto;z-index:3;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
+  .logo-w{position:absolute;left:56px;bottom:84px;height:40px;width:auto;z-index:3;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
   .clock{z-index:3;position:absolute;left:756px;width:392px;top:66px;text-align:right;font-size:44px;font-weight:700;line-height:1.3}
   .title{position:absolute;left:56px;top:256px;font-size:78px;font-weight:900;letter-spacing:-.03em}
   .lbl{font-size:44px;font-weight:700;color:#dfe7f5}
   .k{font-size:40px;color:var(--sub)}
   .hr{position:absolute;height:2px;background:var(--line)}
   .dot{display:inline-block;width:30px;height:30px;border-radius:50%;margin-left:14px;vertical-align:middle}
-  .src{position:absolute;left:56px;width:510px;bottom:66px;font-size:28px;color:rgba(255,255,255,.75);text-shadow:0 1px 8px rgba(0,0,0,.8)}
+  .src{position:absolute;left:56px;width:510px;bottom:140px;font-size:28px;color:rgba(255,255,255,.75);text-shadow:0 1px 8px rgba(0,0,0,.8)}
   /* 후원사 자리 (B면 하단) */
   .spon{position:absolute;left:756px;width:392px;bottom:56px;height:120px;display:flex;align-items:center;justify-content:flex-end;gap:18px}
   .spon .lab{font-size:28px;color:rgba(255,255,255,.7)}
@@ -78,6 +78,7 @@
   <div class="bg" id="bg"></div>
   <img class="logo" src="/*LOGO*/" alt="The JoongAng" style="display:none">
   <div class="t204n"><div class="t204n-t">T204</div></div>
+  <img class="logo-w" src="/*LOGO_WHITE*/" alt="The JoongAng">
   <div class="clock"><div id="cdate"></div><div id="ctime"></div></div>
   <div id="content"></div>
   <div class="spon" id="spon"></div>
