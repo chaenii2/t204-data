@@ -53,7 +53,8 @@ def main():
         cfg["keys"] = {"DATA_GO_KR_KEY": os.environ.get("DATA_GO_KR_KEY", "").strip()}
         cfg["feedUrl"] = a.feed_url
     html = (TPL / a.template).read_text(encoding="utf-8")
-    html = html.replace("/*DATA*/", json.dumps(finalize_embedded(feed), ensure_ascii=False))
+    # 외부 문구(채용공고 제목 등)에 </script> 가 있어도 페이지가 깨지지 않게 '</' 를 이스케이프
+    html = html.replace("/*DATA*/", json.dumps(finalize_embedded(feed), ensure_ascii=False).replace("</", "<\\/"))
     html = html.replace("/*CONFIG*/", json.dumps(cfg, ensure_ascii=False))
     html = html.replace("/*LOADER*/", (TPL / "loader.js").read_text(encoding="utf-8"))
     earth = TPL / "assets" / "earth_bg.jpg"

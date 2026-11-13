@@ -261,10 +261,10 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
     // 15초: 앞 6장은 살짝 위로 빠지며 사라지고, 다음 6장이 아래에서 한 장씩(0.08초 간격) 촤라락 올라옴
     const H=CL.jobs.ROW*CL.jobs.PER, a=15, gap=.08, ez=x=>x<=0?0:x>=1?1:1-Math.pow(1-x,3);
     let mid=0;
-    el.querySelectorAll('.jrow').forEach(r=>{const i=+r.dataset.i, k=i%CL.jobs.PER; let y=0, o=1;
-      if(n>1&&i<CL.jobs.PER){const x=ez((t-(a-.45)-k*.03)/.35); y=-x*70; o=1-x;}
+    el.querySelectorAll('.jrow').forEach(r=>{const k=+r.dataset.k, pg=+r.dataset.p; let y=0, o=1;
+      if(n>1&&pg===0){const x=ez((t-(a-.45)-k*.03)/.35); y=-x*70; o=1-x;}
       else if(n>1){const x=ez((t-a-k*gap)/.6); y=-H+(1-x)*220; o=x;}
-      if(i===CL.jobs.PER+2)mid=o;
+      if(pg===1&&k===0)mid=o;
       r.style.transform=`translateY(${y.toFixed(1)}px)`; r.style.opacity=o.toFixed(3);});
     const p=document.getElementById('jpg'); if(p) p.textContent=(mid>=.5?2:1)+' / '+n;
     // 진행 바: 화면마다 0→100% (2화면이면 15초, 1화면이면 30초)
@@ -272,7 +272,7 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
     const fl=document.getElementById('jbarf'), dt=document.getElementById('jbard');
     if(fl) fl.style.width=(f*W).toFixed(1)+'px'; if(dt) dt.style.left=(56+f*W).toFixed(1)+'px';},
   html:()=>{
-    const J=DATA.jobs, L=J.items.slice(0,12), R=CL.jobs.ROW, P=CL.jobs.PER, pages=L.length>P?2:1;
+    const J=DATA.jobs, L=J.items.slice(0,12), R=CL.jobs.ROW, P=CL.jobs.PER, pages=L.length>P?2:1, PP=pages>1?Math.ceil(L.length/2):L.length;  // 7~11건이면 반씩 나눔
     const esc=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const k=kst(), t0=new Date(k.getFullYear(),k.getMonth(),k.getDate());
     const due=e=>{if(!e)return ['상시 채용','#9fd8ff'];const [y,m,d]=e.split('-').map(Number);const n=Math.round((new Date(y,m-1,d)-t0)/86400000);
@@ -286,8 +286,8 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
     const ik=o=>{const s=(o.title+' '+(o.cat||'')).toLowerCase();
       return /게임|game/.test(s)?'game':/devops|클라우드|인프라|cloud/.test(s)?'cloud':/데이터|분석|data|ml|ai|머신/.test(s)?'chart':/디자인|디자이너|design|ux|ui/.test(s)?'pen':
         /마케팅|마케터|그로스|광고|marketing|brand/.test(s)?'mega':/재무|회계|ir|증권|금융|finance/.test(s)?'coin':/개발|엔지니어|프로그래머|ios|android|backend|front|server/.test(s)?'code':'bag'};
-    const row=(o,i)=>{const [dt,dc]=due(o.end);const top=i*R, h=R-20;
-      return `<div class="jrow" data-i="${i}" style="position:absolute;left:0;top:0;width:1200px;will-change:transform"><div style="position:absolute;left:36px;width:1128px;top:${top}px;height:${h}px;border-radius:22px;
+    const row=(o,i)=>{const [dt,dc]=due(o.end);const pg=Math.floor(i/PP), k=i%PP, top=pg*R*P+k*R, h=R-20;
+      return `<div class="jrow" data-i="${i}" data-k="${k}" data-p="${pg}" style="position:absolute;left:0;top:0;width:1200px;will-change:transform"><div style="position:absolute;left:36px;width:1128px;top:${top}px;height:${h}px;border-radius:22px;
           background:linear-gradient(90deg,rgba(30,80,190,.5),rgba(20,55,150,.32));border:2px solid rgba(150,205,255,.38);
           box-shadow:inset 0 0 34px rgba(120,190,255,.16),inset 0 1px 0 rgba(255,255,255,.22),0 10px 30px rgba(0,10,50,.35)"></div>
         <div style="position:absolute;left:62px;width:504px;top:${top+22}px"><div style="font-size:48px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.company)}</div>
