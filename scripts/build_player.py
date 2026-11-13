@@ -78,7 +78,7 @@ def main():
         import base64
         html = html.replace("/*LOGO*/", "data:image/png;base64," + base64.b64encode(logo.read_bytes()).decode())
     out = pathlib.Path(a.out)
-out.mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
     (out / "index.html").write_text(html, encoding="utf-8")
     if a.zip:
         with zipfile.ZipFile(a.zip, "w", zipfile.ZIP_DEFLATED) as z:
