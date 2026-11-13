@@ -156,7 +156,7 @@ def rates():
 
 # ---------- 채용 (로켓펀치 Open API) ----------
 # 채용공고 조회는 로켓펀치 관리자 승인 후 응답이 옴. 승인 전·실패 시 None → 화면에서 채용 클립 제외
-RP_BASE = "https://openapi.rocketpunch.com/api/v1/jobs"
+RP_BASE = "https://openapi.rocketpunch.com/v1/jobs"
 SIZE_KO = {"HUGE": "대기업", "LARGE": "중견기업", "MEDIUM": "중소기업", "SMALL": "스타트업", "TINY": "스타트업"}
 SIZE_RANK = {"HUGE": 0, "LARGE": 1, "MEDIUM": 2, "SMALL": 3, "TINY": 3}
 # 화면에 맞지 않는 공고(영업 설명회·설계사 모집 등) 제외
