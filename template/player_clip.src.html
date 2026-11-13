@@ -241,24 +241,36 @@ CL.traffic={bg:'bg-green',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.
       <div class="pb" style="top:1430px;text-align:right;font-size:72px;font-weight:900;color:${cgc};line-height:1.1;text-shadow:0 2px 14px rgba(0,0,0,.55)">${cg}</div>`:''}`;
   }};
 CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length)return false;if(!J.ts)return true;const [d,h]=J.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=24*3600000},
-  src:()=>DATA.jobs.basis||'로켓펀치',
+  src:()=>DATA.jobs.basis||'',
+  // 제공 데이터 표기(후원사 자리 대신)
+  spon:()=>`<span class="lab" style="white-space:nowrap;font-size:26px">제공 데이터 :</span><img src="/*RP_LOGO*/" alt="로켓펀치" style="height:34px;max-height:34px;width:auto;flex:none">`,
+  // 5건씩 2화면: 15초에 아래 목록이 위로 올라오며 교체
+  ROW:190, PER:5,
+  tick:t=>{const el=document.getElementById('jroll');if(!el)return;const n=+el.dataset.pages;if(n<2)return;
+    const H=CL.jobs.ROW*CL.jobs.PER, a=15, d=.9; let y;
+    if(t<a-d/2) y=0; else if(t<a+d/2){const x=(t-(a-d/2))/d;y=-(x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2)*H} else y=-H;
+    el.style.transform=`translateY(${y.toFixed(1)}px)`;
+    const p=document.getElementById('jpg'); if(p) p.textContent=(y<=-H/2?2:1)+' / '+n;},
   html:()=>{
-    const J=DATA.jobs, L=J.items.slice(0,4);
+    const J=DATA.jobs, L=J.items.slice(0,10), R=CL.jobs.ROW, P=CL.jobs.PER, pages=L.length>P?2:1;
     const esc=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const k=kst(), t0=new Date(k.getFullYear(),k.getMonth(),k.getDate());
     const due=e=>{if(!e)return ['상시 채용','#c9b8ff'];const [y,m,d]=e.split('-').map(Number);const n=Math.round((new Date(y,m-1,d)-t0)/86400000);
       return n<=0?['오늘 마감','#ff6b5e']:n<=7?[`D-${n}`,'#ffd166']:[`${pad(m)}.${pad(d)} 마감`,'#e6ddff']};
-    const row=(o,i)=>{const [dt,dc]=due(o.end);const top=430+i*235;
-      return `${i?`<div class="hr" style="left:56px;width:1092px;top:${top-28}px"></div>`:''}
-      <div class="pa" style="top:${top}px"><div style="font-size:54px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.company)}</div>
-        <div style="font-size:38px;font-weight:500;color:#e2dcf5;line-height:1.3;margin-top:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(o.title)}</div></div>
-      <div class="pb" style="top:${top}px;text-align:right">${o.size?`<span style="display:inline-block;font-size:34px;font-weight:700;padding:6px 22px 8px;border-radius:999px;background:rgba(255,255,255,.14)">${esc(o.size)}</span>`:''}
-        <div class="num" style="font-size:54px;font-weight:900;color:${dc};margin-top:18px;line-height:1.1">${dt}</div></div>`};
+    const row=(o,i)=>{const [dt,dc]=due(o.end);const top=i*R;
+      return `${i%P?`<div class="hr" style="left:56px;width:1092px;top:${top-20}px"></div>`:''}
+      <div class="pa" style="top:${top}px"><div style="font-size:50px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.company)}</div>
+        <div style="font-size:34px;font-weight:500;color:#e2dcf5;line-height:1.3;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.title)}</div></div>
+      <div class="pb" style="top:${top}px;text-align:right">${o.size?`<span style="display:inline-block;font-size:30px;font-weight:700;padding:4px 20px 6px;border-radius:999px;background:rgba(255,255,255,.14)">${esc(o.size)}</span>`:''}
+        <div class="num" style="font-size:46px;font-weight:900;color:${dc};margin-top:10px;line-height:1.1">${dt}</div></div>`};
     return `<div class="title">오늘의 채용</div>
-      ${L.map(row).join('')}
-      ${J.total?`<div class="hr" style="left:56px;width:1092px;top:1395px"></div>
-      <div class="pa" style="top:1430px;font-size:48px;font-weight:700;line-height:1.3">지금 채용 중인<br>중견·대기업 공고</div>
-      <div class="pb" style="top:1430px;text-align:right"><span class="num" style="font-size:110px;font-weight:900;line-height:1">${Number(J.total).toLocaleString()}</span><span style="font-size:48px;font-weight:700"> 건</span></div>`:''}`;
+      <div class="pa" style="top:378px"><span class="k" style="font-size:34px">중견기업 이상 · 최신 공고</span></div>
+      ${pages>1?`<div class="pb num" id="jpg" style="top:378px;text-align:right;font-size:34px;color:var(--sub)">1 / 2</div>`:''}
+      <div style="position:absolute;left:0;top:450px;width:1200px;height:${R*P}px;overflow:hidden">
+        <div id="jroll" data-pages="${pages}" style="position:absolute;left:0;top:0;width:1200px;will-change:transform">${L.map(row).join('')}</div></div>
+      ${J.total?`<div class="hr" style="left:56px;width:1092px;top:1420px"></div>
+      <div class="pa" style="top:1450px;font-size:44px;font-weight:700;line-height:1.3">지금 채용 중인<br>중견·대기업 공고</div>
+      <div class="pb" style="top:1450px;text-align:right"><span class="num" style="font-size:100px;font-weight:900;line-height:1">${Number(J.total).toLocaleString()}</span><span style="font-size:44px;font-weight:700"> 건</span></div>`:''}`;
   }};
 /* 데이터가 없을 때: 브랜드 화면 */
 CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="top:560px"><div class="num" id="bigtime" style="font-size:190px;font-weight:800;letter-spacing:-.03em;text-shadow:0 0 28px rgba(140,190,255,.7)"></div>
@@ -296,7 +308,7 @@ function draw(intro){
   if(intro) T0=performance.now();
   $('#content').innerHTML=PAGES.map(x=>`<div class="page" style="position:absolute;inset:0;opacity:0;will-change:opacity,filter">${x}</div>`).join('');
   SHOWN=-1; frame(nowT());
-  $('#spon').innerHTML=k==='brand'?'':sponsor();
+  $('#spon').innerHTML=k==='brand'?'':(c.spon?c.spon():sponsor());
   document.querySelector('.clock').style.visibility=k==='brand'?'hidden':'visible';
   clockTick();
 }
@@ -315,6 +327,7 @@ function frame(t){
     e.style.opacity=v; e.style.filter=v>=.999?'none':`blur(${((1-v)*BLUR).toFixed(1)}px)`;
     if(USE_COVER&&i===0&&els.length>1){document.querySelector('.clock').style.opacity=1-v;document.querySelector('.logo').style.opacity=1-v;}
     a=b;});
+  if(CUR&&CUR.tick)CUR.tick(t);
   showPage(pageAt(t));
 }
 function showPage(p,force){if(p===SHOWN&&!force)return;SHOWN=p;

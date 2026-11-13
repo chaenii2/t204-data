@@ -77,6 +77,10 @@ def main():
     if logo.exists():
         import base64
         html = html.replace("/*LOGO*/", "data:image/png;base64," + base64.b64encode(logo.read_bytes()).decode())
+    rp = TPL / "assets" / "logo_rocketpunch_white.svg"
+    if rp.exists() and "/*RP_LOGO*/" in html:
+        import base64
+        html = html.replace("/*RP_LOGO*/", "data:image/svg+xml;base64," + base64.b64encode(rp.read_bytes()).decode())
     out = pathlib.Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     (out / "index.html").write_text(html, encoding="utf-8")

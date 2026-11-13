@@ -200,23 +200,21 @@ def _pick(items, out, seen, limit=4):
 
 
 def jobs():
+    """중견기업 이상(HUGE·LARGE)만, 최신순 최대 10건 (화면: 5건씩 15초)."""
     if not _has("ROCKETPUNCH_KEY"):
         return None
-    base = {"sort": "DATE_DESC", "pageSize": 50, "page": 1}
     out, seen, total_big = [], set(), None
-    try:  # 중견·대기업 우선
-        d = _rp({**base, "companySizes": ["HUGE", "LARGE"]})
-        total_big = d.get("totalItems")
-        _pick(d.get("items") or [], out, seen)
-    except Exception as e:  # noqa: BLE001
-        F.log(f"⚠️ 채용(규모 필터) 실패: {type(e).__name__} {getattr(e, 'code', '')}")
-    if len(out) < 4:  # 부족하면 전체 최신 공고로 채움
-        try:
-            _pick(_rp(base).get("items") or [], out, seen)
-        except Exception as e:  # noqa: BLE001
-            F.log(f"⚠️ 채용(전체) 실패: {type(e).__name__} {getattr(e, 'code', '')}")
+    for page in (1, 2):
+        d = _rp({"sort": "DATE_DESC", "pageSize": 50, "page": page, "companySizes": ["HUGE", "LARGE"]})
+        total_big = d.get("totalItems", total_big)
+        items = [j for j in (d.get("items") or []) if (j.get("company") or {}).get("size") in ("HUGE", "LARGE")]
+        # 최신순 유지 (규모 정렬 없이)
+        for j in items:
+            _pick([j], out, seen, limit=10)
+        if len(out) >= 10 or len(d.get("items") or []) < 50:
+            break
     if not out:
-        raise RuntimeError("채용공고 없음 (채용공고 조회 API 승인 여부 확인)")
-    F.log(f"채용: {[(o['company'], o['size']) for o in out]} (중견·대기업 {total_big}건)")
-    return {"basis": f"{F.NOW:%m.%d %H}시 기준 · 로켓펀치", "ts": F.NOW.strftime("%Y-%m-%d %H:%M"),
+        raise RuntimeError("중견기업 이상 채용공고 없음 (채용공고 조회 API 승인 여부 확인)")
+    F.log(f"채용: {len(out)}건 {[(o['company'], o['size']) for o in out]} (중견·대기업 전체 {total_big}건)")
+    return {"basis": f"{F.NOW:%m.%d %H}시 기준", "ts": F.NOW.strftime("%Y-%m-%d %H:%M"),
             "total": total_big, "items": out}
