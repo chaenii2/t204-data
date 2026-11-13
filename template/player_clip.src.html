@@ -255,10 +255,10 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
   src:()=>DATA.jobs.basis||'',
   // 제공 데이터 표기(후원사 자리 대신)
   spon:()=>`<span class="lab" style="white-space:nowrap;font-size:26px">제공 데이터 :</span><img src="/*RP_LOGO*/" alt="로켓펀치" style="height:34px;max-height:34px;width:auto;flex:none">`,
-  // 5건씩 2화면: 15초에 아래 목록이 위로 올라오며 교체 + 15초 진행 바
-  ROW:186, PER:5,
+  // 6건씩 2화면: 15초에 아래 목록이 위로 올라오며 교체 + 15초 진행 바
+  ROW:186, PER:6,
   tick:t=>{const el=document.getElementById('jroll');if(!el)return;const n=+el.dataset.pages;
-    // 15초: 앞 5장은 살짝 위로 빠지며 사라지고, 다음 5장이 아래에서 한 장씩(0.08초 간격) 촤라락 올라옴
+    // 15초: 앞 6장은 살짝 위로 빠지며 사라지고, 다음 6장이 아래에서 한 장씩(0.08초 간격) 촤라락 올라옴
     const H=CL.jobs.ROW*CL.jobs.PER, a=15, gap=.08, ez=x=>x<=0?0:x>=1?1:1-Math.pow(1-x,3);
     let mid=0;
     el.querySelectorAll('.jrow').forEach(r=>{const i=+r.dataset.i, k=i%CL.jobs.PER; let y=0, o=1;
@@ -272,7 +272,7 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
     const fl=document.getElementById('jbarf'), dt=document.getElementById('jbard');
     if(fl) fl.style.width=(f*W).toFixed(1)+'px'; if(dt) dt.style.left=(56+f*W).toFixed(1)+'px';},
   html:()=>{
-    const J=DATA.jobs, L=J.items.slice(0,10), R=CL.jobs.ROW, P=CL.jobs.PER, pages=L.length>P?2:1;
+    const J=DATA.jobs, L=J.items.slice(0,12), R=CL.jobs.ROW, P=CL.jobs.PER, pages=L.length>P?2:1;
     const esc=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const k=kst(), t0=new Date(k.getFullYear(),k.getMonth(),k.getDate());
     const due=e=>{if(!e)return ['상시 채용','#9fd8ff'];const [y,m,d]=e.split('-').map(Number);const n=Math.round((new Date(y,m-1,d)-t0)/86400000);

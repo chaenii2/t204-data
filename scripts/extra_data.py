@@ -200,7 +200,7 @@ def _pick(items, out, seen, limit=4):
 
 
 def jobs():
-    """중견기업 이상(HUGE·LARGE)만, 최신순 최대 10건 (화면: 5건씩 15초)."""
+    """중견기업 이상(HUGE·LARGE)만, 최신순 최대 12건 (화면: 6건씩 15초)."""
     if not _has("ROCKETPUNCH_KEY"):
         return None
     out, seen, total_big = [], set(), None
@@ -210,8 +210,8 @@ def jobs():
         items = [j for j in (d.get("items") or []) if (j.get("company") or {}).get("size") in ("HUGE", "LARGE")]
         # 최신순 유지 (규모 정렬 없이)
         for j in items:
-            _pick([j], out, seen, limit=10)
-        if len(out) >= 10 or len(d.get("items") or []) < 50:
+            _pick([j], out, seen, limit=12)
+        if len(out) >= 12 or len(d.get("items") or []) < 50:
             break
     if not out:
         raise RuntimeError("중견기업 이상 채용공고 없음 (채용공고 조회 API 승인 여부 확인)")
