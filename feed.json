@@ -273,9 +273,9 @@
   "rates": "한국은행 ECOS (ecos.bok.or.kr)"
  },
  "traffic": {
-  "basis": "06:50 기준 · 서울시 도시데이터",
+  "basis": "06:55 기준 · 서울시 도시데이터",
   "status": "원활",
-  "kmh": 28,
+  "kmh": 30,
   "segments": [
    {
     "name": "강남역 부근",
@@ -287,21 +287,21 @@
    },
    {
     "name": "선릉역 부근",
-    "kmh": 31
+    "kmh": 35
    },
    {
     "name": "삼성역 부근",
-    "kmh": 16
+    "kmh": 19
    }
   ],
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 20
+    "kmh": 25
    },
    {
     "name": "선릉로",
-    "kmh": 32
+    "kmh": 34
    }
   ],
   "congest": "여유",
