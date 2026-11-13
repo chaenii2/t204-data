@@ -30,6 +30,7 @@
   .bg-sky{background:linear-gradient(180deg,#1b2f52 0%,#2c3f63 34%,#4d5a78 60%,#7d6a6a 82%,#4a3a3a 100%)}
   .bg-green{background:radial-gradient(80% 40% at 85% 6%,rgba(90,235,200,.30),transparent 70%),linear-gradient(180deg,#13665a 0%,#0f5348 30%,#0b3c35 58%,#072622 80%,#031311 100%)}
   .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
+  .bg-jobs{background:radial-gradient(80% 42% at 85% 4%,rgba(170,120,255,.32),transparent 65%),linear-gradient(180deg,#2a1858 0%,#211347 32%,#170d35 62%,#0d0722 100%)}
   /* 헤더: 로고는 원본 비율 그대로(가로·세로 비율 고정) */
   .logo{position:absolute;left:56px;top:76px;height:54px;width:auto;display:block;z-index:3}
   .t204n{position:absolute;left:56px;top:178px;display:inline-block;z-index:3;text-shadow:0 2px 12px rgba(0,0,0,.5)}
@@ -89,7 +90,7 @@
     <div class="g" style="left:576px;width:144px;background:repeating-linear-gradient(45deg,rgba(255,0,0,.25) 0 10px,transparent 10px 20px);border-color:red"><span style="color:#f66;top:40px">코너</span></div>
   </div>
 </div>
-<div id="ctl"><button data-c="finance">금융</button><button data-c="weather">날씨</button><button data-c="traffic">교통</button><button id="gbtn">A/B면 가이드</button></div>
+<div id="ctl"><button data-c="finance">금융</button><button data-c="weather">날씨</button><button data-c="traffic">교통</button><button data-c="jobs">채용</button><button id="gbtn">A/B면 가이드</button></div>
 
 <script type="application/json" id="t204-data">/*DATA*/</script>
 <script>window.T204_CONFIG=/*CONFIG*/;</script>
@@ -239,14 +240,34 @@ CL.traffic={bg:'bg-green',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.
       <div class="pa" style="top:1430px;display:flex;align-items:center;gap:22px;width:1092px">${icon('people',84,3)}<span style="font-size:48px;font-weight:700">역삼역 일대 혼잡도</span></div>
       <div class="pb" style="top:1430px;text-align:right;font-size:72px;font-weight:900;color:${cgc};line-height:1.1;text-shadow:0 2px 14px rgba(0,0,0,.55)">${cg}</div>`:''}`;
   }};
+CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length)return false;if(!J.ts)return true;const [d,h]=J.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=24*3600000},
+  src:()=>DATA.jobs.basis||'로켓펀치',
+  html:()=>{
+    const J=DATA.jobs, L=J.items.slice(0,4);
+    const esc=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const k=kst(), t0=new Date(k.getFullYear(),k.getMonth(),k.getDate());
+    const due=e=>{if(!e)return ['상시 채용','#c9b8ff'];const [y,m,d]=e.split('-').map(Number);const n=Math.round((new Date(y,m-1,d)-t0)/86400000);
+      return n<=0?['오늘 마감','#ff6b5e']:n<=7?[`D-${n}`,'#ffd166']:[`${pad(m)}.${pad(d)} 마감`,'#e6ddff']};
+    const row=(o,i)=>{const [dt,dc]=due(o.end);const top=430+i*235;
+      return `${i?`<div class="hr" style="left:56px;width:1092px;top:${top-28}px"></div>`:''}
+      <div class="pa" style="top:${top}px"><div style="font-size:54px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.company)}</div>
+        <div style="font-size:38px;font-weight:500;color:#e2dcf5;line-height:1.3;margin-top:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(o.title)}</div></div>
+      <div class="pb" style="top:${top}px;text-align:right">${o.size?`<span style="display:inline-block;font-size:34px;font-weight:700;padding:6px 22px 8px;border-radius:999px;background:rgba(255,255,255,.14)">${esc(o.size)}</span>`:''}
+        <div class="num" style="font-size:54px;font-weight:900;color:${dc};margin-top:18px;line-height:1.1">${dt}</div></div>`};
+    return `<div class="title">오늘의 채용</div>
+      ${L.map(row).join('')}
+      ${J.total?`<div class="hr" style="left:56px;width:1092px;top:1395px"></div>
+      <div class="pa" style="top:1430px;font-size:48px;font-weight:700;line-height:1.3">지금 채용 중인<br>중견·대기업 공고</div>
+      <div class="pb" style="top:1430px;text-align:right"><span class="num" style="font-size:110px;font-weight:900;line-height:1">${Number(J.total).toLocaleString()}</span><span style="font-size:48px;font-weight:700"> 건</span></div>`:''}`;
+  }};
 /* 데이터가 없을 때: 브랜드 화면 */
 CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="top:560px"><div class="num" id="bigtime" style="font-size:190px;font-weight:800;letter-spacing:-.03em;text-shadow:0 0 28px rgba(140,190,255,.7)"></div>
    <div style="width:100px;height:10px;background:#ef3b24;border-radius:5px;margin:50px 0 34px"></div><div style="font-size:72px;font-weight:800">T204</div><div style="font-size:60px;color:#dbe4f3">오늘의 인사이트</div></div>`};
 
 const COVER_SEC=6, TOTAL_SEC=30, USE_COVER=false;   // 표지 없이 설명지만 송출
-const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통'};
-const TAGLINE={finance:'오늘의 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식'};
-const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0'};
+const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통',jobs:'채용'};
+const TAGLINE={finance:'오늘의 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식',jobs:'오늘의 채용 소식'};
+const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0',jobs:'#b99bff'};
 function skyLvl(){const w=DATA.weather||{},s=w.now_sky||w.sky;return s==='clear'?'clear':s==='partly'?'partly':s==='cloudy'?'cloudy':'wet'}
 function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e){}
   return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="skyline sk-${skyLvl()}"></div><div class="wtint ${wc}"></div>`:''}
@@ -257,7 +278,7 @@ function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e)
     <div style="font-size:44px;line-height:1.45;color:#eef3fb">중앙일보가 전하는<br>${TAGLINE[k]}</div>
   </div>
   <img src="/*LOGO_WHITE*/" alt="The JoongAng" style="position:absolute;left:56px;bottom:84px;height:40px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))">`}
-function clipKey(){const h=(location.hash.match(/finance|weather|traffic/)||[])[0];return h||CFG.clip||'finance'}
+function clipKey(){const h=(location.hash.match(/finance|weather|traffic|jobs/)||[])[0];return h||CFG.clip||'finance'}
 function sponsor(){
   const s=CFG.sponsor, show=/sponsor/.test(location.hash)||CFG.sponsorSlot;
   if(s&&s.img) return `<span class="lab">${s.label||'제공'}</span><img src="${s.img}" alt="">`;

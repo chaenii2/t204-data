@@ -36,6 +36,7 @@ jobs:
           SEOUL_KEY: ${{ secrets.SEOUL_KEY }}
           KRX_KEY: ${{ secrets.KRX_KEY }}
           ECOS_KEY: ${{ secrets.ECOS_KEY }}
+          ROCKETPUNCH_KEY: ${{ secrets.ROCKETPUNCH_KEY }}
         run: |
           # GitHub 예약 실행은 15분마다 정확히 돌지 않아(실측 약 1시간 간격) 한 번 실행에서 직접 15분마다 반복
           git config user.name "t204-bot"
@@ -48,6 +49,8 @@ jobs:
             python scripts/build_player.py relay --embed feed.json --feed-url $U --out player
             python scripts/build_player.py relay --embed feed.json --feed-url $U --out player/v4 --template player_v4.src.html
             for c in finance weather traffic; do python scripts/build_player.py relay --embed feed.json --feed-url $U --template player_clip.src.html --clip $c --out player/$c; done
+            # 채용: 로켓펀치 데이터가 들어온 뒤부터 클립 생성 (그 전에는 '준비 중' 화면 유지)
+            if python -c "import json,sys;sys.exit(0 if json.load(open('feed.json')).get('jobs') else 1)"; then python scripts/build_player.py relay --embed feed.json --feed-url $U --template player_clip.src.html --clip jobs --out player/jobs; fi
             git add feed.json feed_log.md player
             git commit -q -m "데이터 갱신 $(TZ=Asia/Seoul date +'%m-%d %H:%M')" || echo "변경 없음"
             for t in 1 2 3; do (git pull -q --rebase -X theirs origin main && git push -q) && break || { git rebase --abort 2>/dev/null; sleep 7; }; done

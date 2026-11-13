@@ -152,3 +152,71 @@ def rates():
     v = float(rows[-1]["DATA_VALUE"])
     F.log(f"금리: 한국은행 기준금리 {v}% ({cyc} {rows[-1].get('TIME')})")
     return {"basis": "한국은행 ECOS", "items": [{"name": "한국은행 기준금리", "v": v}]}
+
+
+# ---------- 채용 (로켓펀치 Open API) ----------
+# 채용공고 조회는 로켓펀치 관리자 승인 후 응답이 옴. 승인 전·실패 시 None → 화면에서 채용 클립 제외
+RP_BASE = "https://openapi.rocketpunch.com/api/v1/jobs"
+SIZE_KO = {"HUGE": "대기업", "LARGE": "중견기업", "MEDIUM": "중소기업", "SMALL": "스타트업", "TINY": "스타트업"}
+SIZE_RANK = {"HUGE": 0, "LARGE": 1, "MEDIUM": 2, "SMALL": 3, "TINY": 3}
+# 화면에 맞지 않는 공고(영업 설명회·설계사 모집 등) 제외
+JOB_EXCLUDE = ("설명회", "설계사", "컨설턴트 모집", "FC 모집", "보험", "알바", "아르바이트")
+
+
+def _rp(params):
+    q = urllib.parse.urlencode(params, doseq=True)
+    return _json(f"{RP_BASE}?{q}", headers={"X-RP-API-Key": F.key("ROCKETPUNCH_KEY"), "Accept-Language": "ko"})
+
+
+def _kst_date(iso):
+    if not iso:
+        return None
+    try:
+        from datetime import datetime
+        return datetime.fromisoformat(iso.replace("Z", "+00:00")).astimezone(F.KST).strftime("%Y-%m-%d")
+    except Exception:  # noqa: BLE001
+        return iso[:10]
+
+
+def _pick(items, out, seen, limit=4):
+    today = F.NOW.strftime("%Y-%m-%d")
+    for j in sorted(items, key=lambda x: SIZE_RANK.get((x.get("company") or {}).get("size"), 9)):
+        if len(out) >= limit:
+            break
+        c = j.get("company") or {}
+        name, title = (c.get("name") or "").strip(), (j.get("title") or "").strip()
+        if not name or not title or name in seen:
+            continue
+        if j.get("hiring") is False or j.get("status") == "finish":
+            continue
+        if any(w in title for w in JOB_EXCLUDE):
+            continue
+        end = _kst_date(j.get("endAt"))
+        if end and end < today:
+            continue
+        seen.add(name)
+        out.append({"company": name, "title": title, "size": SIZE_KO.get(c.get("size"), ""),
+                    "end": end, "cat": j.get("jobCategory") or ""})
+
+
+def jobs():
+    if not _has("ROCKETPUNCH_KEY"):
+        return None
+    base = {"sort": "DATE_DESC", "pageSize": 50, "page": 1}
+    out, seen, total_big = [], set(), None
+    try:  # 중견·대기업 우선
+        d = _rp({**base, "companySizes": ["HUGE", "LARGE"]})
+        total_big = d.get("totalItems")
+        _pick(d.get("items") or [], out, seen)
+    except Exception as e:  # noqa: BLE001
+        F.log(f"⚠️ 채용(규모 필터) 실패: {type(e).__name__} {getattr(e, 'code', '')}")
+    if len(out) < 4:  # 부족하면 전체 최신 공고로 채움
+        try:
+            _pick(_rp(base).get("items") or [], out, seen)
+        except Exception as e:  # noqa: BLE001
+            F.log(f"⚠️ 채용(전체) 실패: {type(e).__name__} {getattr(e, 'code', '')}")
+    if not out:
+        raise RuntimeError("채용공고 없음 (채용공고 조회 API 승인 여부 확인)")
+    F.log(f"채용: {[(o['company'], o['size']) for o in out]} (중견·대기업 {total_big}건)")
+    return {"basis": f"{F.NOW:%m.%d %H}시 기준 · 로켓펀치", "ts": F.NOW.strftime("%Y-%m-%d %H:%M"),
+            "total": total_big, "items": out}

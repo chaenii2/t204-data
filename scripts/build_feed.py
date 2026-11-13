@@ -107,6 +107,16 @@ def main():
         feed["rates"] = rt
     elif prev.get("rates"):
         feed["rates"] = prev["rates"]; kept.append("rates")
+    jb = F.safe(X.jobs, None)
+    if jb:
+        feed["jobs"] = jb
+    elif prev.get("jobs", {}).get("ts"):
+        # 채용공고는 하루 지난 값까지만 사용
+        from datetime import datetime
+        age = (F.NOW.replace(tzinfo=None) - datetime.strptime(prev["jobs"]["ts"], "%Y-%m-%d %H:%M")).total_seconds()
+        if age <= 86400:
+            feed["jobs"] = prev["jobs"]; kept.append("jobs")
+    feed["sources"]["jobs"] = "로켓펀치 Open API (openapi.rocketpunch.com)"
     feed["sources"].update({"traffic": "서울시 실시간 도시데이터 (openapi.seoul.go.kr)",
                             "kr": "한국거래소 KRX Open API (data-dbg.krx.co.kr)", "rates": "한국은행 ECOS (ecos.bok.or.kr)"})
     if kept:
