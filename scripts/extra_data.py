@@ -163,9 +163,30 @@ SIZE_RANK = {"HUGE": 0, "LARGE": 1, "MEDIUM": 2, "SMALL": 3, "TINY": 3}
 JOB_EXCLUDE = ("설명회", "설계사", "컨설턴트 모집", "FC 모집", "보험", "알바", "아르바이트")
 
 
+def _rp_once(q):
+    import urllib.error
+    try:
+        return _json(f"{RP_BASE}?{q}", headers={"X-RP-API-Key": F.key("ROCKETPUNCH_KEY"), "Accept-Language": "ko",
+                                              "Accept": "application/json"})
+    except urllib.error.HTTPError as e:
+        body = ""
+        try:
+            body = e.read().decode("utf-8", "replace")[:200].replace("\n", " ")
+        except Exception:  # noqa: BLE001
+            pass
+        F.log(f"⚠️ 로켓펀치 응답 {e.code}: {body}")  # 키는 기록하지 않음
+        raise
+
+
 def _rp(params):
-    q = urllib.parse.urlencode(params, doseq=True)
-    return _json(f"{RP_BASE}?{q}", headers={"X-RP-API-Key": F.key("ROCKETPUNCH_KEY"), "Accept-Language": "ko"})
+    """배열 조건은 반복 키(a=1&a=2)로 먼저, 실패하면 쉼표(a=1,2)로 다시 시도."""
+    try:
+        return _rp_once(urllib.parse.urlencode(params, doseq=True))
+    except Exception:  # noqa: BLE001
+        if not any(isinstance(v, list) for v in params.values()):
+            raise
+        flat = {k: (",".join(v) if isinstance(v, list) else v) for k, v in params.items()}
+        return _rp_once(urllib.parse.urlencode(flat))
 
 
 def _kst_date(iso):
