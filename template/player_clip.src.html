@@ -30,7 +30,7 @@
   .bg-sky{background:linear-gradient(180deg,#1b2f52 0%,#2c3f63 34%,#4d5a78 60%,#7d6a6a 82%,#4a3a3a 100%)}
   .bg-green{background:radial-gradient(80% 40% at 85% 6%,rgba(90,235,200,.30),transparent 70%),linear-gradient(180deg,#13665a 0%,#0f5348 30%,#0b3c35 58%,#072622 80%,#031311 100%)}
   .bg-brand{background:#06132b url(/*EARTH*/) center bottom/cover no-repeat}
-  .bg-jobs{background:radial-gradient(55% 30% at 92% 16%,rgba(110,190,255,.45),transparent 70%),radial-gradient(80% 35% at 15% 100%,rgba(60,160,255,.55),transparent 72%),linear-gradient(180deg,#0d3fc4 0%,#0b33a6 28%,#0a2786 55%,#071a63 80%,#051247 100%)}
+  .bg-jobs{background:radial-gradient(55% 30% at 92% 16%,rgba(90,160,255,.28),transparent 70%),radial-gradient(80% 35% at 15% 100%,rgba(50,130,240,.38),transparent 72%),linear-gradient(180deg,#0a2c8c 0%,#082274 28%,#061a5c 55%,#041246 80%,#020b30 100%)}
   .jdeco{position:absolute;inset:0;pointer-events:none}
   /* 헤더: 로고는 원본 비율 그대로(가로·세로 비율 고정) */
   .logo{position:absolute;left:56px;top:76px;height:54px;width:auto;display:block;z-index:3}
@@ -288,7 +288,7 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
         /마케팅|마케터|그로스|광고|marketing|brand/.test(s)?'mega':/재무|회계|ir|증권|금융|finance/.test(s)?'coin':/개발|엔지니어|프로그래머|ios|android|backend|front|server/.test(s)?'code':'bag'};
     const row=(o,i)=>{const [dt,dc]=due(o.end);const top=i*R, h=R-20;
       return `<div class="jrow" data-i="${i}" style="position:absolute;left:0;top:0;width:1200px;will-change:transform"><div style="position:absolute;left:36px;width:1128px;top:${top}px;height:${h}px;border-radius:22px;
-          background:linear-gradient(90deg,rgba(28,78,190,.62),rgba(18,52,150,.42));border:2px solid rgba(150,205,255,.38);
+          background:linear-gradient(90deg,rgba(30,80,190,.5),rgba(20,55,150,.32));border:2px solid rgba(150,205,255,.38);
           box-shadow:inset 0 0 34px rgba(120,190,255,.16),inset 0 1px 0 rgba(255,255,255,.22),0 10px 30px rgba(0,10,50,.35)"></div>
         <div style="position:absolute;left:62px;width:504px;top:${top+22}px"><div style="font-size:48px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.company)}</div>
           <div style="font-size:33px;font-weight:500;color:#d6e6ff;line-height:1.3;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.title)}</div></div>
@@ -300,7 +300,6 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
       <div style="position:absolute;left:1136px;top:410px;width:24px;height:24px;border-radius:50%;background:#bfe6ff;box-shadow:0 0 16px 6px rgba(120,200,255,.75)"></div>
       <div id="jbard" style="position:absolute;left:56px;top:422px;width:0;height:0"><div style="position:absolute;left:-16px;top:-16px;width:32px;height:32px;border-radius:50%;border:4px solid #eaf6ff;background:#0d3fc4;box-shadow:0 0 14px rgba(160,220,255,.9)"><div style="position:absolute;left:6px;top:6px;width:12px;height:12px;border-radius:50%;background:#eaf6ff"></div></div></div>`;
     return `${JDECO}<div class="title">오늘의 채용</div>
-      ${pages>1?`<div class="pb num" id="jpg" style="top:338px;text-align:right;font-size:34px;color:var(--sub)">1 / 2</div>`:''}
       ${bar}
       <div style="position:absolute;left:0;top:462px;width:1200px;height:${R*P}px;overflow:hidden">
         <div id="jroll" data-pages="${pages}" style="position:absolute;left:0;top:0;width:1200px;will-change:transform">${L.map(row).join('')}</div></div>
