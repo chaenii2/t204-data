@@ -1,9 +1,9 @@
 {
- "generated_at": "2026-11-14 17:28",
+ "generated_at": "2026-11-14 17:43",
  "location": "테헤란로 204 · 역삼",
  "weather": {
   "sky": "rain",
-  "now_sky": "rain",
+  "now_sky": "cloudy",
   "text": "비",
   "min": 10,
   "max": 14,
@@ -50,14 +50,14 @@
   "pm": "좋음",
   "pm25": "보통",
   "now": {
-   "t": 12,
-   "at": "16:00",
-   "pty": "1",
+   "t": 11,
+   "at": "17:00",
+   "pty": "0",
    "reh": 94,
-   "wsd": 1.1
+   "wsd": 0.6
   },
-  "now_text": "비",
-  "now_basis": "16:00 관측"
+  "now_text": "흐림",
+  "now_basis": "17:00 초단기예보(16:30 발표)"
  },
  "fx": {
   "basis": "11.13 매매기준율 · 한국수출입은행",
@@ -273,40 +273,40 @@
   "rates": "한국은행 ECOS (ecos.bok.or.kr)"
  },
  "traffic": {
-  "basis": "17:25 기준 · 서울시 도시데이터",
+  "basis": "17:40 기준 · 서울시 도시데이터",
   "status": "정체",
-  "kmh": 13,
+  "kmh": 14,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 10
+    "kmh": 16
    },
    {
     "name": "역삼역 부근",
-    "kmh": 10
+    "kmh": 14
    },
    {
     "name": "선릉역 부근",
-    "kmh": 17
+    "kmh": 16
    },
    {
     "name": "삼성역 부근",
-    "kmh": 8
+    "kmh": 7
    }
   ],
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 11
+    "kmh": 13
    },
    {
     "name": "선릉로",
-    "kmh": 9
+    "kmh": 12
    }
   ],
   "congest": "여유",
   "congest_msg": "사람이 몰려있을 가능성이 낮고 붐빔은 거의 느껴지지 않아요",
-  "ts": "2026-11-14 17:28"
+  "ts": "2026-11-14 17:43"
  },
  "kr_hist": {
   "KOSPI": [
