@@ -315,7 +315,7 @@ const gradeColor=g=>({'좋음':'#4aa8ff','보통':'#4ade80','나쁨':'#fb923c','
 
 /* ---------- 클립 ---------- */
 const CL={};
-CL.finance={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fresh(2),
+CL.finance={bg:'bg-navy',has:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length,ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fresh(2),
   // 30초 = 환율 15초 + 증시 15초 (증시 데이터가 없으면 환율 30초)
   src:p=>p===1?((DATA.kr&&DATA.kr.basis)||'한국거래소'):((DATA.fx&&DATA.fx.basis)||'한국수출입은행'),
   html:()=>{
@@ -360,7 +360,7 @@ CL.weather={bg:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
     if(sky==='rain'||sky==='sleet')return 'bg-w-rain';
     if(sky==='snow')return 'bg-w-snow';
     const t=n.t!=null?n.t:(w.min+w.max)/2;
-    return t>=25?'bg-w-hot':t>=17?'bg-w-warm':t<=5?'bg-w-cold':'bg-w-cool';},ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
+    return t>=25?'bg-w-hot':t>=17?'bg-w-warm':t<=5?'bg-w-cold':'bg-w-cool';},has:()=>!!DATA.weather,ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에어코리아',
   html:()=>{
     const w=DATA.weather, n=w.now||{}, T=w.tomorrow;
     const sky=w.now_sky||w.sky;
@@ -380,7 +380,7 @@ CL.weather={bg:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
       <div class="pa" style="top:1420px;font-size:50px;font-weight:800;line-height:1.35;text-shadow:0 2px 14px rgba(0,0,0,.7)">${w.tip}</div>
       ${T?`<div class="pb" style="top:1420px;text-align:right;text-shadow:0 2px 14px rgba(0,0,0,.7)"><div class="k">내일</div><div class="num" style="font-size:52px;font-weight:800;line-height:1.2">${T.min}° / ${T.max}°</div><div style="font-size:44px;font-weight:700;line-height:1.25">${({clear:'맑음',partly:'구름 많음',cloudy:'흐림',rain:'비',snow:'눈',sleet:'비/눈'})[T.sky]||''}</div>${T.pop>=40?`<div class="k">강수 ${T.pop}%</div>`:''}</div>`:''}`;
   }};
-CL.traffic={bg:'bg-green',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.ts)return true;const [d,h]=T.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=60*60000},
+CL.traffic={bg:'bg-green',has:()=>!!DATA.traffic,ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.ts)return true;const [d,h]=T.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=60*60000},
   src:()=>DATA.traffic.basis||'서울시 도시데이터',
   html:()=>{
     const T=DATA.traffic, segs=(T.segments||[]).slice(0,4);
@@ -411,6 +411,7 @@ const JDECO=(()=>{let rings='';for(let i=0;i<11;i++){const r=46+i*34;rings+=`<ci
 CL.jobs={bg:'bg-jobs',
   // 마감 안 지난 공고만 (예시 화면 포함). 기간 제한 없음 → 데이터 갱신이 멈춰도 화면은 계속 돌아감
   live:()=>{const J=DATA.jobs;if(!J||!J.items)return [];const k=kst(),td=`${k.getFullYear()}-${pad(k.getMonth()+1)}-${pad(k.getDate())}`;return J.items.filter(o=>o.endIn!=null||!o.end||o.end>=td)},
+  has:()=>CL.jobs.live().length>0,
   ok:()=>CL.jobs.live().length>0,
   src:()=>DATA.jobs.basis||'',
   // 제공 데이터 표기(후원사 자리 대신)
@@ -493,7 +494,10 @@ function sponsor(){
 }
 function draw(intro){
   let k=clipKey(); let c=CL[k]; let ok=false; try{ok=!!c.ok()}catch(e){}
-  if(!ok){k='brand';c=CL.brand}
+  // 데이터가 오래됐어도 있으면 계속 보여줌(하단에 자료 날짜 표시). 데이터가 아예 없을 때만 시계 화면
+  STALE=false;
+  if(!ok){let has=false;try{has=!!(c.has&&c.has())}catch(e){} if(has)STALE=true; else {k='brand';c=CL.brand}}
+  OKSTATE=ok;
   $('#bg').className='bg '+(typeof c.bg==='function'?c.bg():c.bg);
   let h='';try{h=c.html()}catch(e){console.warn(e);c=CL.brand;$('#bg').className='bg bg-brand';h=c.html()}
   PAGES=Array.isArray(h)?h:[h]; CUR=c;
@@ -506,7 +510,8 @@ function draw(intro){
   document.querySelector('.clock').style.visibility=k==='brand'?'hidden':'visible';
   clockTick();
 }
-let PAGES=[],CUR=null,T0=performance.now(),SHOWN=-1,DUR=[30];
+let PAGES=[],CUR=null,T0=performance.now(),SHOWN=-1,DUR=[30],STALE=false,OKSTATE=null;
+function dataStamp(){const g=DATA.generated_at||'';const m=g.match(/(\d{4})-(\d\d)-(\d\d)[ T](\d\d):(\d\d)/);return m?`${m[2]}.${m[3]} ${m[4]}:${m[5]} 자료`:'이전 자료'}
 function pageAt(t){if(PAGES.length<2)return 0;t=(t??(performance.now()-T0)/1000)%TOTAL_SEC;let a=0;for(let i=0;i<DUR.length;i++){a+=DUR[i];if(t<a)return i}return DUR.length-1}
 /* 장면 전환: 흐림 효과(나가는 화면은 흐려지며 사라지고, 들어오는 화면은 흐린 상태에서 선명해짐) */
 const TR=.8, BLUR=18, ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
@@ -526,7 +531,8 @@ function frame(t){
 }
 function showPage(p,force){if(p===SHOWN&&!force)return;SHOWN=p;
   const cov=USE_COVER&&PAGES.length>1&&p===0;
-  $('#src').textContent=cov?'':((CUR&&typeof CUR.src==='function'?CUR.src(p-(USE_COVER&&PAGES.length>1?1:0)):'')||'');
+  const sx=cov?'':((CUR&&typeof CUR.src==='function'?CUR.src(p-(USE_COVER&&PAGES.length>1?1:0)):'')||'');
+  $('#src').textContent=sx&&STALE?`${sx} · ${dataStamp()}`:sx;
 }
 function clockTick(){const k=kst(),h=k.getHours(),dw='일월화수목금토'[k.getDay()],hm=`${pad(h%12||12)}:${pad(k.getMinutes())}`,ap=h<12?'AM':'PM';
   $('#cdate').textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())}(${dw})`;$('#ctime').textContent=`${hm} ${ap}`;
@@ -546,7 +552,15 @@ if(!window.__T204_RENDER){
   if(/diag/.test(location.hash)||CFG.diag){document.body.classList.add('kiosk');$('#stage').innerHTML='<div id="diag"></div>';window.T204_DIAG&&T204_DIAG($('#diag'));return;}
   // 데이터: 열릴 때 1회 + 10분마다. 고정 화면이라 값만 조용히 바뀜
   const pull=()=>(window.T204_LOAD?T204_LOAD():Promise.resolve(null)).then(d=>{if(d){DATA=d;draw(false)}}).catch(e=>console.warn('T204 load',e));
-  pull(); setInterval(pull,10*60*1000); setInterval(clockTick,5000); (function loop(){frame(nowT());requestAnimationFrame(loop)})(); setInterval(()=>frame(nowT()),100); // rAF가 멈추는 환경 대비
+  let lastPull=0, lastTick=Date.now();
+  const pullNow=()=>{lastPull=Date.now();pull()};
+  pullNow(); setInterval(pullNow,10*60*1000);
+  // 데이터가 오래됐으면 30초마다 재시도, 화면 상태(정상↔오래됨)가 바뀌면 다시 그림
+  setInterval(()=>{let ok=false;try{ok=!!CL[clipKey()].ok()}catch(e){} if(ok!==OKSTATE)draw(false); if(!ok&&Date.now()-lastPull>25000)pullNow()},30000);
+  // 컴퓨터가 잠들었다 깨어나면(시간이 1분 이상 건너뜀) 즉시 다시 받기
+  setInterval(()=>{const n=Date.now(); if(n-lastTick>60000)pullNow(); lastTick=n},5000);
+  addEventListener('online',pullNow); addEventListener('focus',pullNow); addEventListener('pageshow',pullNow);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)pullNow()}); setInterval(clockTick,5000); (function loop(){frame(nowT());requestAnimationFrame(loop)})(); setInterval(()=>frame(nowT()),100); // rAF가 멈추는 환경 대비
   let idle;addEventListener('mousemove',()=>{$('#ctl').style.opacity=1;clearTimeout(idle);idle=setTimeout(()=>$('#ctl').style.opacity=0,3000)});
 }
 })();
