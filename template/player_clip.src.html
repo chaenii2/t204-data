@@ -251,7 +251,7 @@ const JDECO=(()=>{let rings='';for(let i=0;i<11;i++){const r=46+i*34;rings+=`<ci
     <g>${rings}</g>
     <path d="M-40 1640 C 300 1560, 700 1760, 1260 1600 L1260 1824 L-40 1824 Z" fill="url(#jf)"/>
     <g filter="url(#jg)" opacity=".9">${waves}</g><g>${waves}</g></svg>`})();
-CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length)return false;if(!J.ts)return true;const [d,h]=J.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=24*3600000},
+CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length)return false;if(J.sample||!J.ts)return true;  /* 예시 화면은 시간 제한 없음 */const [d,h]=J.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=24*3600000},
   src:()=>DATA.jobs.basis||'',
   // 제공 데이터 표기(후원사 자리 대신)
   spon:()=>`<span class="lab" style="white-space:nowrap;font-size:26px">제공 데이터 :</span><img src="/*RP_LOGO*/" alt="로켓펀치" style="height:34px;max-height:34px;width:auto;flex:none">`,
@@ -275,7 +275,8 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
     const J=DATA.jobs, L=J.items.slice(0,12), R=CL.jobs.ROW, P=CL.jobs.PER, pages=L.length>P?2:1, PP=pages>1?Math.ceil(L.length/2):L.length;  // 7~11건이면 반씩 나눔
     const esc=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const k=kst(), t0=new Date(k.getFullYear(),k.getMonth(),k.getDate());
-    const due=e=>{if(!e)return ['상시 채용','#9fd8ff'];const [y,m,d]=e.split('-').map(Number);const n=Math.round((new Date(y,m-1,d)-t0)/86400000);
+    const due=e=>{if(typeof e==='number'){const d=new Date(t0);d.setDate(d.getDate()+e);e=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}  /* 예시: 오늘부터 N일 뒤 */
+      if(!e)return ['상시 채용','#9fd8ff'];const [y,m,d]=e.split('-').map(Number);const n=Math.round((new Date(y,m-1,d)-t0)/86400000);
       return n<=0?['오늘 마감','#ff6b5e']:n<=7?[`D-${n}`,'#ffd166']:[`${pad(m)}.${pad(d)} 마감`,'#e3efff']};
     // 직무에 맞는 아이콘 (제목·직군 키워드)
     const JI={code:'<path d="M9 8 5 12l4 4M15 8l4 4-4 4M13.5 6l-3 12"/>',chart:'<path d="M5 19V5M5 19h14"/><path d="M9 16v-4M13 16V9M17 16v-6"/>',
@@ -286,7 +287,7 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
     const ik=o=>{const s=(o.title+' '+(o.cat||'')).toLowerCase();
       return /게임|game/.test(s)?'game':/devops|클라우드|인프라|cloud/.test(s)?'cloud':/데이터|분석|data|ml|ai|머신/.test(s)?'chart':/디자인|디자이너|design|ux|ui/.test(s)?'pen':
         /마케팅|마케터|그로스|광고|marketing|brand/.test(s)?'mega':/재무|회계|ir|증권|금융|finance/.test(s)?'coin':/개발|엔지니어|프로그래머|ios|android|backend|front|server/.test(s)?'code':'bag'};
-    const row=(o,i)=>{const [dt,dc]=due(o.end);const pg=Math.floor(i/PP), k=i%PP, top=pg*R*P+k*R, h=R-20;
+    const row=(o,i)=>{const [dt,dc]=due(o.endIn!=null?o.endIn:o.end);const pg=Math.floor(i/PP), k=i%PP, top=pg*R*P+k*R, h=R-20;
       return `<div class="jrow" data-i="${i}" data-k="${k}" data-p="${pg}" style="position:absolute;left:0;top:0;width:1200px;will-change:transform"><div style="position:absolute;left:36px;width:1128px;top:${top}px;height:${h}px;border-radius:22px;
           background:linear-gradient(90deg,rgba(30,80,190,.5),rgba(20,55,150,.32));border:2px solid rgba(150,205,255,.38);
           box-shadow:inset 0 0 34px rgba(120,190,255,.16),inset 0 1px 0 rgba(255,255,255,.22),0 10px 30px rgba(0,10,50,.35)"></div>
