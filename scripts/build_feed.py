@@ -110,12 +110,14 @@ def main():
     jb = F.safe(X.jobs, None)
     if jb:
         feed["jobs"] = jb
-    elif prev.get("jobs", {}).get("ts"):
-        # 채용공고는 하루 지난 값까지만 사용
-        from datetime import datetime
-        age = (F.NOW.replace(tzinfo=None) - datetime.strptime(prev["jobs"]["ts"], "%Y-%m-%d %H:%M")).total_seconds()
-        if age <= 86400:
-            feed["jobs"] = prev["jobs"]; kept.append("jobs")
+    elif prev.get("jobs", {}).get("items"):
+        # 로켓펀치 응답이 없어도 채용 화면은 꺼지지 않게: 직전 목록을 기간 제한 없이 유지하고
+        # 마감일이 지난 공고만 뺌 (화면 하단 '○○시 기준'으로 기준 시각 표시)
+        today = F.NOW.strftime("%Y-%m-%d")
+        pj = dict(prev["jobs"])
+        pj["items"] = [i for i in pj["items"] if not i.get("end") or i["end"] >= today]
+        if pj["items"]:
+            feed["jobs"] = pj; kept.append("jobs")
     feed["sources"]["jobs"] = "로켓펀치 Open API (openapi.rocketpunch.com)"
     feed["sources"].update({"traffic": "서울시 실시간 도시데이터 (openapi.seoul.go.kr)",
                             "kr": "한국거래소 KRX Open API (data-dbg.krx.co.kr)", "rates": "한국은행 ECOS (ecos.bok.or.kr)"})

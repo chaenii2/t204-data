@@ -251,7 +251,10 @@ const JDECO=(()=>{let rings='';for(let i=0;i<11;i++){const r=46+i*34;rings+=`<ci
     <g>${rings}</g>
     <path d="M-40 1640 C 300 1560, 700 1760, 1260 1600 L1260 1824 L-40 1824 Z" fill="url(#jf)"/>
     <g filter="url(#jg)" opacity=".9">${waves}</g><g>${waves}</g></svg>`})();
-CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length)return false;if(J.sample||!J.ts)return true;  /* 예시 화면은 시간 제한 없음 */const [d,h]=J.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=24*3600000},
+CL.jobs={bg:'bg-jobs',
+  // 마감 안 지난 공고만 (예시 화면 포함). 기간 제한 없음 → 데이터 갱신이 멈춰도 화면은 계속 돌아감
+  live:()=>{const J=DATA.jobs;if(!J||!J.items)return [];const k=kst(),td=`${k.getFullYear()}-${pad(k.getMonth()+1)}-${pad(k.getDate())}`;return J.items.filter(o=>o.endIn!=null||!o.end||o.end>=td)},
+  ok:()=>CL.jobs.live().length>0,
   src:()=>DATA.jobs.basis||'',
   // 제공 데이터 표기(후원사 자리 대신)
   spon:()=>`<span class="lab" style="white-space:nowrap;font-size:26px">제공 데이터 :</span><img src="/*RP_LOGO*/" alt="로켓펀치" style="height:34px;max-height:34px;width:auto;flex:none">`,
@@ -272,7 +275,7 @@ CL.jobs={bg:'bg-jobs',ok:()=>{const J=DATA.jobs;if(!J||!J.items||!J.items.length
     const fl=document.getElementById('jbarf'), dt=document.getElementById('jbard');
     if(fl) fl.style.width=(f*W).toFixed(1)+'px'; if(dt) dt.style.left=(56+f*W).toFixed(1)+'px';},
   html:()=>{
-    const J=DATA.jobs, L=J.items.slice(0,12), R=CL.jobs.ROW, P=CL.jobs.PER, pages=L.length>P?2:1, PP=pages>1?Math.ceil(L.length/2):L.length;  // 7~11건이면 반씩 나눔
+    const J=DATA.jobs, L=CL.jobs.live().slice(0,12), R=CL.jobs.ROW, P=CL.jobs.PER, pages=L.length>P?2:1, PP=pages>1?Math.ceil(L.length/2):L.length;  // 7~11건이면 반씩 나눔
     const esc=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const k=kst(), t0=new Date(k.getFullYear(),k.getMonth(),k.getDate());
     const due=e=>{if(typeof e==='number'){const d=new Date(t0);d.setDate(d.getDate()+e);e=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}  /* 예시: 오늘부터 N일 뒤 */
