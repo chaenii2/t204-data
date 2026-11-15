@@ -1,63 +1,63 @@
 {
- "generated_at": "2026-11-16 00:13",
+ "generated_at": "2026-11-16 00:14",
  "location": "테헤란로 204 · 역삼",
  "weather": {
-  "sky": "clear",
+  "sky": "cloudy",
   "now_sky": "clear",
-  "text": "맑음",
-  "min": 9,
-  "max": 18,
-  "pop": 0,
+  "text": "흐림",
+  "min": 8,
+  "max": 17,
+  "pop": 30,
   "tip": "활동하기 좋은 날씨예요",
   "hourly": [
    {
     "h": "6시",
-    "t": 10,
-    "sky": "clear"
+    "t": 8,
+    "sky": "cloudy"
    },
    {
     "h": "9시",
-    "t": 11,
-    "sky": "clear"
+    "t": 10,
+    "sky": "cloudy"
    },
    {
     "h": "12시",
-    "t": 16,
-    "sky": "clear"
+    "t": 15,
+    "sky": "cloudy"
    },
    {
     "h": "15시",
-    "t": 18,
-    "sky": "clear"
+    "t": 17,
+    "sky": "cloudy"
    },
    {
     "h": "18시",
-    "t": 13,
-    "sky": "clear"
+    "t": 14,
+    "sky": "cloudy"
    },
    {
     "h": "21시",
-    "t": 9,
-    "sky": "clear"
+    "t": 12,
+    "sky": "cloudy"
    }
   ],
   "tomorrow": {
-   "min": 7,
-   "max": 17,
-   "pop": 30,
-   "sky": "cloudy"
+   "min": 10,
+   "max": 16,
+   "pop": 60,
+   "sky": "rain"
   },
-  "pm": "좋음",
-  "pm25": "좋음",
+  "pm": "보통",
+  "pm25": "보통",
   "now": {
-   "t": 14,
-   "at": "18:00",
+   "t": 10,
+   "at": "23:00",
    "pty": "0",
-   "reh": 48,
-   "wsd": 0.6
+   "reh": 74,
+   "wsd": 0.8
   },
   "now_text": "맑음",
-  "now_basis": "19:00 초단기예보(18:30 발표)"
+  "now_basis": "00:00 초단기예보(23:30 발표)"
  },
  "fx": {
   "basis": "11.13 매매기준율 · 한국수출입은행",
@@ -273,25 +273,25 @@
   "rates": "한국은행 ECOS (ecos.bok.or.kr)"
  },
  "traffic": {
-  "basis": "00:10 기준 · 서울시 도시데이터",
+  "basis": "00:15 기준 · 서울시 도시데이터",
   "status": "원활",
-  "kmh": 27,
+  "kmh": 29,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 26
+    "kmh": 27
    },
    {
     "name": "역삼역 부근",
-    "kmh": 31
+    "kmh": 33
    },
    {
     "name": "선릉역 부근",
-    "kmh": 28
+    "kmh": 31
    },
    {
     "name": "삼성역 부근",
-    "kmh": 17
+    "kmh": 18
    }
   ],
   "roads": [
@@ -301,12 +301,12 @@
    },
    {
     "name": "선릉로",
-    "kmh": 30
+    "kmh": 28
    }
   ],
   "congest": "여유",
   "congest_msg": "사람이 몰려있을 가능성이 낮고 붐빔은 거의 느껴지지 않아요",
-  "ts": "2026-11-16 00:13"
+  "ts": "2026-11-16 00:14"
  },
  "kr_hist": {
   "KOSPI": [
@@ -468,9 +468,7 @@
    }
   ]
  },
- "stale": [
-  "weather"
- ],
+ "stale": [],
  "fx_hist": [
   {
    "d": "10.15",
