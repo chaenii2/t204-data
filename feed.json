@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-17 04:17",
+ "generated_at": "2026-11-17 04:32",
  "location": "테헤란로 204 · 역삼",
  "weather": {
   "sky": "rain",
@@ -259,40 +259,40 @@
   "rates": "한국은행 ECOS (ecos.bok.or.kr)"
  },
  "traffic": {
-  "basis": "04:15 기준 · 서울시 도시데이터",
+  "basis": "04:30 기준 · 서울시 도시데이터",
   "status": "원활",
-  "kmh": 25,
+  "kmh": 30,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 23
+    "kmh": 34
    },
    {
     "name": "역삼역 부근",
-    "kmh": 27
+    "kmh": 36
    },
    {
     "name": "선릉역 부근",
-    "kmh": 24
+    "kmh": 28
    },
    {
     "name": "삼성역 부근",
-    "kmh": 24
+    "kmh": 20
    }
   ],
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 30
+    "kmh": 26
    },
    {
     "name": "선릉로",
-    "kmh": 28
+    "kmh": 30
    }
   ],
   "congest": "여유",
   "congest_msg": "사람이 몰려있을 가능성이 낮고 붐빔은 거의 느껴지지 않아요",
-  "ts": "2026-11-17 04:17"
+  "ts": "2026-11-17 04:32"
  },
  "kr_hist": {
   "KOSPI": [
