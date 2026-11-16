@@ -23,6 +23,7 @@
   /* B안: 배경은 같은 남색, 오른쪽 위 빛만 클립 포인트 색 */
   .bg-navy.acc-w{background:radial-gradient(80% 45% at 85% 0%,rgba(255,160,80,.26),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
   .bg-navy.acc-t{background:radial-gradient(80% 45% at 85% 0%,rgba(80,220,170,.24),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
+  .bg-navy.acc-j{background:radial-gradient(80% 45% at 85% 0%,rgba(170,140,255,.26),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
   /* 제목 아래 포인트 색 막대 */
   .title::after{content:'';position:absolute;left:3px;top:100%;margin-top:14px;width:72px;height:8px;border-radius:4px;background:var(--acc,#6fb4ff)}
   /* 날씨 화면: 표지와 같은 보라 계열을 기본으로, 날씨·기온에 따라 색 조정 */
@@ -256,7 +257,7 @@ const JDECO=(()=>{let rings='';for(let i=0;i<11;i++){const r=46+i*34;rings+=`<ci
     <g>${rings}</g>
     <path d="M-40 1640 C 300 1560, 700 1760, 1260 1600 L1260 1824 L-40 1824 Z" fill="url(#jf)"/>
     <g filter="url(#jg)" opacity=".9">${waves}</g><g>${waves}</g></svg>`})();
-CL.jobs={bg:'bg-jobs',
+CL.jobs={bg:'bg-navy acc-j',
   // 마감 안 지난 공고만 (예시 화면 포함). 기간 제한 없음 → 데이터 갱신이 멈춰도 화면은 계속 돌아감
   live:()=>{const J=DATA.jobs;if(!J||!J.items)return [];const k=kst(),td=`${k.getFullYear()}-${pad(k.getMonth()+1)}-${pad(k.getDate())}`;return J.items.filter(o=>o.endIn!=null||!o.end||o.end>=td)},
   has:()=>CL.jobs.live().length>0,
@@ -285,8 +286,8 @@ CL.jobs={bg:'bg-jobs',
     const esc=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const k=kst(), t0=new Date(k.getFullYear(),k.getMonth(),k.getDate());
     const due=e=>{if(typeof e==='number'){const d=new Date(t0);d.setDate(d.getDate()+e);e=`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}  /* 예시: 오늘부터 N일 뒤 */
-      if(!e)return ['상시 채용','#9fd8ff'];const [y,m,d]=e.split('-').map(Number);const n=Math.round((new Date(y,m-1,d)-t0)/86400000);
-      return n<=0?['오늘 마감','#ff6b5e']:n<=7?[`D-${n}`,'#ffd166']:[`${pad(m)}.${pad(d)} 마감`,'#e3efff']};
+      if(!e)return ['상시 채용','#c3cee0'];const [y,m,d]=e.split('-').map(Number);const n=Math.round((new Date(y,m-1,d)-t0)/86400000);
+      return n<=0?['오늘 마감','#ff6b5e']:n<=7?[`D-${n}`,'#ffd166']:[`${pad(m)}.${pad(d)} 마감`,'#ffffff']};
     // 직무에 맞는 아이콘 (제목·직군 키워드)
     const JI={code:'<path d="M9 8 5 12l4 4M15 8l4 4-4 4M13.5 6l-3 12"/>',chart:'<path d="M5 19V5M5 19h14"/><path d="M9 16v-4M13 16V9M17 16v-6"/>',
       pen:'<path d="m14.5 5.5 4 4L9 19H5v-4z"/><path d="m12.5 7.5 4 4"/>',mega:'<path d="M4 10v4h3l6 4V6l-6 4z"/><path d="M17 9a4 4 0 0 1 0 6"/>',
@@ -298,18 +299,17 @@ CL.jobs={bg:'bg-jobs',
         /마케팅|마케터|그로스|광고|marketing|brand/.test(s)?'mega':/재무|회계|ir|증권|금융|finance/.test(s)?'coin':/개발|엔지니어|프로그래머|ios|android|backend|front|server/.test(s)?'code':'bag'};
     const row=(o,i)=>{const [dt,dc]=due(o.endIn!=null?o.endIn:o.end);const pg=Math.floor(i/PP), k=i%PP, top=pg*R*P+k*R, h=R-20;
       return `<div class="jrow" data-i="${i}" data-k="${k}" data-p="${pg}" style="position:absolute;left:0;top:0;width:1200px;will-change:transform"><div style="position:absolute;left:36px;width:1128px;top:${top}px;height:${h}px;border-radius:22px;
-          background:linear-gradient(90deg,rgba(30,80,190,.5),rgba(20,55,150,.32));border:2px solid rgba(150,205,255,.38);
-          box-shadow:inset 0 0 34px rgba(120,190,255,.16),inset 0 1px 0 rgba(255,255,255,.22),0 10px 30px rgba(0,10,50,.35)"></div>
+          background:rgba(255,255,255,.045);border:1.5px solid rgba(255,255,255,.13)"></div>
         <div style="position:absolute;left:62px;width:504px;top:${top+22}px"><div style="font-size:48px;font-weight:900;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.company)}</div>
-          <div style="font-size:33px;font-weight:500;color:#d6e6ff;line-height:1.3;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.title)}</div></div>
-        <div style="position:absolute;left:756px;width:340px;top:${top+22}px;text-align:right">${o.size?`<span style="display:inline-block;font-size:28px;font-weight:800;padding:4px 20px 6px;border-radius:999px;background:#cfeaff;color:#0b2f86">${esc(o.size)}</span>`:''}
+          <div style="font-size:33px;font-weight:500;color:var(--sub);line-height:1.3;margin-top:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(o.title)}</div></div>
+        <div style="position:absolute;left:756px;width:340px;top:${top+22}px;text-align:right">${o.size?`<span style="display:inline-block;font-size:28px;font-weight:800;padding:4px 20px 6px;border-radius:999px;background:rgba(255,255,255,.14);color:#fff">${esc(o.size)}</span>`:''}
           <div class="num" style="font-size:44px;font-weight:900;color:${dc};margin-top:10px;line-height:1.1">${dt}</div></div>
-        <svg style="position:absolute;left:1112px;top:${top+h/2-18}px" width="22" height="36" viewBox="0 0 22 36" fill="none" stroke="#e8f4ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l13 14L4 32"/></svg></div>`};
-    const bar=`<div style="position:absolute;left:56px;top:421px;width:1092px;height:3px;background:rgba(150,205,255,.32);border-radius:2px"></div>
-      <div id="jbarf" style="position:absolute;left:56px;top:420px;width:0;height:5px;border-radius:3px;background:linear-gradient(90deg,rgba(160,215,255,.5),#e6f6ff);box-shadow:0 0 12px rgba(140,210,255,.9)"></div>
-      <div style="position:absolute;left:1136px;top:410px;width:24px;height:24px;border-radius:50%;background:#bfe6ff;box-shadow:0 0 16px 6px rgba(120,200,255,.75)"></div>
-      <div id="jbard" style="position:absolute;left:56px;top:422px;width:0;height:0"><div style="position:absolute;left:-16px;top:-16px;width:32px;height:32px;border-radius:50%;border:4px solid #eaf6ff;background:#0d3fc4;box-shadow:0 0 14px rgba(160,220,255,.9)"><div style="position:absolute;left:6px;top:6px;width:12px;height:12px;border-radius:50%;background:#eaf6ff"></div></div></div>`;
-    return `${JDECO}<div class="title" id="jtitle">현재 채용</div>
+        <svg style="position:absolute;left:1112px;top:${top+h/2-18}px" width="22" height="36" viewBox="0 0 22 36" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l13 14L4 32"/></svg></div>`};
+    const bar=`<div style="position:absolute;left:56px;top:421px;width:1092px;height:3px;background:rgba(255,255,255,.16);border-radius:2px"></div>
+      <div id="jbarf" style="position:absolute;left:56px;top:420px;width:0;height:5px;border-radius:3px;background:var(--acc);box-shadow:0 0 8px var(--acc)"></div>
+      <div style="position:absolute;left:1136px;top:410px;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.35)"></div>
+      <div id="jbard" style="position:absolute;left:56px;top:422px;width:0;height:0"><div style="position:absolute;left:-16px;top:-16px;width:32px;height:32px;border-radius:50%;border:4px solid var(--acc);background:#071328"><div style="position:absolute;left:6px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--acc)"></div></div></div>`;
+    return `<div class="title" id="jtitle">현재 채용</div>
       ${bar}
       <div style="position:absolute;left:0;top:462px;width:1200px;height:${R*P}px;overflow:hidden">
         <div id="jroll" data-pages="${pages}" style="position:absolute;left:0;top:0;width:1200px;will-change:transform">${L.map(row).join('')}</div></div>
@@ -322,7 +322,7 @@ CL.brand={bg:'bg-brand',ok:()=>true,src:()=>'',html:()=>`<div class="pa" style="
 const COVER_SEC=6, TOTAL_SEC=30, USE_COVER=false;   // 표지 없이 설명지만 송출
 const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통',jobs:'채용'};
 const TAGLINE={finance:'현재 경제 소식',weather:'현재 날씨 소식',traffic:'현재 교통 소식',jobs:'현재 채용 소식'};
-const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0',jobs:'#7fc4ff'};
+const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0',jobs:'#b99bff'};
 function skyLvl(){const w=DATA.weather||{},s=w.now_sky||w.sky;return s==='clear'?'clear':s==='partly'?'partly':s==='cloudy'?'cloudy':'wet'}
 function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.tint():''}catch(e){}
   return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="skyline sk-${skyLvl()}"></div><div class="wtint ${wc}"></div>`:''}
