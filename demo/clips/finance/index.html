@@ -349,7 +349,7 @@ CL.weather={bg:'bg-sky',ok:()=>DATA.weather&&fresh(0),src:()=>'기상청 · 에�
       <div class="pa" style="top:1420px;font-size:50px;font-weight:800;line-height:1.35">${w.tip}</div>
       ${T?`<div class="pb" style="top:1420px;text-align:right"><div class="k">내일</div><div style="font-size:52px;font-weight:800;line-height:1.25"><span class="num">${T.min}° / ${T.max}°</span> ${({clear:'맑음',partly:'구름 많음',cloudy:'흐림',rain:'비',snow:'눈',sleet:'비/눈'})[T.sky]||''}</div>${T.pop>=40?`<div class="k">강수 ${T.pop}%</div>`:''}</div>`:''}`;
   }};
-CL.traffic={bg:'bg-green',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.ts)return true;const [d,h]=T.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=60*60000},
+CL.traffic={bg:'bg-navy',ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.ts)return true;const [d,h]=T.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=60*60000},
   src:()=>DATA.traffic.basis||'서울시 도시데이터',
   html:()=>{
     const T=DATA.traffic, segs=(T.segments||[]).slice(0,4);

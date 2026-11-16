@@ -199,7 +199,7 @@ CL.finance={bg:'bg-navy',has:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length,ok
       ${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
     return [fx,st];
   }};
-CL.weather={bg:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
+CL.weather={bg:'bg-navy',tint:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
     if(sky==='rain'||sky==='sleet')return 'bg-w-rain';
     if(sky==='snow')return 'bg-w-snow';
     const t=n.t!=null?n.t:(w.min+w.max)/2;
@@ -223,7 +223,7 @@ CL.weather={bg:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
       <div class="pa" style="top:1420px;font-size:50px;font-weight:800;line-height:1.35;text-shadow:0 2px 14px rgba(0,0,0,.7)">${w.tip}</div>
       ${T?`<div class="pb" style="top:1420px;text-align:right;text-shadow:0 2px 14px rgba(0,0,0,.7)"><div class="k">내일</div><div class="num" style="font-size:52px;font-weight:800;line-height:1.2">${T.min}° / ${T.max}°</div><div style="font-size:44px;font-weight:700;line-height:1.25">${({clear:'맑음',partly:'구름 많음',cloudy:'흐림',rain:'비',snow:'눈',sleet:'비/눈'})[T.sky]||''}</div>${T.pop>=40?`<div class="k">강수 ${T.pop}%</div>`:''}</div>`:''}`;
   }};
-CL.traffic={bg:'bg-green',has:()=>!!DATA.traffic,ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.ts)return true;const [d,h]=T.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=60*60000},
+CL.traffic={bg:'bg-navy',has:()=>!!DATA.traffic,ok:()=>{const T=DATA.traffic;if(!T)return false;if(!T.ts)return true;const [d,h]=T.ts.split(' '),[y,m,dd]=d.split('-').map(Number),[hh,mm]=h.split(':').map(Number);return (kst()-new Date(y,m-1,dd,hh,mm))<=60*60000},
   src:()=>DATA.traffic.basis||'서울시 도시데이터',
   html:()=>{
     const T=DATA.traffic, segs=(T.segments||[]).slice(0,4);
@@ -319,7 +319,7 @@ const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통',jobs:'채용'
 const TAGLINE={finance:'오늘의 경제 소식',weather:'오늘의 날씨 소식',traffic:'오늘의 교통 소식',jobs:'오늘의 채용 소식'};
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0',jobs:'#7fc4ff'};
 function skyLvl(){const w=DATA.weather||{},s=w.now_sky||w.sky;return s==='clear'?'clear':s==='partly'?'partly':s==='cloudy'?'cloudy':'wet'}
-function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.bg():''}catch(e){}
+function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.tint():''}catch(e){}
   return `<div class="cover-bg ${k}"></div>${k==='weather'?`<div class="skyline sk-${skyLvl()}"></div><div class="wtint ${wc}"></div>`:''}
   <div class="pa" style="top:470px;text-shadow:0 2px 14px rgba(0,0,0,.55),0 0 2px rgba(0,0,0,.4)">
     <div style="display:flex;justify-content:space-between;align-items:baseline;width:500px"><span class="num" style="font-size:54px;font-weight:700"><span class="cdate2"></span></span><span class="campm" style="font-size:54px;font-weight:600;color:#dbe4f3"></span></div>
