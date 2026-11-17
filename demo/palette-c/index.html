@@ -486,9 +486,10 @@ const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0',jobs:'#b9
 const THEME=(/vivid/.test(location.hash)?'C':/glow/.test(location.hash)?'B':(CFG.theme||'A'));
 const THEMES={
  A:{bar:{finance:['linear-gradient(90deg,#1c48c8 0%,#4f8cff 55%,#b4d8ff 100%)','#b4d8ff'],
-         weather:['linear-gradient(90deg,#8a2a5c 0%,#d8607c 55%,#ffc59a 100%)','#ffc59a'],
+         weather:['linear-gradient(90deg,#e0560a 0%,#ff9f1c 55%,#ffe39a 100%)','#ffe39a'],
          traffic:['linear-gradient(90deg,#0d6a56 0%,#2fc79c 55%,#b0f6dd 100%)','#b0f6dd'],
-         jobs:   ['linear-gradient(90deg,#5236d0 0%,#9a7bff 55%,#dccbff 100%)','#dccbff']}},
+         jobs:   ['linear-gradient(90deg,#5236d0 0%,#9a7bff 55%,#dccbff 100%)','#dccbff']},
+    bg:{weather:"radial-gradient(75% 42% at 92% -4%,rgba(255,226,140,.75) 0%,rgba(255,170,60,.35) 40%,transparent 72%),radial-gradient(150% 80% at 50% 112%,#ff9a24 0%,#f07412 22%,#b84a08 42%,#5a2204 60%,transparent 80%),linear-gradient(180deg,#5a2608 0%,#3a1806 55%,#2a1004 100%)"}},
  B:{bar:{finance:['linear-gradient(90deg,#2a0ae0 0%,#6a5cff 55%,#b7b0ff 100%)','#b7b0ff'],
          weather:['linear-gradient(90deg,#005c9a 0%,#00b4c8 55%,#a6f4ff 100%)','#a6f4ff'],
          traffic:['linear-gradient(90deg,#8a0b0b 0%,#e0262a 55%,#ff9e8c 100%)','#ff9e8c'],
@@ -562,11 +563,11 @@ function draw(intro){
   if(!ok){let has=false;try{has=!!(c.has&&c.has())}catch(e){} if(has)STALE=true; else {k='brand';c=CL.brand}}
   OKSTATE=ok;
   $('#bg').className='bg '+(typeof c.bg==='function'?c.bg():c.bg);
-  $('#bg').style.background=(THEME!=='A'&&THEMES[THEME].bg&&THEMES[THEME].bg[k])||'';
+  $('#bg').style.background=((THEME!=='A'||CFG.rotate)&&THEMES[THEME].bg&&THEMES[THEME].bg[k])||'';
   $('#bg').classList.toggle('grain',THEME==='C'&&k!=='brand');
   $('#stage').style.setProperty('--acc',CLIPCOLOR[k]||'#6fb4ff');
   let h='';try{h=c.html()}catch(e){console.warn(e);c=CL.brand;$('#bg').className='bg bg-brand';h=c.html()}
-  PAGES=Array.isArray(h)?h:[h]; CUR=c;
+  PAGES=Array.isArray(h)?h:[h]; if(CFG.rotate)PAGES=PAGES.map(x=>x.replace(/(<div class="title"[^>]*>)현재 ([^<]+)</g,'$1$2 NOW<')); CUR=c;
   if(k!=='brand'&&USE_COVER){PAGES=[coverHtml(k),...PAGES]}
   const n=PAGES.length; DUR=(k==='brand'||!USE_COVER)?Array(n).fill(TOTAL_SEC/n):[COVER_SEC,...Array(n-1).fill((TOTAL_SEC-COVER_SEC)/(n-1))];
   if(intro) T0=performance.now();

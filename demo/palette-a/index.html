@@ -567,7 +567,7 @@ function draw(intro){
   $('#bg').classList.toggle('grain',THEME==='C'&&k!=='brand');
   $('#stage').style.setProperty('--acc',CLIPCOLOR[k]||'#6fb4ff');
   let h='';try{h=c.html()}catch(e){console.warn(e);c=CL.brand;$('#bg').className='bg bg-brand';h=c.html()}
-  PAGES=Array.isArray(h)?h:[h]; CUR=c;
+  PAGES=Array.isArray(h)?h:[h]; if(CFG.rotate)PAGES=PAGES.map(x=>x.replace(/(<div class="title"[^>]*>)현재 ([^<]+)</g,'$1$2 NOW<')); CUR=c;
   if(k!=='brand'&&USE_COVER){PAGES=[coverHtml(k),...PAGES]}
   const n=PAGES.length; DUR=(k==='brand'||!USE_COVER)?Array(n).fill(TOTAL_SEC/n):[COVER_SEC,...Array(n-1).fill((TOTAL_SEC-COVER_SEC)/(n-1))];
   if(intro) T0=performance.now();
