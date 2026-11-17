@@ -20,6 +20,8 @@
   .pb{left:756px;width:392px}
   .bg{position:absolute;inset:0}
   .bg-navy{background:radial-gradient(80% 45% at 85% 0%,rgba(40,110,220,.35),transparent 60%),linear-gradient(180deg,#0a1a36 0%,#071328 60%,#050d1d 100%)}
+  .bg.grain::after{content:'';position:absolute;inset:0;opacity:.22;mix-blend-mode:overlay;pointer-events:none;
+    background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .9 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
   /* B안: 배경은 같은 남색, 오른쪽 위 빛만 클립 포인트 색 */
   .bg-navy.acc-w{background:radial-gradient(80% 45% at 85% 0%,rgba(255,150,110,.22),transparent 60%),linear-gradient(180deg,#30122c 0%,#200c20 60%,#120612 100%)}
   .bg-navy.acc-t{background:radial-gradient(80% 45% at 85% 0%,rgba(80,220,170,.26),transparent 60%),linear-gradient(180deg,#082c34 0%,#062028 60%,#041418 100%)}
@@ -323,24 +325,32 @@ const COVER_SEC=6, TOTAL_SEC=30, USE_COVER=false;   // 표지 없이 설명지�
 const CLIPNAME={finance:'금융',weather:'날씨',traffic:'교통',jobs:'채용'};
 const TAGLINE={finance:'현재 경제 소식',weather:'현재 날씨 소식',traffic:'현재 교통 소식',jobs:'현재 채용 소식'};
 const CLIPCOLOR={finance:'#6fb4ff',weather:'#ffb36b',traffic:'#5ee0b0',jobs:'#b99bff'};
-/* 팔레트: A(다크, 기본) / C(Glow: 검정 → 아래에서 올라오는 색). 설정 theme 또는 주소 #glow */
-const THEME=(/glow/.test(location.hash)?'C':(CFG.theme||'A'));
+/* 팔레트: A(다크, 기본) / B(Glow: 검정 → 아래에서 올라오는 색, 주소 #glow) / C(Vivid: 선명한 메시 그라데이션 + 입자감, 주소 #vivid) */
+const THEME=(/vivid/.test(location.hash)?'C':/glow/.test(location.hash)?'B':(CFG.theme||'A'));
 const THEMES={
  A:{bar:{finance:['linear-gradient(90deg,#1c48c8 0%,#4f8cff 55%,#b4d8ff 100%)','#b4d8ff'],
          weather:['linear-gradient(90deg,#8a2a5c 0%,#d8607c 55%,#ffc59a 100%)','#ffc59a'],
          traffic:['linear-gradient(90deg,#0d6a56 0%,#2fc79c 55%,#b0f6dd 100%)','#b0f6dd'],
          jobs:   ['linear-gradient(90deg,#5236d0 0%,#9a7bff 55%,#dccbff 100%)','#dccbff']}},
- C:{bar:{finance:['linear-gradient(90deg,#2a0ae0 0%,#6a5cff 55%,#b7b0ff 100%)','#b7b0ff'],
+ B:{bar:{finance:['linear-gradient(90deg,#2a0ae0 0%,#6a5cff 55%,#b7b0ff 100%)','#b7b0ff'],
          weather:['linear-gradient(90deg,#005c9a 0%,#00b4c8 55%,#a6f4ff 100%)','#a6f4ff'],
          traffic:['linear-gradient(90deg,#8a0b0b 0%,#e0262a 55%,#ff9e8c 100%)','#ff9e8c'],
          jobs:   ['linear-gradient(90deg,#7b4dff 0%,#c24c8a 55%,#f2a27c 100%)','#f2a27c']},
     bg:{finance:"radial-gradient(150% 85% at 55% 112%,#2a0ae0 0%,#1f02c2 22%,#14018a 42%,#0a0050 58%,rgba(4,0,24,.7) 70%,transparent 82%),#000",
         traffic:"radial-gradient(150% 85% at 62% 112%,#d81a1b 0%,#c01010 22%,#8a0b0b 42%,#4a0606 58%,rgba(20,2,2,.7) 70%,transparent 82%),#000",
         weather:"radial-gradient(150% 85% at 58% 112%,#00b4c8 0%,#0192c6 22%,#005a8a 42%,#00304f 58%,rgba(0,14,24,.7) 70%,transparent 82%),#000",
-        jobs:"radial-gradient(75% 45% at 100% 106%,rgba(225,130,90,.95) 0%,rgba(175,60,60,.65) 38%,transparent 72%),radial-gradient(150% 88% at 30% 108%,#4a1cc8 0%,#2c0ea0 25%,#1a0670 46%,#0d0340 62%,transparent 82%),linear-gradient(180deg,#0b0820 0%,#000 30%)"}}
+        jobs:"radial-gradient(75% 45% at 100% 106%,rgba(225,130,90,.95) 0%,rgba(175,60,60,.65) 38%,transparent 72%),radial-gradient(150% 88% at 30% 108%,#4a1cc8 0%,#2c0ea0 25%,#1a0670 46%,#0d0340 62%,transparent 82%),linear-gradient(180deg,#0b0820 0%,#000 30%)"}},
+ C:{bar:{finance:['linear-gradient(90deg,#0a8fd8 0%,#38d4ff 55%,#e0faff 100%)','#e0faff'],
+         weather:['linear-gradient(90deg,#b81cd0 0%,#ff5fb8 55%,#ffc29a 100%)','#ffc29a'],
+         traffic:['linear-gradient(90deg,#12a83a 0%,#6cff5a 55%,#eaffb0 100%)','#eaffb0'],
+         jobs:   ['linear-gradient(90deg,#7d44be 0%,#6f7bff 55%,#cfd6ff 100%)','#cfd6ff']},
+    bg:{finance:"radial-gradient(60% 38% at 0% 0%,#0a9ad6 0%,transparent 70%),radial-gradient(55% 32% at 100% 100%,#0bc0e0 0%,transparent 72%),radial-gradient(45% 26% at 62% 104%,#0a7fd0 0%,transparent 70%),linear-gradient(165deg,#0a5ab0 0%,#03309a 30%,#02215e 58%,#01224d 100%)",
+        weather:"radial-gradient(55% 34% at 45% 0%,#c21ccf 0%,transparent 72%),radial-gradient(50% 32% at 82% 100%,#c81ad8 0%,transparent 72%),radial-gradient(45% 30% at 10% 80%,#5a2a9a 0%,transparent 70%),linear-gradient(170deg,#6a1aa0 0%,#4a1478 35%,#3a1062 65%,#341a6a 100%)",
+        traffic:"radial-gradient(55% 32% at 65% 0%,#18c232 0%,transparent 72%),radial-gradient(50% 30% at 70% 102%,#12a82c 0%,transparent 72%),radial-gradient(40% 40% at 100% 40%,#03807a 0%,transparent 70%),linear-gradient(170deg,#0a6e44 0%,#05583f 35%,#044a42 65%,#064a36 100%)",
+        jobs:"radial-gradient(55% 32% at 10% 0%,#8a4cd0 0%,transparent 72%),radial-gradient(55% 34% at 100% 100%,#3f52c0 0%,transparent 72%),radial-gradient(40% 26% at 35% 102%,#6a4cb8 0%,transparent 70%),linear-gradient(170deg,#3a2390 0%,#24196e 35%,#1c175a 65%,#22205e 100%)"}}
 };
-/* C: 배경과 같은 계열이라 묻히는 글씨색 보정 */
-function themeTweak(k){ if(THEME!=='C')return;
+/* B: 배경과 같은 계열이라 묻히는 글씨색 보정 */
+function themeTweak(k){ if(THEME==='C'){vividTweak(k);return} if(THEME!=='B')return;
   const P=x=>{const m=x&&x.match(/[\d.]+/g);return m?m.map(Number):null};
   document.querySelectorAll('#content *').forEach(e=>{const cs=getComputedStyle(e),c=P(cs.color),b=P(cs.backgroundColor);
     if(c){ if(k==='traffic'&&c[0]>230&&c[1]<140) e.style.color='#ffc9c9';
@@ -349,6 +359,16 @@ function themeTweak(k){ if(THEME!=='C')return;
     if(b&&(b[3]===undefined||b[3]>.5)){ if(k==='traffic'&&b[0]>220&&b[1]<120) e.style.backgroundColor='#ffb0b0';
       if(k==='finance'&&b[0]>200&&b[1]<80&&e.getBoundingClientRect().top>1100){e.style.backgroundColor='#fff';e.style.color='#1a0a8a'} }});
   if(k==='jobs') document.querySelectorAll('.jrow').forEach(r=>{const c=r.children[0];c.style.background='rgba(255,255,255,.095)';c.style.borderColor='rgba(255,255,255,.18)'});
+}
+/* C(Vivid): 포인트 색 보정 */
+function vividTweak(k){
+  const P=x=>{const m=x&&x.match(/[\d.]+/g);return m?m.map(Number):null};
+  document.querySelectorAll('#content *').forEach(e=>{const cs=getComputedStyle(e),c=P(cs.color),b=P(cs.backgroundColor);
+    if(c){ if(c[2]>220&&c[0]<120) e.style.color=(k==='finance'?'#7fe3ff':'#5ee8ff');        // 파랑 → 시안
+      if(k==='traffic'&&c[0]>220&&c[1]>170&&c[2]<140) e.style.color='#e4ff3c'; }            // 노랑 → 라임
+    if(b&&(b[3]===undefined||b[3]>.5)&&k==='finance'&&b[0]>200&&b[1]<80&&e.getBoundingClientRect().top>1100){e.style.backgroundColor='#22d3ee';e.style.color='#04213a'} });
+  document.querySelectorAll('#content svg [stroke]').forEach(e=>{const v=e.getAttribute('stroke')||''; if(/#4aa8ff|#6fb4ff|74,168,255/i.test(v)) e.setAttribute('stroke','#22e0ff')});
+  if(k==='jobs') document.querySelectorAll('.jrow').forEach(r=>{const c=r.children[0];c.style.background='rgba(20,14,70,.38)';c.style.borderColor='rgba(255,255,255,.2)'});
 }
 let BARPER=30;
 function barSet(k){const pb=$('#pbar'),T=THEMES[THEME]||THEMES.A,b=T.bar[k];
@@ -386,6 +406,7 @@ function draw(intro){
   OKSTATE=ok;
   $('#bg').className='bg '+(typeof c.bg==='function'?c.bg():c.bg);
   $('#bg').style.background=(THEME!=='A'&&THEMES[THEME].bg&&THEMES[THEME].bg[k])||'';
+  $('#bg').classList.toggle('grain',THEME==='C'&&k!=='brand');
   $('#stage').style.setProperty('--acc',CLIPCOLOR[k]||'#6fb4ff');
   let h='';try{h=c.html()}catch(e){console.warn(e);c=CL.brand;$('#bg').className='bg bg-brand';h=c.html()}
   PAGES=Array.isArray(h)?h:[h]; CUR=c;
