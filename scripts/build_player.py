@@ -34,6 +34,9 @@ def main():
     ap.add_argument("--embed", default=str(ROOT / "data" / "feed.json"))
     ap.add_argument("--out", required=True)
     ap.add_argument("--zip", default="")
+    ap.add_argument("--theme", default="")      # A(기본)·C(Glow)
+    ap.add_argument("--rotate", action="store_true")   # 금융·날씨·교통·채용 30초씩 순환
+    ap.add_argument("--keep-jobs", action="store_true")  # 실시간 자료에 채용이 없으면 내장 예시 유지(시안용)
     ap.add_argument("--diag", action="store_true", help="열면 바로 연결 진단 화면")
     ap.add_argument("--template", default="player_v5.src.html")
     ap.add_argument("--clip", default="", help="finance | weather | traffic (30초 고정 클립)")
@@ -42,6 +45,12 @@ def main():
 
     feed = json.loads(pathlib.Path(a.embed).read_text(encoding="utf-8"))
     cfg = {"mode": a.mode, "diag": a.diag}
+    if a.theme:
+        cfg["theme"] = a.theme
+    if a.rotate:
+        cfg["rotate"] = True
+    if a.keep_jobs:
+        cfg["keepJobs"] = True
     if a.clip:
         cfg["clip"] = a.clip
     if a.sponsor_slot:
