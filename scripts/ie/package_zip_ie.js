@@ -87,7 +87,7 @@ if(!window.performance||!performance.now){window.performance=window.performance|
   const head = `<meta http-equiv="X-UA-Compatible" content="IE=edge">\n` +
     `<meta name="viewport" content="width=1200,initial-scale=1,maximum-scale=1,user-scalable=no">\n` +
     `<meta http-equiv="Pragma" content="no-cache">\n<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">\n` +
-    `<style>${faces}</style>\n<script src="js/polyfill-ie11.js"></script>\n<script>window.T204_TOPLEFT=true;</script>\n`;
+    `<style>${faces}</style>\n<script src="js/polyfill-ie11.js"></script>\n`;
   h = h.replace(/<meta name="viewport"[^>]*>\n?/, '');
   if (!/<meta charset/i.test(h)) throw new Error('charset meta 없음');
   h = h.replace(/(<meta charset[^>]*>)/i, `$1\n${head}`);

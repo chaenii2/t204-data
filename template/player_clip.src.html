@@ -514,7 +514,7 @@ function clockTick(){const k=kst(),h=k.getHours(),dw='일월화수목금토'[k.g
   const b=document.getElementById('bigtime'); if(b) b.textContent=hm;
   document.querySelectorAll('.ctime2').forEach(e=>e.textContent=hm);document.querySelectorAll('.campm').forEach(e=>e.textContent=ap);
   document.querySelectorAll('.cdate2').forEach(e=>e.textContent=`${pad(k.getMonth()+1)}.${pad(k.getDate())} (${dw})`);}
-function fit(){const st=$('#stage'),s=Math.min(innerWidth/W0,innerHeight/H0);st.style.transform=`scale(${s})`;const tl=!!window.T204_TOPLEFT; /* 송출용 ZIP: 좌상단(0,0) 고정 */ st.style.left=(tl?0:(innerWidth-W0*s)/2)+'px';st.style.top=(tl?0:(innerHeight-H0*s)/2)+'px'}
+function fit(){const st=$('#stage'),s=Math.min(innerWidth/W0,innerHeight/H0);st.style.transform=`scale(${s})`;st.style.left=((innerWidth-W0*s)/2)+'px';st.style.top=((innerHeight-H0*s)/2)+'px'}
 window.T204={setData(d){DATA=d;draw(false)},renderAt(t){if(!PAGES.length)draw(false);document.querySelector('.clock').style.transition='none';frame(t)},LOOP:30,W:W0,H:H0,clip:clipKey};
 
 draw(true);
