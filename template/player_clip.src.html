@@ -251,21 +251,24 @@ CL.finone={bg:'bg-navy',roll:true,ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.l
     const HU=US.length>=2;
     /* 줄 단위 마스크: 각 줄 안에서 국내→미국 값이 위로 굴러 올라감(오도미터) */
     const row=(s,h,x,y,st)=>`<div class="ri" data-s="${s}" data-h="${h}" style="height:${h}px;overflow:hidden;${st||''}"><div class="rt"><div style="height:${h}px">${x}</div>${HU?`<div style="height:${h}px">${y}</div>`:''}</div></div>`;
-    const lbl=it=>`<div class="lbl" style="font-size:54px;line-height:76px">${NM[it.code]||it.code}</div>`;
-    const val=(it,big)=>`<div class="num" style="font-size:${big}px;font-weight:900;line-height:140px;letter-spacing:-.03em">${fmt(it.v)}</div>`;
-    const chg=it=>`<div class="num ${cls(it.d)}" style="font-size:60px;font-weight:700;line-height:78px">${sgn(it.d)} ${fmt(Math.abs(it.d))}</div>`;
-    const pcl=it=>`<div class="num ${cls(it.d)}" style="font-size:60px;font-weight:700;line-height:78px">${pc(it)}%</div>`;
-    const pill=(name,date)=>`<span style="display:inline-block;background:rgba(111,180,255,.16);border:2px solid rgba(111,180,255,.55);color:#cfe3ff;font-size:44px;font-weight:800;padding:6px 26px 9px;border-radius:999px">${name}</span>${date?`<span class="k" style="font-size:36px;margin-left:18px">${date} 종가</span>`:''}`;
-    const sz=(it,l)=>l?(it.v>=10000?106:116):(it.code==='SPX'?96:104);
-    const col=(box,A,B,l)=>`<div class="${box}" style="top:640px">
-        ${row(1,76,lbl(A),B&&lbl(B))}${row(2,140,val(A,sz(A,l)),B&&val(B,sz(B,l)))}${row(3,78,chg(A),B&&chg(B))}${row(4,78,pcl(A),B&&pcl(B))}</div>`;
-    let h=`<div class="title">오늘의 금융</div><div class="rset">
-        <div class="pa" style="top:496px">${row(0,90,pill('국내 증시',md(DATA.kr.basis)),HU&&pill('미국 증시',md(DATA.us.basis)),'white-space:nowrap;padding-top:4px')}</div>
-        ${col('pa',K[0],HU&&US[0],1)}${K[1]?col('pb',K[1],HU&&US[1],0):''}</div>`;
+    const F=(px,lh,cl,txt,w)=>`<div style="line-height:${lh}px;white-space:nowrap"><span class="num fit ${cl||''}" data-f="${px}" style="display:inline-block;font-size:${px}px;font-weight:${w||800}">${txt}</span></div>`;
+    const lbl=it=>`<div class="lbl" style="font-size:80px;line-height:110px;font-weight:700">${NM[it.code]||it.code}</div>`;
+    const val=it=>F(160,190,'',fmt(it.v),900).replace('display:inline-block;','display:inline-block;letter-spacing:-.035em;');
+    const chg=it=>F(96,124,cls(it.d),`${sgn(it.d)} ${fmt(Math.abs(it.d))}`);
+    const pcl=it=>F(96,124,cls(it.d),`${pc(it)}%`);
+    const pill=(name,date)=>`<span style="display:inline-block;background:rgba(111,180,255,.16);border:2px solid rgba(111,180,255,.55);color:#cfe3ff;font-size:58px;font-weight:800;padding:8px 34px 12px;border-radius:999px">${name}</span>${date?`<span class="k" style="font-size:40px;margin-left:16px">${date} 종가</span>`:''}`;
+    const col=(box,A,B)=>`<div class="${box}" style="top:740px">
+        ${row(1,110,lbl(A),B&&lbl(B))}${row(2,190,val(A),B&&val(B))}${row(3,124,chg(A),B&&chg(B))}${row(4,124,pcl(A),B&&pcl(B))}</div>`;
+    let h=`<div class="title" style="font-size:96px">오늘의 금융</div><div class="rset">
+        <div class="pa" style="top:540px">${row(0,116,pill('국내 증시',md(DATA.kr.basis)),HU&&pill('미국 증시',md(DATA.us.basis)),'white-space:nowrap;padding-top:6px')}</div>
+        ${col('pa',K[0],HU&&US[0])}${K[1]?col('pb',K[1],HU&&US[1]):''}</div>`;
     return [h];
   }};
 /* 롤링: 세트 사이 전환(위로 밀려 올라감), 요소마다 약간씩 시차 */
 const ROLL_AT=15, ROLL_DUR=.6, ROLL_GAP=.08;
+function fitNums(){document.querySelectorAll('#content .fit').forEach(e=>{const W=e.closest('.pa,.pb');if(!W)return;
+  const max=+e.dataset.f, cw=W.clientWidth; e.style.fontSize=max+'px'; const w=e.offsetWidth;
+  if(w>cw) e.style.fontSize=Math.floor(max*cw/w)+'px';});}
 function rollTick(t){const items=document.querySelectorAll('#content .ri[data-h]'); if(!items.length)return;
   const pr=x=>Math.min(1,Math.max(0,x)), E=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
   items.forEach(e=>{const r=e.firstElementChild; if(r.children.length<2){r.style.transform='';return}
@@ -474,6 +477,7 @@ function draw(intro){
   const n=PAGES.length; DUR=(k==='brand'||!USE_COVER)?Array(n).fill(TOTAL_SEC/n):[COVER_SEC,...Array(n-1).fill((TOTAL_SEC-COVER_SEC)/(n-1))];
   if(intro) T0=performance.now();
   $('#content').innerHTML=PAGES.map(x=>`<div class="page" style="position:absolute;inset:0;opacity:0;will-change:opacity,filter">${x}</div>`).join('');
+  fitNums(); document.fonts&&document.fonts.ready.then(fitNums);
   SHOWN=-1; barSet(k); themeTweak(k); frame(nowT());
   $('#spon').innerHTML=k==='brand'?'':(c.spon?c.spon():sponsor());
   document.querySelector('.clock').style.visibility=k==='brand'?'hidden':'visible';
