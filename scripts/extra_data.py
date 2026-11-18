@@ -239,3 +239,34 @@ def jobs():
     F.log(f"채용: {len(out)}건 {[(o['company'], o['size']) for o in out]} (중견·대기업 전체 {total_big}건)")
     return {"basis": f"{F.NOW:%m.%d %H}시 기준", "ts": F.NOW.strftime("%Y-%m-%d %H:%M"),
             "total": total_big, "items": out}
+
+
+# ---------- 간밤 미국 증시 (FRED) ----------
+def _fred(series):
+    k = urllib.parse.quote(F.key("FRED_KEY"))
+    d = _json(f"https://api.stlouisfed.org/fred/series/observations?series_id={series}&api_key={k}"
+              f"&file_type=json&sort_order=desc&limit=12")
+    obs = [o for o in d.get("observations", []) if o.get("value") not in (".", "", None)]
+    if len(obs) < 2:
+        raise RuntimeError(f"{series}: 값 부족")
+    v, p = float(obs[0]["value"]), float(obs[1]["value"])
+    return {"v": v, "d": round(v - p, 2), "pct": round((v - p) / p * 100, 2), "date": obs[0]["date"]}
+
+
+def us_market():
+    if not _has("FRED_KEY"):
+        return None
+    items, last = [], None
+    for code, series in [("NASDAQ", "NASDAQCOM"), ("SPX", "SP500")]:
+        try:
+            x = _fred(series)
+        except Exception as e:  # noqa: BLE001
+            F.log(f"⚠️ FRED {series} 실패: {type(e).__name__}: {str(e)[:100]}")
+            continue
+        last = max(last or x["date"], x["date"])
+        items.append({"code": code, "v": x["v"], "d": x["d"], "pct": x["pct"], "date": x["date"]})
+    if not items:
+        raise RuntimeError("미국 지수 없음")
+    md = f"{last[5:7]}.{last[8:10]}"
+    F.log(f"미국 증시: {[(i['code'], i['v'], i['pct'], i['date']) for i in items]}")
+    return {"basis": f"{md} 종가 · FRED", "items": items}

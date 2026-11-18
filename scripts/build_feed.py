@@ -102,6 +102,11 @@ def main():
         feed["kr"] = krd
     elif prev.get("kr"):
         feed["kr"] = prev["kr"]; kept.append("kr")
+    us = F.safe(X.us_market, None)
+    if us:
+        feed["us"] = us
+    elif prev.get("us"):
+        feed["us"] = prev["us"]; kept.append("us")
     rt = F.safe(X.rates, None)
     if rt:
         feed["rates"] = rt
@@ -120,7 +125,7 @@ def main():
             feed["jobs"] = pj; kept.append("jobs")
     feed["sources"]["jobs"] = "로켓펀치 Open API (openapi.rocketpunch.com)"
     feed["sources"].update({"traffic": "서울시 실시간 도시데이터 (openapi.seoul.go.kr)",
-                            "kr": "한국거래소 KRX Open API (data-dbg.krx.co.kr)", "rates": "한국은행 ECOS (ecos.bok.or.kr)"})
+                            "kr": "한국거래소 KRX Open API (data-dbg.krx.co.kr)", "rates": "한국은행 ECOS (ecos.bok.or.kr)", "us": "FRED, Federal Reserve Bank of St. Louis (NASDAQCOM, SP500)"})
     if kept:
         F.log("직전 값 유지: " + ", ".join(kept))
     feed["stale"] = kept
