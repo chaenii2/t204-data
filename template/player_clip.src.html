@@ -214,6 +214,32 @@ CL.finance={bg:'bg-navy',has:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length,ok
       ${idx(K[0],'pa')}${K[1]?idx(K[1],'pb'):''}${ip}`;
     return [fx,st];
   }};
+/* 금융(간결형): 환율 15초 + 국내 증시 15초, 핵심 숫자만 크게 */
+CL.finsimple={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&fresh(2),
+  src:p=>p===1?((DATA.kr&&DATA.kr.basis)||'한국거래소'):((DATA.fx&&DATA.fx.basis)||'한국수출입은행'),
+  html:()=>{
+    const F=Object.fromEntries(DATA.fx.items.map(i=>[i.code,i])), U=F.USD;
+    const K=(DATA.kr&&DATA.kr.items&&fresh(4))?DATA.kr.items:[];
+    const chg=(d,unit)=>`<span class="${cls(d)}">${sgn(d)} ${fmt(Math.abs(d))}${unit||''}</span>`;
+    const side=(lbl,it,top)=>`<div class="pb" style="top:${top}px"><div class="lbl" style="font-size:46px">${lbl}</div>
+        <div class="num" style="font-size:96px;font-weight:900;line-height:1.1;letter-spacing:-.02em">${fmt(it.v)}</div>
+        <div class="num" style="font-size:48px;font-weight:700">${chg(it.d)}</div></div>`;
+    const fx=`<div class="title">오늘의 환율</div>
+      <div class="pa" style="top:720px"><div class="lbl" style="font-size:52px">원/달러</div>
+        <div class="num" style="font-size:120px;font-weight:900;line-height:1.1;margin-left:-4px;letter-spacing:-.03em">${fmt(U.v)}</div>
+        <div class="num" style="font-size:60px;font-weight:700">${chg(U.d,'원')}</div></div>
+      ${F.JPY?side('엔 (100엔)',F.JPY,660):''}${F.EUR?side('유로',F.EUR,980):''}`;
+    if(!K.length) return [fx];
+    const kb=((DATA.kr.basis||'').match(/(\d{2}\.\d{2})/)||[])[1];
+    const idx=(it,box,big)=>`<div class="${box}" style="top:720px"><div class="lbl" style="font-size:52px">${it.code==='KOSPI'?'코스피':'코스닥'}</div>
+        <div class="num" style="font-size:${big}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>
+        <div class="num ${cls(it.d)}" style="font-size:56px;font-weight:700">${sgn(it.d)} ${fmt(Math.abs(it.d))}</div>
+        <div class="num ${cls(it.d)}" style="font-size:56px;font-weight:700">${(v=>(v>0?'+':'')+v.toFixed(2))(it.pct??pct(it.d,it.v))}%</div></div>`;
+    const st=`<div class="title" style="letter-spacing:-.045em">오늘의 국내 증시</div>
+      ${kb?`<div class="pa k" style="top:370px;font-size:36px">${kb} 종가 기준</div>`:''}
+      ${idx(K[0],'pa',116)}${K[1]?idx(K[1],'pb',100):''}`;
+    return [fx,st];
+  }};
 CL.weather={bg:'bg-navy acc-w',tint:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
     if(sky==='rain'||sky==='sleet')return 'bg-w-rain';
     if(sky==='snow')return 'bg-w-snow';
@@ -392,7 +418,7 @@ function coverHtml(k){let wc='';try{wc=k==='weather'?CL.weather.tint():''}catch(
     <div style="font-size:44px;line-height:1.45;color:#eef3fb">중앙일보가 전하는<br>${TAGLINE[k]}</div>
   </div>
   <img src="/*LOGO_WHITE*/" alt="The JoongAng" style="position:absolute;left:56px;bottom:84px;height:40px;width:auto;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))">`}
-function clipKey(){const h=(location.hash.match(/finance|weather|traffic|jobs/)||[])[0];if(!h&&ROTATE())return ROT_ORDER[ROT_I];return h||CFG.clip||'finance'}
+function clipKey(){const h=(location.hash.match(/finsimple|finance|weather|traffic|jobs/)||[])[0];if(!h&&ROTATE())return ROT_ORDER[ROT_I];return h||CFG.clip||'finance'}
 function sponsor(){
   const s=CFG.sponsor, show=/sponsor/.test(location.hash)||CFG.sponsorSlot;
   if(s&&s.img) return `<span class="lab">${s.label||'제공'}</span><img src="${s.img}" alt="">`;
