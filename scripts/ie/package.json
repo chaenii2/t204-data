@@ -1,0 +1,16 @@
+{
+  "name": "t204-ie-packager",
+  "private": true,
+  "dependencies": {
+    "@babel/core": "^8.1.2",
+    "@babel/preset-env": "^8.0.7",
+    "abortcontroller-polyfill": "^1.7.8",
+    "acorn": "^8.19.0",
+    "autoprefixer": "^10.6.2",
+    "core-js-bundle": "^3.51.0",
+    "postcss": "^8.5.33",
+    "postcss-custom-properties": "^15.0.5",
+    "regenerator-runtime": "^0.14.1",
+    "whatwg-fetch": "^3.6.20"
+  }
+}
