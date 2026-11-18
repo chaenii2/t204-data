@@ -253,8 +253,8 @@ CL.finone={bg:'bg-navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length&&fre
         <div class="num" style="font-size:${big}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>
         <div class="num ${cls(it.d)}" style="font-size:50px;font-weight:700">${sgn(it.d)} ${pc(it)}%</div></div>`;
     const head=(t,sub,top)=>`<div class="pa" style="top:${top}px;width:510px;white-space:nowrap;display:flex;align-items:baseline;gap:20px"><span style="font-size:44px;font-weight:800;color:#9fc3ff">${t}</span>${sub?`<span class="k" style="font-size:32px">${sub}</span>`:''}</div>`;
-    let h=`<div class="title">오늘의 증시</div>`+head('국내 증시',kb?`${kb} 종가`:'',420)+cell(K[0],'pa',500,104)+(K[1]?cell(K[1],'pb',500,92):'');
-    if(US.length){ h+=`<div class="hr" style="left:56px;width:1092px;top:860px"></div>`+head('미국 증시',ub?`${ub} 종가`:'',910)+cell(US[0],'pa',990,104)+(US[1]?cell(US[1],'pb',990,84):''); }
+    let h=`<div class="title">오늘의 증시</div>`+head('국내 증시',kb?`${kb} 종가`:'',470)+cell(K[0],'pa',550,104)+(K[1]?cell(K[1],'pb',550,92):'');
+    if(US.length){ h+=`<div class="hr" style="left:56px;width:1092px;top:910px"></div>`+head('미국 증시',ub?`${ub} 종가`:'',960)+cell(US[0],'pa',1040,104)+(US[1]?cell(US[1],'pb',1040,84):''); }
     return [h];
   }};
 CL.weather={bg:'bg-navy acc-w',tint:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
@@ -415,7 +415,7 @@ function vividTweak(k){
   if(k==='jobs') document.querySelectorAll('.jrow').forEach(r=>{const c=r.children[0];c.style.background='rgba(20,14,70,.38)';c.style.borderColor='rgba(255,255,255,.2)'});
 }
 let BARPER=30;
-function barSet(k){const pb=$('#pbar'),T=THEMES[THEME]||THEMES.A,b=T.bar[k];
+function barSet(k){const pb=$('#pbar'),T=THEMES[THEME]||THEMES.A,b=T.bar[k]||T.bar[{finone:'finance',finsimple:'finance'}[k]];
   if(!b||k==='brand'){pb.style.display='none';return} pb.style.display='';
   pb.querySelector('.fl').style.background=b[0]; pb.querySelector('.fl').style.boxShadow=`0 0 10px ${b[1]}99`;
   pb.querySelector('.dt').style.borderColor=b[1]; pb.querySelector('.dt i').style.background=b[1];
