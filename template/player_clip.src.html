@@ -260,7 +260,7 @@ CL.finone={bg:'bg-navy',roll:true,ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.l
     const pill=(name,date)=>`<span style="display:inline-block;background:rgba(111,180,255,.16);border:2px solid rgba(111,180,255,.55);color:#cfe3ff;font-size:58px;font-weight:800;padding:8px 34px 12px;border-radius:999px">${name}</span>${date?`<span class="k" style="font-size:40px;margin-left:16px">${date} 종가</span>`:''}`;
     const col=(box,A,B)=>`<div class="${box}" style="top:740px">
         ${row(1,110,lbl(A),B&&lbl(B))}${row(2,190,val(A),B&&val(B))}${row(3,124,chg(A),B&&chg(B))}${row(4,124,pcl(A),B&&pcl(B))}</div>`;
-    let h=`<div class="title" style="font-size:96px">오늘의 금융</div><div class="rset">
+    let h=`<div class="title" style="font-size:82px;top:250px">오늘의 금융</div><div class="rset">
         <div class="pa" style="top:540px">${row(0,116,pill('국내 증시',md(DATA.kr.basis)),HU&&pill('미국 증시',md(DATA.us.basis)),'white-space:nowrap;padding-top:6px')}</div>
         ${col('pa',K[0],HU&&US[0])}${K[1]?col('pb',K[1],HU&&US[1]):''}</div>`;
     return [h];
