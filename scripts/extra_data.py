@@ -242,31 +242,37 @@ def jobs():
 
 
 # ---------- 간밤 미국 증시 (FRED) ----------
-def _fred(series):
+def _fred_obs(series):
     k = urllib.parse.quote(F.key("FRED_KEY"))
-    d = _json(f"https://api.stlouisfed.org/fred/series/observations?series_id={series}&api_key={k}"
-              f"&file_type=json&sort_order=desc&limit=12")
-    obs = [o for o in d.get("observations", []) if o.get("value") not in (".", "", None)]
-    if len(obs) < 2:
-        raise RuntimeError(f"{series}: 값 부족")
-    v, p = float(obs[0]["value"]), float(obs[1]["value"])
-    return {"v": v, "d": round(v - p, 2), "pct": round((v - p) / p * 100, 2), "date": obs[0]["date"]}
+    d = _json(f"https://api.stlouisfed.org/fred/series/observations?series_id={series}&api_key={k}&file_type=json&sort_order=desc&limit=12")
+    return [(o["date"], float(o["value"])) for o in d.get("observations", []) if o.get("value") not in (".", "", None)]
+
+
+def _fred_at(obs, date):
+    """date 시점 종가와 그 직전 거래일 대비 등락"""
+    i = next(i for i, (dt, _) in enumerate(obs) if dt == date)
+    v, p = obs[i][1], obs[i + 1][1]
+    return {"v": round(v, 2), "d": round(v - p, 2), "pct": round((v - p) / p * 100, 2), "date": date}
 
 
 def us_market():
     if not _has("FRED_KEY"):
         return None
-    items, last = [], None
-    for code, series in [("NASDAQ", "NASDAQCOM"), ("SPX", "SP500")]:
+    series = [("NASDAQ", "NASDAQCOM"), ("SPX", "SP500")]
+    obs = {}
+    for code, sid in series:
         try:
-            x = _fred(series)
+            obs[code] = _fred_obs(sid)
         except Exception as e:  # noqa: BLE001
-            F.log(f"⚠️ FRED {series} 실패: {type(e).__name__}: {str(e)[:100]}")
-            continue
-        last = max(last or x["date"], x["date"])
-        items.append({"code": code, "v": x["v"], "d": x["d"], "pct": x["pct"], "date": x["date"]})
-    if not items:
-        raise RuntimeError("미국 지수 없음")
+            F.log(f"⚠️ FRED {sid} 실패: {type(e).__name__}: {str(e)[:100]}")
+    if len(obs) < len(series):
+        raise RuntimeError("미국 지수 일부 실패")
+    # 두 지수가 모두 있는 가장 최근 날짜로 맞춤 (FRED는 지수별 반영 시각이 다름)
+    common = set.intersection(*[{dt for dt, _ in o[:-1]} for o in obs.values()])
+    if not common:
+        raise RuntimeError("미국 지수 공통 날짜 없음")
+    last = max(common)
+    items = [{"code": code, **_fred_at(obs[code], last)} for code, _ in series]
     md = f"{last[5:7]}.{last[8:10]}"
     F.log(f"미국 증시: {[(i['code'], i['v'], i['pct'], i['date']) for i in items]}")
     return {"basis": f"{md} 종가 · FRED", "items": items}
