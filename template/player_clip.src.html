@@ -240,23 +240,37 @@ CL.finsimple={bg:'bg-navy',ok:()=>DATA.fx&&DATA.fx.items&&DATA.fx.items.length&&
       ${idx(K[0],'pa',116)}${K[1]?idx(K[1],'pb',100):''}`;
     return [fx,st];
   }};
-/* 금융(한 화면): 국내 증시 + 간밤 미국 증시, 30초 고정 */
-CL.finone={bg:'bg-navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length&&fresh(4),
+/* 금융(한 화면 + 롤링): 0~15초 국내 증시 → 15초에 위로 밀려 올라가며 미국 증시 */
+CL.finone={bg:'bg-navy',roll:true,ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length&&fresh(4),
   src:()=>[DATA.kr&&DATA.kr.basis,DATA.us&&DATA.us.basis].filter(Boolean).join(' · '),
   html:()=>{
     const K=DATA.kr.items, US=(DATA.us&&DATA.us.items)||[];
-    const kb=((DATA.kr.basis||'').match(/(\d{2}\.\d{2})/)||[])[1];
-    const ub=DATA.us&&((DATA.us.basis||'').match(/(\d{2}\.\d{2})/)||[])[1];
+    const md=b=>((b||'').match(/(\d{2}\.\d{2})/)||[])[1];
     const NM={KOSPI:'코스피',KOSDAQ:'코스닥',NASDAQ:'나스닥',SPX:'S&P500'};
     const pc=it=>(v=>(v>0?'+':'')+v.toFixed(2))(it.pct??pct(it.d,it.v));
-    const cell=(it,box,top,big)=>`<div class="${box}" style="top:${top}px"><div class="lbl" style="font-size:48px">${NM[it.code]||it.code}</div>
-        <div class="num" style="font-size:${big}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>
-        <div class="num ${cls(it.d)}" style="font-size:50px;font-weight:700">${sgn(it.d)} ${pc(it)}%</div></div>`;
-    const head=(t,sub,top)=>`<div class="pa" style="top:${top}px;width:510px;white-space:nowrap;display:flex;align-items:baseline;gap:20px"><span style="font-size:44px;font-weight:800;color:#9fc3ff">${t}</span>${sub?`<span class="k" style="font-size:32px">${sub}</span>`:''}</div>`;
-    let h=`<div class="title">오늘의 증시</div>`+head('국내 증시',kb?`${kb} 종가`:'',470)+cell(K[0],'pa',550,104)+(K[1]?cell(K[1],'pb',550,92):'');
-    if(US.length){ h+=`<div class="hr" style="left:56px;width:1092px;top:910px"></div>`+head('미국 증시',ub?`${ub} 종가`:'',960)+cell(US[0],'pa',1040,104)+(US[1]?cell(US[1],'pb',1040,84):''); }
+    const ri=(s,inner,st)=>`<div class="ri" data-s="${s}" style="${st||''}">${inner}</div>`;
+    const cell=(it,box,big,s0)=>`<div class="${box}" style="top:640px">
+        ${ri(s0,`<div class="lbl" style="font-size:54px">${NM[it.code]||it.code}</div>`)}
+        ${ri(s0+1,`<div class="num" style="font-size:${big}px;font-weight:900;line-height:1.1;letter-spacing:-.03em">${fmt(it.v)}</div>`)}
+        ${ri(s0+2,`<div class="num ${cls(it.d)}" style="font-size:60px;font-weight:700">${sgn(it.d)} ${fmt(Math.abs(it.d))}</div><div class="num ${cls(it.d)}" style="font-size:60px;font-weight:700">${pc(it)}%</div>`)}</div>`;
+    const set=(name,date,A,B)=>`<div class="rset">
+        <div class="pa" style="top:500px">${ri(0,`<span style="display:inline-block;background:rgba(111,180,255,.16);border:2px solid rgba(111,180,255,.55);color:#cfe3ff;font-size:44px;font-weight:800;padding:6px 26px 9px;border-radius:999px">${name}</span>${date?`<span class="k" style="font-size:36px;margin-left:18px">${date} 종가</span>`:''}`,'white-space:nowrap')}</div>
+        ${cell(A,'pa',A.v>=10000?106:116,1)}${B?cell(B,'pb',B.code==='SPX'?96:104,1):''}</div>`;
+    let h=`<div class="title">오늘의 금융</div>`+set('국내 증시',md(DATA.kr.basis),K[0],K[1]);
+    if(US.length) h+=set('미국 증시',md(DATA.us.basis),US[0],US[1]);
     return [h];
   }};
+/* 롤링: 세트 사이 전환(위로 밀려 올라감), 요소마다 약간씩 시차 */
+const ROLL_AT=15, ROLL_DUR=.55, ROLL_GAP=.07, ROLL_Y=70;
+function rollTick(t){const sets=document.querySelectorAll('#content .rset'); if(!sets.length)return;
+  const n=sets.length;
+  sets.forEach((st,si)=>{st.querySelectorAll('.ri').forEach(e=>{const s=+e.dataset.s||0; let y=0,o=1;
+    if(n<2){e.style.transform='';e.style.opacity=1;return}
+    const pr=x=>Math.min(1,Math.max(0,x)), E=x=>1-Math.pow(1-x,3);
+    const p=E(pr((t-ROLL_AT+ .25 - s*ROLL_GAP)/ROLL_DUR));       // 15초 전환 진행도
+    if(si===0){ y=-ROLL_Y*p; o=1-p; } else { y=ROLL_Y*(1-p); o=p; }
+    e.style.transform=`translateY(${y.toFixed(1)}px)`; e.style.opacity=o.toFixed(3);});});
+}
 CL.weather={bg:'bg-navy acc-w',tint:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
     if(sky==='rain'||sky==='sleet')return 'bg-w-rain';
     if(sky==='snow')return 'bg-w-snow';
@@ -419,7 +433,8 @@ function barSet(k){const pb=$('#pbar'),T=THEMES[THEME]||THEMES.A,b=T.bar[k]||T.b
   if(!b||k==='brand'){pb.style.display='none';return} pb.style.display='';
   pb.querySelector('.fl').style.background=b[0]; pb.querySelector('.fl').style.boxShadow=`0 0 10px ${b[1]}99`;
   pb.querySelector('.dt').style.borderColor=b[1]; pb.querySelector('.dt i').style.background=b[1];
-  BARPER=(k==='jobs'&&CL.jobs.live().length>CL.jobs.PER)?15:30;}
+  BARPER=(k==='jobs'&&CL.jobs.live().length>CL.jobs.PER)?15:(k==='finone'&&DATA.us&&DATA.us.items&&DATA.us.items.length)?ROLL_AT:30;
+  const tn=document.querySelector('.t204n'); if(tn) tn.style.display=(k==='finone')?'none':'';}
 function barTick(t){const pb=$('#pbar');if(!pb||pb.style.display==='none')return;const f=Math.min(1,(t%BARPER)/BARPER),W=1092;
   pb.querySelector('.fl').style.width=(f*W).toFixed(1)+'px'; pb.querySelector('.dt').style.left=(f*W-16).toFixed(1)+'px';}
 /* 자동 순환: 설정 rotate 또는 주소 #rotate → 금융·날씨·교통·채용 30초씩 */
@@ -480,7 +495,7 @@ function frame(t){
     if(USE_COVER&&i===0&&els.length>1){document.querySelector('.clock').style.opacity=1-v;document.querySelector('.logo').style.opacity=1-v;}
     a=b;});
   if(CUR&&CUR.tick)CUR.tick(t);
-  barTick(t);
+  barTick(t); rollTick(t);
   showPage(pageAt(t));
 }
 function showPage(p,force){if(p===SHOWN&&!force)return;SHOWN=p;
