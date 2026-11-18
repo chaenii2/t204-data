@@ -15,7 +15,7 @@ face = ("<style>@font-face{font-family:'Noto Sans KR';src:url('font/NotoSansKR-T
         "font-weight:100 900;font-style:normal;font-display:block}</style>")
 h = h.replace('<meta name="viewport" content="width=device-width, initial-scale=1">',
     '<meta name="viewport" content="width=1200,initial-scale=1,maximum-scale=1,user-scalable=no">\n'
-    '<meta http-equiv="Pragma" content="no-cache">\n'
+    '<meta http-equiv="Pragma" content="no-cache">\n<script>window.T204_TOPLEFT=true;</script>\n'
     '<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">\n' + face, 1)
 assert 'fonts.googleapis' not in h and 'NotoSansKR-T204' in h
 with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
