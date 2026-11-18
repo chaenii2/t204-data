@@ -53,6 +53,7 @@
   .t204n-n{display:flex;justify-content:space-between;font-size:34px;font-weight:700;line-height:1;margin-top:10px;padding:0 2px}
   .logo-w{position:absolute;left:56px;bottom:84px;height:40px;width:auto;z-index:3;filter:drop-shadow(0 2px 8px rgba(0,0,0,.5))}
   .clock{z-index:3;position:absolute;left:756px;width:392px;top:66px;text-align:right;font-size:44px;font-weight:700;line-height:1.3}
+  .clock.big{top:56px;line-height:1.2}.clock.big #cdate{font-size:58px}.clock.big #ctime{font-size:76px;font-weight:800}
   .title{position:absolute;left:56px;top:256px;font-size:78px;font-weight:900;letter-spacing:-.03em}
   .lbl{font-size:44px;font-weight:700;color:#dfe7f5}
   .k{font-size:40px;color:var(--sub)}
@@ -438,7 +439,7 @@ function barSet(k){const pb=$('#pbar'),T=THEMES[THEME]||THEMES.A,b=T.bar[k]||T.b
   pb.querySelector('.fl').style.background=b[0]; pb.querySelector('.fl').style.boxShadow=`0 0 10px ${b[1]}99`;
   pb.querySelector('.dt').style.borderColor=b[1]; pb.querySelector('.dt i').style.background=b[1];
   BARPER=(k==='jobs'&&CL.jobs.live().length>CL.jobs.PER)?15:(k==='finone'&&DATA.us&&DATA.us.items&&DATA.us.items.length)?ROLL_AT:30;
-  const tn=document.querySelector('.t204n'); if(tn) tn.style.display=(k==='finone')?'none':'';}
+  const tn=document.querySelector('.t204n'); if(tn) tn.style.display=(k==='finone')?'none':''; document.querySelector('.clock').classList.toggle('big',k==='finone');}
 function barTick(t){const pb=$('#pbar');if(!pb||pb.style.display==='none')return;const f=Math.min(1,(t%BARPER)/BARPER),W=1092;
   pb.querySelector('.fl').style.width=(f*W).toFixed(1)+'px'; pb.querySelector('.dt').style.left=(f*W-16).toFixed(1)+'px';}
 /* 자동 순환: 설정 rotate 또는 주소 #rotate → 금융·날씨·교통·채용 30초씩 */
