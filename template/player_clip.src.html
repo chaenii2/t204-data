@@ -254,7 +254,7 @@ CL.finone={bg:'bg-navy',ok:()=>DATA.kr&&DATA.kr.items&&DATA.kr.items.length&&fre
         <div class="num ${cls(it.d)}" style="font-size:50px;font-weight:700">${sgn(it.d)} ${pc(it)}%</div></div>`;
     const head=(t,sub,top)=>`<div class="pa" style="top:${top}px;width:510px;white-space:nowrap;display:flex;align-items:baseline;gap:20px"><span style="font-size:44px;font-weight:800;color:#9fc3ff">${t}</span>${sub?`<span class="k" style="font-size:32px">${sub}</span>`:''}</div>`;
     let h=`<div class="title">오늘의 증시</div>`+head('국내 증시',kb?`${kb} 종가`:'',420)+cell(K[0],'pa',500,104)+(K[1]?cell(K[1],'pb',500,92):'');
-    if(US.length){ h+=`<div class="hr" style="left:56px;width:1092px;top:860px"></div>`+head('간밤 미국 증시',ub?`${ub} 종가`:'',910)+cell(US[0],'pa',990,104)+(US[1]?cell(US[1],'pb',990,84):''); }
+    if(US.length){ h+=`<div class="hr" style="left:56px;width:1092px;top:860px"></div>`+head('미국 증시',ub?`${ub} 종가`:'',910)+cell(US[0],'pa',990,104)+(US[1]?cell(US[1],'pb',990,84):''); }
     return [h];
   }};
 CL.weather={bg:'bg-navy acc-w',tint:()=>{const w=DATA.weather||{},sky=w.now_sky||w.sky,n=w.now||{};
