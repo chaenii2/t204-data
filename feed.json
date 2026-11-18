@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-18 11:03",
+ "generated_at": "2026-11-18 11:13",
  "location": "테헤란로 204 · 역삼",
  "weather": {
   "sky": "rain",
@@ -263,16 +263,17 @@
   "jobs": "로켓펀치 Open API (openapi.rocketpunch.com)",
   "traffic": "서울시 실시간 도시데이터 (openapi.seoul.go.kr)",
   "kr": "한국거래소 KRX Open API (data-dbg.krx.co.kr)",
-  "rates": "한국은행 ECOS (ecos.bok.or.kr)"
+  "rates": "한국은행 ECOS (ecos.bok.or.kr)",
+  "us": "FRED, Federal Reserve Bank of St. Louis (NASDAQCOM, SP500)"
  },
  "traffic": {
-  "basis": "11:00 기준 · 서울시 도시데이터",
+  "basis": "11:10 기준 · 서울시 도시데이터",
   "status": "서행",
-  "kmh": 17,
+  "kmh": 19,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 17
+    "kmh": 21
    },
    {
     "name": "역삼역 부근",
@@ -280,17 +281,17 @@
    },
    {
     "name": "선릉역 부근",
-    "kmh": 19
+    "kmh": 21
    },
    {
     "name": "삼성역 부근",
-    "kmh": 11
+    "kmh": 14
    }
   ],
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 18
+    "kmh": 19
    },
    {
     "name": "선릉로",
@@ -299,7 +300,7 @@
   ],
   "congest": "약간 붐빔",
   "congest_msg": "사람들이 몰려있을 가능성이 크고 붐빈다고 느낄 수 있어요",
-  "ts": "2026-11-18 11:03"
+  "ts": "2026-11-18 11:13"
  },
  "kr_hist": {
   "KOSPI": [
@@ -465,6 +466,25 @@
      665.65,
      650.06
     ]
+   }
+  ]
+ },
+ "us": {
+  "basis": "11.16 종가 · FRED",
+  "items": [
+   {
+    "code": "NASDAQ",
+    "v": 24509.76,
+    "d": -626.51,
+    "pct": -2.49,
+    "date": "2026-11-16"
+   },
+   {
+    "code": "SPX",
+    "v": 7416.59,
+    "d": -145.08,
+    "pct": -1.92,
+    "date": "2026-11-16"
    }
   ]
  },
