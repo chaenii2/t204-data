@@ -439,7 +439,7 @@ function barSet(k){const pb=$('#pbar'),T=THEMES[THEME]||THEMES.A,b=T.bar[k]||T.b
   pb.querySelector('.fl').style.background=b[0]; pb.querySelector('.fl').style.boxShadow=`0 0 10px ${b[1]}99`;
   pb.querySelector('.dt').style.borderColor=b[1]; pb.querySelector('.dt i').style.background=b[1];
   BARPER=(k==='jobs'&&CL.jobs.live().length>CL.jobs.PER)?15:30; // 금융: 30초 동안 한 번 차오름(15초=중간)
-  const tn=document.querySelector('.t204n'); if(tn) tn.style.display=(k==='finone')?'none':''; document.querySelector('.clock').classList.toggle('big',k==='finone');}
+  const tn=document.querySelector('.t204n'); if(tn) tn.style.display=(k==='finone'||k==='jobs')?'none':''; document.querySelector('.clock').classList.toggle('big',k==='finone');}
 function barTick(t){const pb=$('#pbar');if(!pb||pb.style.display==='none')return;const f=Math.min(1,(t%BARPER)/BARPER),W=1092;
   pb.querySelector('.fl').style.width=(f*W).toFixed(1)+'px'; pb.querySelector('.dt').style.left=(f*W-16).toFixed(1)+'px';}
 /* 자동 순환: 설정 rotate 또는 주소 #rotate → 금융·날씨·교통·채용 30초씩 */
