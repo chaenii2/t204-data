@@ -1,51 +1,51 @@
 {
- "generated_at": "2026-11-22 23:49",
+ "generated_at": "2026-11-23 00:03",
  "location": "테헤란로 204 · 역삼",
  "weather": {
-  "sky": "clear",
+  "sky": "rain",
   "now_sky": "partly",
-  "text": "맑음",
-  "min": -3,
-  "max": 6,
-  "pop": 20,
-  "tip": "활동하기 좋은 날씨예요",
+  "text": "비",
+  "min": 2,
+  "max": 11,
+  "pop": 60,
+  "tip": "강수확률 60%, 우산을 꼭 챙기세요",
   "hourly": [
    {
     "h": "6시",
-    "t": -3,
-    "sky": "clear"
+    "t": 3,
+    "sky": "cloudy"
    },
    {
     "h": "9시",
-    "t": -1,
-    "sky": "clear"
+    "t": 5,
+    "sky": "rain"
    },
    {
     "h": "12시",
-    "t": 3,
-    "sky": "clear"
+    "t": 9,
+    "sky": "rain"
    },
    {
     "h": "15시",
-    "t": 6,
-    "sky": "clear"
+    "t": 11,
+    "sky": "rain"
    },
    {
     "h": "18시",
-    "t": 2,
-    "sky": "clear"
+    "t": 10,
+    "sky": "rain"
    },
    {
     "h": "21시",
-    "t": 1,
-    "sky": "partly"
+    "t": 8,
+    "sky": "cloudy"
    }
   ],
   "tomorrow": {
-   "min": 1,
-   "max": 10,
-   "pop": 60,
-   "sky": "rain"
+   "min": -1,
+   "max": 3,
+   "pop": 0,
+   "sky": "clear"
   },
   "pm": "좋음",
   "pm25": "보통",
@@ -260,13 +260,13 @@
   "us": "FRED, Federal Reserve Bank of St. Louis (NASDAQCOM, SP500)"
  },
  "traffic": {
-  "basis": "23:45 기준 · 서울시 도시데이터",
+  "basis": "00:00 기준 · 서울시 도시데이터",
   "status": "원활",
   "kmh": 27,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 23
+    "kmh": 25
    },
    {
     "name": "역삼역 부근",
@@ -274,26 +274,26 @@
    },
    {
     "name": "선릉역 부근",
-    "kmh": 27
+    "kmh": 29
    },
    {
     "name": "삼성역 부근",
-    "kmh": 23
+    "kmh": 19
    }
   ],
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 19
+    "kmh": 20
    },
    {
     "name": "선릉로",
-    "kmh": 27
+    "kmh": 29
    }
   ],
   "congest": "여유",
   "congest_msg": "사람이 몰려있을 가능성이 낮고 붐빔은 거의 느껴지지 않아요",
-  "ts": "2026-11-22 23:49"
+  "ts": "2026-11-23 00:03"
  },
  "kr_hist": {
   "KOSPI": [
@@ -446,13 +446,13 @@
   ]
  },
  "kr": {
-  "basis": "11.20 종가 · 한국거래소",
+  "basis": "11.19 종가 · 한국거래소",
   "items": [
    {
     "code": "KOSPI",
-    "v": 4869.96,
-    "d": -267.93,
-    "pct": -5.21,
+    "v": 5137.89,
+    "d": 70.45,
+    "pct": 1.39,
     "hist": [
      5018.85,
      5239.13,
@@ -468,9 +468,9 @@
    },
    {
     "code": "KOSDAQ",
-    "v": 645.68,
-    "d": -39.13,
-    "pct": -5.71,
+    "v": 684.81,
+    "d": 22.0,
+    "pct": 3.32,
     "hist": [
      638.97,
      667.61,
