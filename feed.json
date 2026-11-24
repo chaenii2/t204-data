@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-24 13:43",
+ "generated_at": "2026-11-24 13:58",
  "location": "테헤란로 204 · 역삼",
  "weather": {
   "sky": "clear",
@@ -57,7 +57,7 @@
    "wsd": 4.1
   },
   "now_text": "맑음",
-  "now_basis": "13:00 초단기예보(12:30 발표)"
+  "now_basis": "14:00 초단기예보(13:30 발표)"
  },
  "fx": {
   "basis": "11.24 매매기준율 · 한국수출입은행",
@@ -260,25 +260,25 @@
   "us": "FRED, Federal Reserve Bank of St. Louis (NASDAQCOM, SP500)"
  },
  "traffic": {
-  "basis": "13:40 기준 · 서울시 도시데이터",
-  "status": "서행",
-  "kmh": 16,
+  "basis": "13:55 기준 · 서울시 도시데이터",
+  "status": "정체",
+  "kmh": 14,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 15
+    "kmh": 13
    },
    {
     "name": "역삼역 부근",
-    "kmh": 14
+    "kmh": 12
    },
    {
     "name": "선릉역 부근",
-    "kmh": 20
+    "kmh": 17
    },
    {
     "name": "삼성역 부근",
-    "kmh": 11
+    "kmh": 10
    }
   ],
   "roads": [
@@ -288,12 +288,12 @@
    },
    {
     "name": "선릉로",
-    "kmh": 19
+    "kmh": 17
    }
   ],
   "congest": "붐빔",
   "congest_msg": "사람들이 몰려있을 가능성이 매우 크고 많이 붐빈다고 느낄 수 있어요",
-  "ts": "2026-11-24 13:43"
+  "ts": "2026-11-24 13:58"
  },
  "kr_hist": {
   "KOSPI": [
