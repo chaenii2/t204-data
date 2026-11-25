@@ -1,11 +1,11 @@
-# feed 생성 2026-11-25 18:52 KST
+# feed 생성 2026-11-25 19:08 KST
 
-- 날씨: 최저 -4.0 / 최고 8.0, 구름많음, 강수 20%, 지금 하늘 clear (발표 11-25 02시)
-- 미세먼지: 좋음 / 초미세먼지: 좋음 (강남구 측정소 2026-11-25 18:00)
+- 날씨: 최저 -4.0 / 최고 8.0, 구름많음, 강수 20%, 지금 하늘 partly (발표 11-25 02시)
+- 미세먼지: 좋음 / 초미세먼지: 좋음 (강남구 측정소 2026-11-25 19:00)
 - 지금 기온: 5.3°, 습도 63%, 바람 1.6m/s (18:00 관측)
 - 지금 하늘: clear / 맑음 (19:00 초단기예보(18:30 발표))
 - ⚠️ ipo 실패: URLError: <urlopen error timed out>
-- 환율: 11-25 매매기준율 USD 1343.6, JPY 843.41, EUR 1472.72, CNY 201.7
+- ⚠️ fx 실패: URLError: <urlopen error [Errno 104] Connection reset by peer>
 - ⚠️ 도시데이터 강남역 실패: URLError: <urlopen error timed out>
 - ⚠️ 도시데이터 역삼역 실패: URLError: <urlopen error timed out>
 - ⚠️ 도시데이터 선릉역 실패: URLError: <urlopen error timed out>
@@ -14,7 +14,7 @@
 - 증시: [('KOSPI', 5006.03, 297.49), ('KOSDAQ', 665.88, 30.43)] (11.24 종가 · 한국거래소)
 - 미국 증시: [('NASDAQ', 24089.56, 6.51, '2026-11-23'), ('SPX', 7237.17, 4.73, '2026-11-23')]
 - 금리: 한국은행 기준금리 3.0% (D 20261123)
-- ⚠️ 로켓펀치 응답 403: {"code":"A0003","message":"채용공고 조회 API 사용 승인이 필요합니다.","timestamp":"2026-11-25T09:54:23.790820231","details":null}
-- ⚠️ 로켓펀치 응답 403: {"code":"A0003","message":"채용공고 조회 API 사용 승인이 필요합니다.","timestamp":"2026-11-25T09:54:24.235165562","details":null}
+- ⚠️ 로켓펀치 응답 403: {"code":"A0003","message":"채용공고 조회 API 사용 승인이 필요합니다.","timestamp":"2026-11-25T10:10:40.454076403","details":null}
+- ⚠️ 로켓펀치 응답 403: {"code":"A0003","message":"채용공고 조회 API 사용 승인이 필요합니다.","timestamp":"2026-11-25T10:10:40.907705342","details":null}
 - ⚠️ jobs 실패: HTTPError: HTTP Error 403: Forbidden
-- 직전 값 유지: ipo
+- 직전 값 유지: fx, ipo
