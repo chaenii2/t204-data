@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-25 19:08",
+ "generated_at": "2026-11-25 19:24",
  "location": "테헤란로 204 · 역삼",
  "weather": {
   "sky": "partly",
@@ -495,7 +495,6 @@
   ]
  },
  "stale": [
-  "fx",
   "ipo"
  ],
  "fx_hist": [
