@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-27 00:22",
+ "generated_at": "2026-11-27 00:37",
  "location": "테헤란로 204 · 역삼",
  "weather": {
   "sky": "rain",
@@ -260,21 +260,21 @@
   "us": "FRED, Federal Reserve Bank of St. Louis (NASDAQCOM, SP500)"
  },
  "traffic": {
-  "basis": "00:20 기준 · 서울시 도시데이터",
+  "basis": "00:35 기준 · 서울시 도시데이터",
   "status": "원활",
-  "kmh": 26,
+  "kmh": 29,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 26
+    "kmh": 27
    },
    {
     "name": "역삼역 부근",
-    "kmh": 30
+    "kmh": 31
    },
    {
     "name": "선릉역 부근",
-    "kmh": 25
+    "kmh": 32
    },
    {
     "name": "삼성역 부근",
@@ -284,16 +284,16 @@
   "roads": [
    {
     "name": "강남대로",
-    "kmh": 24
+    "kmh": 21
    },
    {
     "name": "선릉로",
-    "kmh": 28
+    "kmh": 31
    }
   ],
   "congest": "여유",
   "congest_msg": "사람이 몰려있을 가능성이 낮고 붐빔은 거의 느껴지지 않아요",
-  "ts": "2026-11-27 00:22"
+  "ts": "2026-11-27 00:37"
  },
  "kr_hist": {
   "KOSPI": [
