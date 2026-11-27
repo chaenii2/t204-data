@@ -1,50 +1,50 @@
 {
- "generated_at": "2026-11-27 23:48",
+ "generated_at": "2026-11-28 00:03",
  "location": "테헤란로 204 · 역삼",
  "weather": {
-  "sky": "rain",
+  "sky": "clear",
   "now_sky": "partly",
-  "text": "비",
-  "min": 9,
-  "max": 17,
-  "pop": 60,
-  "tip": "강수확률 60%, 우산을 꼭 챙기세요",
+  "text": "맑음",
+  "min": 5,
+  "max": 9,
+  "pop": 20,
+  "tip": "활동하기 좋은 날씨예요",
   "hourly": [
    {
     "h": "6시",
-    "t": 10,
+    "t": 6,
     "sky": "clear"
    },
    {
     "h": "9시",
-    "t": 12,
+    "t": 7,
     "sky": "clear"
    },
    {
     "h": "12시",
-    "t": 16,
-    "sky": "cloudy"
+    "t": 9,
+    "sky": "clear"
    },
    {
     "h": "15시",
-    "t": 17,
-    "sky": "cloudy"
+    "t": 8,
+    "sky": "clear"
    },
    {
     "h": "18시",
-    "t": 14,
-    "sky": "cloudy"
+    "t": 5,
+    "sky": "clear"
    },
    {
     "h": "21시",
-    "t": 12,
-    "sky": "cloudy"
+    "t": 3,
+    "sky": "clear"
    }
   ],
   "tomorrow": {
-   "min": 4,
-   "max": 9,
-   "pop": 20,
+   "min": -1,
+   "max": 8,
+   "pop": 0,
    "sky": "clear"
   },
   "pm": "나쁨",
@@ -260,25 +260,25 @@
   "us": "FRED, Federal Reserve Bank of St. Louis (NASDAQCOM, SP500)"
  },
  "traffic": {
-  "basis": "23:45 기준 · 서울시 도시데이터",
-  "status": "서행",
-  "kmh": 21,
+  "basis": "00:00 기준 · 서울시 도시데이터",
+  "status": "원활",
+  "kmh": 26,
   "segments": [
    {
     "name": "강남역 부근",
-    "kmh": 22
+    "kmh": 25
    },
    {
     "name": "역삼역 부근",
-    "kmh": 22
+    "kmh": 29
    },
    {
     "name": "선릉역 부근",
-    "kmh": 21
+    "kmh": 28
    },
    {
     "name": "삼성역 부근",
-    "kmh": 20
+    "kmh": 15
    }
   ],
   "roads": [
@@ -288,12 +288,12 @@
    },
    {
     "name": "선릉로",
-    "kmh": 26
+    "kmh": 25
    }
   ],
   "congest": "여유",
   "congest_msg": "사람이 몰려있을 가능성이 낮고 붐빔은 거의 느껴지지 않아요",
-  "ts": "2026-11-27 23:48"
+  "ts": "2026-11-28 00:03"
  },
  "kr_hist": {
   "KOSPI": [
